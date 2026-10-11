@@ -1,0 +1,35 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  plugins:
+    - custom_lint
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  errors:
+    invalid_annotation_target: ignore
+    # Treat some warnings as errors
+    always_declare_return_types: error
+    avoid_print: error
+    prefer_const_constructors: warning
+    prefer_final_locals: warning
+
+linter:
+  rules:
+    - always_declare_return_types
+    - annotate_overrides
+    - avoid_print
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+    - require_trailing_commas
+    - sort_constructors_first
+    - use_key_in_widget_constructors
+    - avoid_empty_else
+    - empty_statements
+    - avoid_relative_lib_imports
+    - no_duplicate_case_values
+    - camel_case_types
+    - library_names
+    - prefer_is_empty
+    - prefer_is_not_empty

@@ -1,0 +1,135 @@
+name: afri_bms
+description: "African Business Management System"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ─── State Management ───
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # ─── Routing ───
+  go_router: ^14.8.1
+
+  # ─── Local Database ───
+  isar: any
+  xxf_isar_flutter_libs: ^3.1.0+3
+
+  # ─── Backend ───
+  supabase_flutter: ^2.8.3
+
+  # ─── Network ───
+  dio: ^5.7.0
+  connectivity_plus: ^6.1.1
+
+  # ─── Code Generation (runtime) ───
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # ─── Functional Programming ───
+  fpdart: ^1.1.0
+
+  # ─── UI / Design ───
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.16
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  lottie: ^3.2.0
+  fl_chart: ^0.70.2
+  flutter_staggered_animations: ^1.1.1
+
+  # ─── Barcode ───
+  mobile_scanner: ^6.0.2
+  barcode_widget: ^2.0.4
+
+  # ─── PDF & Printing ───
+  pdf: ^3.11.1
+  printing: ^5.13.2
+
+  # ─── Thermal Printing ───
+  # esc_pos_utils: any
+  # esc_pos_bluetooth: any
+
+  # ─── Sharing ───
+  share_plus: ^10.1.3
+
+  # ─── Storage ───
+  flutter_secure_storage: ^9.2.3
+  path_provider: ^2.1.5
+  path: ^1.9.0
+
+  # ─── Image ───
+  image_picker: ^1.1.2
+  flutter_image_compress: ^2.3.0
+
+  # ─── Background Work ───
+  workmanager: any
+
+  # ─── Utils ───
+  uuid: ^4.5.1
+  intl: ^0.20.2
+  equatable: ^2.0.7
+  collection: ^1.19.0
+  logger: ^2.5.0
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.1.3
+  device_info_plus: ^11.2.1
+  permission_handler: ^11.3.1
+
+  # ─── In-App Purchase ───
+  in_app_purchase: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # ─── Code Generation ───
+  build_runner: any
+  freezed: any
+  json_serializable: any
+  riverpod_generator: any
+  isar_generator: any
+
+  # ─── Linting ───
+  flutter_lints: any
+  custom_lint: any
+  riverpod_lint: any
+
+  # ─── Testing ───
+  mocktail: ^1.0.4
+  golden_toolkit: ^0.15.0
+dependency_overrides:
+  archive: ^4.4.0
+
+flutter:
+  uses-material-design: true
+  generate: true  # For l10n
+
+  assets:
+    - assets/logo/
+    - assets/onboarding/
+
+#   fonts:
+#     - family: PlusJakartaSans
+#       fonts:
+#         - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+#         - asset: assets/fonts/PlusJakartaSans-Medium.ttf
+#           weight: 500
+#         - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
+#           weight: 600
+#         - asset: assets/fonts/PlusJakartaSans-Bold.ttf
+#           weight: 700
+#     - family: JetBrainsMono
+#       fonts:
+#         - asset: assets/fonts/JetBrainsMono-Regular.ttf
+#         - asset: assets/fonts/JetBrainsMono-Medium.ttf
+#           weight: 500
