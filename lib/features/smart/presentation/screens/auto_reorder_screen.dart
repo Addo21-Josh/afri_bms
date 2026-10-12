@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/smart_insights_provider.dart';
+import '../../domain/entities/smart_insights_entity.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/utils/currency_formatter.dart';
 
@@ -17,7 +18,7 @@ class AutoReorderScreen extends ConsumerStatefulWidget {
 class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
   final Map<String, int> _customQuantities = {};
 
-  void _sharePurchaseOrder(String businessName, String currency, List items) {
+  void _sharePurchaseOrder(String businessName, String currency, List<AutoReorderItem> items) {
     final buffer = StringBuffer();
     buffer.writeln('📋 *PURCHASE ORDER - $businessName*');
     buffer.writeln('Date: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}\n');
@@ -27,8 +28,8 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
     int totalEstimate = 0;
     for (int i = 0; i < items.length; i++) {
       final item = items[i];
-      final qty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
-      final lineCost = qty * item.unitCostPrice;
+      final int qty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
+      final int lineCost = qty * item.unitCostPrice;
       totalEstimate += lineCost;
       final costFormatted = CurrencyFormatter.format(lineCost, currencyCode: currency);
 
@@ -43,12 +44,12 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
     Share.share(buffer.toString(), subject: 'Purchase Order - $businessName');
   }
 
-  void _sendViaWhatsApp(String businessName, String currency, List items) async {
+  void _sendViaWhatsApp(String businessName, String currency, List<AutoReorderItem> items) async {
     final buffer = StringBuffer();
     buffer.writeln('📋 *PURCHASE ORDER - $businessName*%0A');
     buffer.writeln('Please fulfill the following restock items:%0A');
     for (final item in items) {
-      final qty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
+      final int qty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
       buffer.writeln('• ${item.product.name}: $qty ${item.product.unit}%0A');
     }
     final url = Uri.parse('https://wa.me/?text=${buffer.toString()}');

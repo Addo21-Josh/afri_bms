@@ -16,7 +16,8 @@ final autoReorderListProvider = Provider<List<AutoReorderItem>>((ref) {
     final reorder = product.reorderLevel;
 
     if (stock <= reorder) {
-      final suggestedQty = ((reorder * 2) - stock).clamp(1, 99999);
+      final int diff = (reorder * 2) - stock;
+      final int suggestedQty = diff > 0 ? diff : 1;
       final estimatedCost = suggestedQty * product.costPrice;
 
       reorderItems.add(AutoReorderItem(
