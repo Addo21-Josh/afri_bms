@@ -63,10 +63,12 @@ final savedBusinessIdProvider = FutureProvider<String?>((ref) async {
 // Current Selected Business State
 @riverpod
 class CurrentBusiness extends _$CurrentBusiness {
+  String? _manualSelectedId;
+
   @override
   BusinessEntity? build() {
     final businessesAsync = ref.watch(userBusinessesProvider);
-    final savedId = ref.watch(savedBusinessIdProvider).value;
+    final savedId = ref.watch(savedBusinessIdProvider).value ?? _manualSelectedId;
 
     return businessesAsync.maybeWhen(
       data: (businesses) {
@@ -75,9 +77,6 @@ class CurrentBusiness extends _$CurrentBusiness {
           final matched = businesses.where((b) => b.id == savedId).firstOrNull;
           if (matched != null) return matched;
         }
-        if (state != null && businesses.any((b) => b.id == state!.id)) {
-          return businesses.firstWhere((b) => b.id == state!.id);
-        }
         return businesses.first;
       },
       orElse: () => null,
@@ -85,6 +84,7 @@ class CurrentBusiness extends _$CurrentBusiness {
   }
 
   void select(BusinessEntity business) {
+    _manualSelectedId = business.id;
     state = business;
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
@@ -94,6 +94,7 @@ class CurrentBusiness extends _$CurrentBusiness {
   }
 
   void clear() {
+    _manualSelectedId = null;
     state = null;
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
