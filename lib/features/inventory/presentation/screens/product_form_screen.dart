@@ -351,8 +351,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: categoriesAsync.when(
-                      data: (cats) {
+                    child: Builder(
+                      builder: (context) {
+                        final cats = categoriesAsync.value ?? [];
                         final hasSelected = _selectedCategoryId == null ||
                             cats.any((c) => c.id == _selectedCategoryId);
 
@@ -391,8 +392,6 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           },
                         );
                       },
-                      loading: () => const LinearProgressIndicator(),
-                      error: (_, __) => const SizedBox.shrink(),
                     ),
                   ),
                   const SizedBox(width: 12),

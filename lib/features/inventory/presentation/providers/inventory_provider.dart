@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/variant_entity.dart';
@@ -7,7 +8,12 @@ import '../../domain/entities/stock_movement_entity.dart';
 import '../../domain/repositories/inventory_repository.dart';
 import '../../data/datasources/inventory_remote_datasource.dart';
 import '../../data/repositories/inventory_repository_impl.dart';
+import '../../data/models/product_model.dart';
+import '../../data/models/category_model.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/sync/presentation/providers/sync_provider.dart';
+import '../../../../core/sync/domain/models/sync_queue_item.dart';
+import '../../../../core/utils/logger.dart';
 
 final inventoryRemoteDatasourceProvider = Provider<InventoryRemoteDatasource>((ref) {
   return InventoryRemoteDatasourceImpl(Supabase.instance.client);
@@ -22,20 +28,28 @@ final inventoryRepositoryProvider = Provider<InventoryRepository>((ref) {
 final selectedCategoryFilterProvider = StateProvider<String?>((ref) => null);
 final productSearchQueryProvider = StateProvider<String>((ref) => '');
 
-// Fetch categories for active business
+// Fetch categories for active business with offline fallback
 final productCategoriesProvider = FutureProvider.autoDispose<List<ProductCategoryEntity>>((ref) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return [];
 
   final repo = ref.watch(inventoryRepositoryProvider);
+  final localCache = ref.watch(localCacheServiceProvider);
+
   final result = await repo.getCategories(currentBiz.id);
   return result.fold(
-    (failure) => throw failure.message,
-    (categories) => categories,
+    (failure) async {
+      AppLogger.w('Categories fetch failed: ${failure.message}. Falling back to offline cache.');
+      return await localCache.getCachedCategories(currentBiz.id);
+    },
+    (categories) async {
+      await localCache.cacheCategories(currentBiz.id, categories);
+      return categories;
+    },
   );
 });
 
-// Fetch products list for active business and active branch
+// Fetch products list for active business and active branch with offline fallback
 final productsListProvider = FutureProvider.autoDispose<List<ProductEntity>>((ref) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return [];
@@ -45,6 +59,8 @@ final productsListProvider = FutureProvider.autoDispose<List<ProductEntity>>((re
   final searchQuery = ref.watch(productSearchQueryProvider);
 
   final repo = ref.watch(inventoryRepositoryProvider);
+  final localCache = ref.watch(localCacheServiceProvider);
+
   final result = await repo.getProducts(
     businessId: currentBiz.id,
     branchId: currentBranch?.id,
@@ -53,8 +69,22 @@ final productsListProvider = FutureProvider.autoDispose<List<ProductEntity>>((re
   );
 
   return result.fold(
-    (failure) => throw failure.message,
-    (products) => products,
+    (failure) async {
+      AppLogger.w('Products fetch failed: ${failure.message}. Falling back to offline cache.');
+      var cached = await localCache.getCachedProducts(currentBiz.id);
+      if (categoryId != null) {
+        cached = cached.where((p) => p.categoryId == categoryId).toList();
+      }
+      if (searchQuery.isNotEmpty) {
+        final q = searchQuery.toLowerCase();
+        cached = cached.where((p) => p.name.toLowerCase().contains(q) || (p.sku?.toLowerCase().contains(q) ?? false)).toList();
+      }
+      return cached;
+    },
+    (products) async {
+      await localCache.cacheProducts(currentBiz.id, products);
+      return products;
+    },
   );
 });
 
@@ -139,11 +169,48 @@ class InventoryController extends StateNotifier<AsyncValue<void>> {
     );
 
     return result.fold(
-      (failure) {
+      (failure) async {
+        final syncState = ref.read(syncProvider);
+        if (!syncState.isOnline || failure.message.contains('SocketException') || failure.message.contains('ClientException') || failure.message.contains('Failed host lookup')) {
+          final localProduct = ProductEntity(
+            id: const Uuid().v4(),
+            businessId: currentBiz.id,
+            categoryId: categoryId,
+            name: name,
+            description: description,
+            sku: sku,
+            barcode: barcode,
+            costPrice: costPrice,
+            sellingPrice: sellingPrice,
+            currency: currency,
+            unit: unit,
+            reorderLevel: reorderLevel,
+            currentBranchStock: initialStock,
+            variants: variants,
+            imageUrls: imageUrls,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+
+          await ref.read(localCacheServiceProvider).saveOfflineProduct(currentBiz.id, localProduct);
+          await ref.read(syncProvider.notifier).enqueueOperation(
+            table: 'products',
+            operation: SyncOperation.insert,
+            recordId: localProduct.id,
+            payload: ProductModel.fromEntity(localProduct).toJson(),
+            businessId: currentBiz.id,
+          );
+
+          state = const AsyncValue.data(null);
+          ref.invalidate(productsListProvider);
+          return localProduct;
+        }
+
         state = AsyncValue.error(failure.message, StackTrace.current);
         return null;
       },
-      (product) {
+      (product) async {
+        await ref.read(localCacheServiceProvider).saveOfflineProduct(currentBiz.id, product);
         state = const AsyncValue.data(null);
         ref.invalidate(productsListProvider);
         return product;
@@ -204,11 +271,37 @@ class InventoryController extends StateNotifier<AsyncValue<void>> {
     );
 
     return result.fold(
-      (failure) {
+      (failure) async {
+        final syncState = ref.read(syncProvider);
+        if (!syncState.isOnline || failure.message.contains('SocketException') || failure.message.contains('ClientException') || failure.message.contains('Failed host lookup')) {
+          final localCat = ProductCategoryEntity(
+            id: const Uuid().v4(),
+            businessId: currentBiz.id,
+            name: name,
+            description: description,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+
+          await ref.read(localCacheServiceProvider).saveOfflineCategory(currentBiz.id, localCat);
+          await ref.read(syncProvider.notifier).enqueueOperation(
+            table: 'categories',
+            operation: SyncOperation.insert,
+            recordId: localCat.id,
+            payload: ProductCategoryModel.fromEntity(localCat).toJson(),
+            businessId: currentBiz.id,
+          );
+
+          state = const AsyncValue.data(null);
+          ref.invalidate(productCategoriesProvider);
+          return localCat;
+        }
+
         state = AsyncValue.error(failure.message, StackTrace.current);
         return null;
       },
-      (category) {
+      (category) async {
+        await ref.read(localCacheServiceProvider).saveOfflineCategory(currentBiz.id, category);
         state = const AsyncValue.data(null);
         ref.invalidate(productCategoriesProvider);
         return category;

@@ -451,7 +451,8 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                     // Quick Customer Selector Dropdown
                     Consumer(
                       builder: (context, ref, _) {
-                        final customersList = ref.watch(customersListProvider).value ?? [];
+                        final customersAsync = ref.watch(customersListProvider);
+                        final customersList = customersAsync.hasValue ? customersAsync.value! : <CustomerEntity>[];
                         if (customersList.isEmpty) return const SizedBox.shrink();
 
                         return Padding(

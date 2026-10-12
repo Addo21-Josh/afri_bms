@@ -61,45 +61,41 @@ class CategorySelectorBar extends ConsumerWidget {
     final categoriesAsync = ref.watch(productCategoriesProvider);
     final selectedCat = ref.watch(selectedCategoryFilterProvider);
 
+    final categories = categoriesAsync.value ?? [];
+
     return SizedBox(
       height: 48,
-      child: categoriesAsync.when(
-        data: (categories) {
-          return ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              FilterChip(
-                selected: selectedCat == null,
-                label: const Text('All Products'),
-                onSelected: (_) {
-                  ref.read(selectedCategoryFilterProvider.notifier).state = null;
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          FilterChip(
+            selected: selectedCat == null,
+            label: const Text('All Products'),
+            onSelected: (_) {
+              ref.read(selectedCategoryFilterProvider.notifier).state = null;
+            },
+          ),
+          const SizedBox(width: 8),
+          ...categories.map((cat) {
+            final isSelected = selectedCat == cat.id;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FilterChip(
+                selected: isSelected,
+                label: Text(cat.name),
+                onSelected: (val) {
+                  ref.read(selectedCategoryFilterProvider.notifier).state = val ? cat.id : null;
                 },
               ),
-              const SizedBox(width: 8),
-              ...categories.map((cat) {
-                final isSelected = selectedCat == cat.id;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    selected: isSelected,
-                    label: Text(cat.name),
-                    onSelected: (val) {
-                      ref.read(selectedCategoryFilterProvider.notifier).state = val ? cat.id : null;
-                    },
-                  ),
-                );
-              }),
-              ActionChip(
-                avatar: const Icon(Icons.add, size: 16),
-                label: const Text('Add Category'),
-                onPressed: () => _showAddCategoryDialog(context, ref),
-              ),
-            ],
-          );
-        },
-        loading: () => const SizedBox.shrink(),
-        error: (_, __) => const SizedBox.shrink(),
+            );
+          }),
+          ActionChip(
+            avatar: const Icon(Icons.add, size: 16),
+            label: const Text('Add Category'),
+            onPressed: () => _showAddCategoryDialog(context, ref),
+          ),
+        ],
       ),
     );
   }

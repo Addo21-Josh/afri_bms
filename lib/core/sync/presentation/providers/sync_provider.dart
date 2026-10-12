@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../../data/local/sync_queue_storage.dart';
+import '../../data/local/local_cache_service.dart';
 import '../../domain/models/sync_queue_item.dart';
 import '../../domain/services/conflict_resolver.dart';
 import '../../domain/services/delta_sync_service.dart';
@@ -55,6 +56,10 @@ class SyncState {
     );
   }
 }
+
+final localCacheServiceProvider = Provider<LocalCacheService>((ref) {
+  return LocalCacheService();
+});
 
 final syncStorageProvider = Provider<SyncQueueStorage>((ref) {
   return SyncQueueStorage();
