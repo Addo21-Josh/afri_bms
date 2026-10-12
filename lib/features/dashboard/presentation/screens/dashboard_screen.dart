@@ -48,6 +48,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   void _warmOfflineCache() {
+    final currentBiz = ref.read(currentBusinessProvider);
+    if (currentBiz == null) return;
     // Proactively load and cache categories, products, customers & sales in the background
     ref.read(productCategoriesProvider.future).catchError((_) => <ProductCategoryEntity>[]);
     ref.read(customersListProvider.future).catchError((_) => <CustomerEntity>[]);
@@ -1058,6 +1060,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.listen(currentUserRoleProvider, (previous, next) {
       if (previous?.value != next.value && mounted) {
         setState(() => _currentTabIndex = 0);
+      }
+    });
+
+    // Proactively warm offline cache whenever active business is resolved/changed
+    ref.listen(currentBusinessProvider, (previous, next) {
+      if (next != null && next.id != previous?.id) {
+        _warmOfflineCache();
       }
     });
 

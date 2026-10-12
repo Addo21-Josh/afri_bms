@@ -35,15 +35,17 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
 
   if (!syncState.isOnline) {
     final cached = await localCache.getCachedCustomers(currentBiz.id);
-    if (searchQuery.isNotEmpty) {
-      final query = searchQuery.toLowerCase();
-      return cached.where((CustomerEntity c) {
-        final name = c.name.toLowerCase();
-        final phone = c.phone?.toLowerCase() ?? '';
-        return name.contains(query) || phone.contains(query);
-      }).toList();
+    if (cached.isNotEmpty) {
+      if (searchQuery.isNotEmpty) {
+        final query = searchQuery.toLowerCase();
+        return cached.where((CustomerEntity c) {
+          final name = c.name.toLowerCase();
+          final phone = c.phone?.toLowerCase() ?? '';
+          return name.contains(query) || phone.contains(query);
+        }).toList();
+      }
+      return cached;
     }
-    return cached;
   }
 
   final result = await repo.getCustomers(

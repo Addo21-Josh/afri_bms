@@ -87,34 +87,33 @@ final syncProvider = StateNotifierProvider<SyncNotifier, SyncState>((ref) {
   final storage = ref.watch(syncStorageProvider);
   final processor = ref.watch(syncQueueProcessorProvider);
   final deltaService = ref.watch(deltaSyncServiceProvider);
-  final business = ref.watch(currentBusinessProvider);
 
   return SyncNotifier(
+    ref: ref,
     storage: storage,
     processor: processor,
     deltaService: deltaService,
-    businessId: business?.id,
   );
 });
 
 class SyncNotifier extends StateNotifier<SyncState> {
+  final Ref _ref;
   final SyncQueueStorage _storage;
   final SyncQueueProcessor _processor;
   final DeltaSyncService _deltaService;
-  final String? _businessId;
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
   Timer? _autoSyncDebounce;
 
   SyncNotifier({
+    required Ref ref,
     required SyncQueueStorage storage,
     required SyncQueueProcessor processor,
     required DeltaSyncService deltaService,
-    String? businessId,
-  })  : _storage = storage,
+  })  : _ref = ref,
+        _storage = storage,
         _processor = processor,
         _deltaService = deltaService,
-        _businessId = businessId,
         super(const SyncState(isOnline: true, isSyncing: false, pendingCount: 0)) {
     _init();
   }
@@ -173,7 +172,8 @@ class SyncNotifier extends StateNotifier<SyncState> {
     required Map<String, dynamic> payload,
     String? businessId,
   }) async {
-    final bizId = businessId ?? _businessId ?? '';
+    final currentBiz = _ref.read(currentBusinessProvider);
+    final bizId = businessId ?? currentBiz?.id ?? '';
     final item = SyncQueueItem(
       id: const Uuid().v4(),
       businessId: bizId,
@@ -205,6 +205,9 @@ class SyncNotifier extends StateNotifier<SyncState> {
       return;
     }
 
+    final currentBiz = _ref.read(currentBusinessProvider);
+    final bId = currentBiz?.id;
+
     state = state.copyWith(
       isSyncing: true,
       progress: 0.1,
@@ -215,7 +218,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
     try {
       // 1. Process outbound queue
       final pushResult = await _processor.processQueue(
-        businessId: _businessId,
+        businessId: bId,
         onProgress: (processed, total, progress) {
           state = state.copyWith(
             progress: 0.1 + (progress * 0.5),
@@ -225,7 +228,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
       );
 
       // 2. Pull inbound delta updates
-      final bId = _businessId;
       if (bId != null && bId.isNotEmpty) {
         state = state.copyWith(progress: 0.7, statusMessage: 'Fetching latest cloud updates...');
         await _deltaService.pullAllDeltas(bId);
@@ -255,7 +257,8 @@ class SyncNotifier extends StateNotifier<SyncState> {
   }
 
   Future<void> retryFailed() async {
-    await _storage.retryFailedItems(businessId: _businessId);
+    final businessId = _ref.read(currentBusinessProvider)?.id;
+    await _storage.retryFailedItems(businessId: businessId);
     await refreshQueue();
     await triggerSync();
   }

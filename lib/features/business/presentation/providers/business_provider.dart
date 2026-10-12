@@ -38,11 +38,6 @@ Future<List<BusinessEntity>> userBusinesses(UserBusinessesRef ref) async {
 
   final repo = ref.watch(businessRepositoryProvider);
   final localCache = ref.watch(localCacheServiceProvider);
-  final syncState = ref.watch(syncProvider);
-
-  if (!syncState.isOnline) {
-    return await localCache.getCachedBusinesses(user.id);
-  }
 
   final result = await repo.getUserBusinesses(user.id);
 
@@ -87,11 +82,6 @@ Future<List<BranchEntity>> businessBranches(BusinessBranchesRef ref) async {
 
   final repo = ref.watch(branchRepositoryProvider);
   final localCache = ref.watch(localCacheServiceProvider);
-  final syncState = ref.watch(syncProvider);
-
-  if (!syncState.isOnline) {
-    return await localCache.getCachedBranches(activeBiz.id);
-  }
 
   final result = await repo.getBranches(activeBiz.id);
 

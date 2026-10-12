@@ -37,7 +37,8 @@ final productCategoriesProvider = FutureProvider.autoDispose<List<ProductCategor
   final syncState = ref.watch(syncProvider);
 
   if (!syncState.isOnline) {
-    return await localCache.getCachedCategories(currentBiz.id);
+    final cached = await localCache.getCachedCategories(currentBiz.id);
+    if (cached.isNotEmpty) return cached;
   }
 
   final repo = ref.watch(inventoryRepositoryProvider);
@@ -67,14 +68,16 @@ final productsListProvider = FutureProvider.autoDispose<List<ProductEntity>>((re
 
   if (!syncState.isOnline) {
     var cached = await localCache.getCachedProducts(currentBiz.id, branchId: currentBranch?.id);
-    if (categoryId != null) {
-      cached = cached.where((p) => p.categoryId == categoryId).toList();
+    if (cached.isNotEmpty) {
+      if (categoryId != null) {
+        cached = cached.where((p) => p.categoryId == categoryId).toList();
+      }
+      if (searchQuery.isNotEmpty) {
+        final q = searchQuery.toLowerCase();
+        cached = cached.where((p) => p.name.toLowerCase().contains(q) || (p.sku?.toLowerCase().contains(q) ?? false)).toList();
+      }
+      return cached;
     }
-    if (searchQuery.isNotEmpty) {
-      final q = searchQuery.toLowerCase();
-      cached = cached.where((p) => p.name.toLowerCase().contains(q) || (p.sku?.toLowerCase().contains(q) ?? false)).toList();
-    }
-    return cached;
   }
 
   final repo = ref.watch(inventoryRepositoryProvider);

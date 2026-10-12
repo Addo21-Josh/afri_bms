@@ -41,11 +41,13 @@ final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((ref) asy
 
   if (!syncState.isOnline) {
     var cached = await localCache.getCachedSales(currentBiz.id);
-    if (searchQuery.isNotEmpty) {
-      final q = searchQuery.toLowerCase();
-      cached = cached.where((s) => s.saleNumber.toLowerCase().contains(q) || (s.customerName?.toLowerCase().contains(q) ?? false)).toList();
+    if (cached.isNotEmpty) {
+      if (searchQuery.isNotEmpty) {
+        final q = searchQuery.toLowerCase();
+        cached = cached.where((s) => s.saleNumber.toLowerCase().contains(q) || (s.customerName?.toLowerCase().contains(q) ?? false)).toList();
+      }
+      return cached;
     }
-    return cached;
   }
 
   final result = await repo.getSales(
