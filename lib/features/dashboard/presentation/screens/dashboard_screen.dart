@@ -21,6 +21,8 @@ import '../../../reports/presentation/widgets/top_products_bar_chart.dart';
 import '../../../reports/domain/entities/report_entities.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../alerts/presentation/providers/alerts_provider.dart';
+import '../../../../core/widgets/offline_banner.dart';
+import '../../../../core/sync/presentation/providers/sync_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -894,6 +896,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onTap: () => context.push('/reports'),
           ),
           const Divider(),
+          ListTile(
+            leading: const Icon(Icons.sync, color: Colors.blueAccent),
+            title: const Text('Sync & Offline Center'),
+            subtitle: const Text('Manage offline queue and connectivity'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/sync-center'),
+          ),
+          const Divider(),
         ] else ...[
           ListTile(
             leading: const Icon(Icons.receipt_long, color: Colors.blue),
@@ -973,6 +983,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             subtitle: const Text('Inventory additions, deductions and adjustments'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/stock-movements'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.sync, color: Colors.blueAccent),
+            title: const Text('Sync & Offline Center'),
+            subtitle: const Text('Manage offline queue, delta sync & connection'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/sync-center'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.backup_outlined, color: Colors.teal),
+            title: const Text('Cloud Backup & Restore'),
+            subtitle: const Text('Export JSON database snapshot & automated backups'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/backup'),
           ),
           const Divider(),
           ListTile(
@@ -1116,6 +1142,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ? AppBar(
               title: Text(isStaffOrSales ? 'Store Dashboard' : 'Afri_BMS Dashboard'),
               actions: [
+                const SyncStatusBadge(),
                 IconButton(
                   tooltip: 'Alerts & Notifications',
                   icon: Badge(
@@ -1126,8 +1153,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   onPressed: () => context.push('/alerts'),
                 ),
                 IconButton(
+                  tooltip: 'Sync & Refresh',
                   icon: const Icon(Icons.refresh),
                   onPressed: () {
+                    ref.read(syncProvider.notifier).triggerSync();
                     ref.invalidate(userBusinessesProvider);
                     ref.invalidate(businessBranchesProvider);
                     ref.invalidate(productsListProvider);

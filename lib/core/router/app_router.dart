@@ -27,6 +27,8 @@ import '../../features/reports/presentation/screens/reports_hub_screen.dart';
 import '../../features/alerts/presentation/screens/alerts_screen.dart';
 import '../../features/smart/presentation/screens/smart_insights_screen.dart';
 import '../../features/smart/presentation/screens/auto_reorder_screen.dart';
+import '../sync/presentation/screens/sync_center_screen.dart';
+import '../../features/backup/presentation/screens/backup_screen.dart';
 import 'auth_guard.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -149,6 +151,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auto-reorder',
         builder: (context, state) => const AutoReorderScreen(),
+      ),
+      GoRoute(
+        path: '/sync-center',
+        builder: (context, state) => const SyncCenterScreen(),
+      ),
+      GoRoute(
+        path: '/backup',
+        builder: (context, state) => const BackupScreen(),
       ),
     ],
   );

@@ -365,31 +365,31 @@
 
 #### 10.1 Sync Engine
 
-- [ ] Background sync worker (WorkManager)
-- [ ] Sync queue processor
-- [ ] Conflict resolution implementation
-- [ ] Delta sync (changed records only)
-- [ ] Batch sync operations
-- [ ] Sync status indicator (UI)
-- [ ] Manual sync trigger (pull-to-refresh)
-- [ ] Sync progress reporting
-- [ ] Error recovery & retry logic
+- [x] Background sync worker (WorkManager)
+- [x] Sync queue processor
+- [x] Conflict resolution implementation
+- [x] Delta sync (changed records only)
+- [x] Batch sync operations
+- [x] Sync status indicator (UI)
+- [x] Manual sync trigger (pull-to-refresh)
+- [x] Sync progress reporting
+- [x] Error recovery & retry logic
 
 #### 10.2 Offline Mode
 
-- [ ] Offline detection banner
-- [ ] All CRUD operations work offline
-- [ ] Queue all operations for later sync
-- [ ] Offline mode indicator on all screens
-- [ ] Grace period for expired tokens
-- [ ] Data integrity checks
+- [x] Offline detection banner
+- [x] All CRUD operations work offline
+- [x] Queue all operations for later sync
+- [x] Offline mode indicator on all screens
+- [x] Grace period for expired tokens
+- [x] Data integrity checks
 
 #### 10.3 Cloud Backup
 
-- [ ] Full backup export (Isar → JSON → Supabase Storage)
-- [ ] Restore from backup
-- [ ] Automatic daily backup (Pro+)
-- [ ] Backup history and management
+- [x] Full backup export (Isar → JSON → Supabase Storage)
+- [x] Restore from backup
+- [x] Automatic daily backup (Pro+)
+- [x] Backup history and management
 
 **Milestone**: App works fully offline. Sync is reliable. Cloud backup functional.
 
