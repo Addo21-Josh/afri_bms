@@ -111,9 +111,21 @@ class SyncQueueProcessor {
 
     switch (item.operation) {
       case SyncOperation.insert:
+        try {
+          await table.insert(item.payload);
+        } on PostgrestException catch (e) {
+          // If record already exists in Supabase (unique key conflict 23505),
+          // treat as successfully synced without error
+          if (e.code == '23505' || e.message.contains('duplicate key')) {
+            AppLogger.i('Item ${item.recordId} already exists in ${item.table}. Treating insert as completed.');
+          } else {
+            rethrow;
+          }
+        }
+        break;
+
       case SyncOperation.update:
-        // Use upsert to handle idempotency and avoids unique key conflicts
-        await table.upsert(item.payload, onConflict: 'id');
+        await table.update(item.payload).eq('id', item.recordId);
         break;
 
       case SyncOperation.delete:
