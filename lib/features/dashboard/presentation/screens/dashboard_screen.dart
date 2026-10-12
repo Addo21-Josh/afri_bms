@@ -11,7 +11,6 @@ import '../../../users/domain/entities/staff_user_entity.dart';
 import '../../../users/presentation/providers/staff_provider.dart';
 import '../../../users/presentation/screens/staff_list_screen.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../../core/utils/session_manager.dart';
 import '../../../sales/presentation/screens/pos_screen.dart';
 import '../../../sales/presentation/screens/sales_history_screen.dart';
 import 'package:intl/intl.dart';
@@ -1065,9 +1064,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           leading: const Icon(Icons.logout, color: Colors.red),
           title: const Text('Log Out', style: TextStyle(color: Colors.red)),
           onTap: () async {
-            await ref.read(authControllerProvider.notifier).signOut();
-            SessionManager.invalidateAllSessionData(ref);
             if (context.mounted) context.go('/login');
+            await ref.read(authControllerProvider.notifier).signOut();
           },
         ),
       ],

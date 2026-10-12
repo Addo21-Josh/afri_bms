@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import '../../features/business/presentation/providers/business_provider.dart';
 import '../../features/users/presentation/providers/staff_provider.dart';
 import '../../features/inventory/presentation/providers/inventory_provider.dart';
@@ -15,7 +16,8 @@ class SessionManager {
   /// whenever a user logs in, logs out, or switches accounts.
   static void invalidateAllSessionData(dynamic refOrWidgetRef) {
     AppLogger.i('Clearing all session cached providers for account switch...');
-    try {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
       // 1. Explicitly clear stateful active notifiers
       try {
         refOrWidgetRef.read(currentBusinessProvider.notifier).clear();
@@ -54,5 +56,6 @@ class SessionManager {
     } catch (e) {
       AppLogger.w('Warning while invalidating session data: $e');
     }
-  }
+  });
+}
 }
