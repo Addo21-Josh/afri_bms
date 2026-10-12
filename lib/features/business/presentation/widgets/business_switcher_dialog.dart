@@ -55,22 +55,22 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
           .read(businessControllerProvider.notifier)
           .deleteBusiness(business.id);
 
-      if (mounted) {
-        setState(() => _deletingBusinessId = null);
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('"${business.name}" deleted successfully.')),
-          );
-        } else {
-          final errorMsg = ref.read(businessControllerProvider).error?.toString() ??
-              'Failed to delete business. Check network or admin privileges.';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMsg),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
-        }
+      if (!mounted) return;
+      setState(() => _deletingBusinessId = null);
+      if (!context.mounted) return;
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('"${business.name}" deleted successfully.')),
+        );
+      } else {
+        final errorMsg = ref.read(businessControllerProvider).error?.toString() ??
+            'Failed to delete business. Check network or admin privileges.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
       }
     }
   }
@@ -150,7 +150,7 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                   child: ListView.separated(
                     shrinkWrap: true,
                     itemCount: businesses.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (ctx, index) {
                       final biz = businesses[index];
                       final isSelected = currentBiz?.id == biz.id;
@@ -244,7 +244,7 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                                       ),
                                       const SizedBox(height: 3),
                                       Text(
-                                        'Currency: ${biz.defaultCurrency}${biz.taxNumber != null ? ' • Tax: ${biz.taxNumber}' : ''}',
+                                        'Currency: ${biz.defaultCurrency}${biz.taxRate > 0 ? ' • Tax: ${(biz.taxRate * 100).toStringAsFixed(1)}%' : ''}',
                                         style: theme.textTheme.bodySmall?.copyWith(
                                           color: colorScheme.outline,
                                           fontSize: 11,
