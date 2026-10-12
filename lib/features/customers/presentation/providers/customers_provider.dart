@@ -31,6 +31,20 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
   final searchQuery = ref.watch(customerSearchQueryProvider);
   final repo = ref.watch(customerRepositoryProvider);
   final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    final cached = await localCache.getCachedCustomers(currentBiz.id);
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.toLowerCase();
+      return cached.where((CustomerEntity c) {
+        final name = c.name.toLowerCase();
+        final phone = c.phone?.toLowerCase() ?? '';
+        return name.contains(query) || phone.contains(query);
+      }).toList();
+    }
+    return cached;
+  }
 
   final result = await repo.getCustomers(
     currentBiz.id,
@@ -98,9 +112,38 @@ class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
     }
 
     state = const AsyncValue.loading();
-    final repo = ref.read(customerRepositoryProvider);
     final localCache = ref.read(localCacheServiceProvider);
+    final syncState = ref.read(syncProvider);
 
+    if (!syncState.isOnline) {
+      final localCust = CustomerEntity(
+        id: const Uuid().v4(),
+        businessId: currentBiz.id,
+        name: name,
+        phone: phone,
+        email: email,
+        address: address,
+        creditLimit: creditLimit,
+        notes: notes,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await localCache.saveOfflineCustomer(currentBiz.id, localCust);
+      await ref.read(syncProvider.notifier).enqueueOperation(
+        table: 'customers',
+        operation: SyncOperation.insert,
+        recordId: localCust.id,
+        payload: CustomerModel.fromEntity(localCust).toJson(),
+        businessId: currentBiz.id,
+      );
+
+      ref.invalidate(customersListProvider);
+      state = AsyncValue.data(localCust);
+      return localCust;
+    }
+
+    final repo = ref.read(customerRepositoryProvider);
     final result = await repo.createCustomer(
       businessId: currentBiz.id,
       name: name,
@@ -113,38 +156,31 @@ class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
 
     return result.fold(
       (failure) async {
-        // Fallback for offline customer creation
-        final syncState = ref.read(syncProvider);
-        if (!syncState.isOnline || failure.message.contains('SocketException') || failure.message.contains('ClientException') || failure.message.contains('Failed host lookup')) {
-          final localCust = CustomerEntity(
-            id: const Uuid().v4(),
-            businessId: currentBiz.id,
-            name: name,
-            phone: phone,
-            email: email,
-            address: address,
-            creditLimit: creditLimit,
-            notes: notes,
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-          );
+        final localCust = CustomerEntity(
+          id: const Uuid().v4(),
+          businessId: currentBiz.id,
+          name: name,
+          phone: phone,
+          email: email,
+          address: address,
+          creditLimit: creditLimit,
+          notes: notes,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
 
-          await localCache.saveOfflineCustomer(currentBiz.id, localCust);
-          await ref.read(syncProvider.notifier).enqueueOperation(
-            table: 'customers',
-            operation: SyncOperation.insert,
-            recordId: localCust.id,
-            payload: CustomerModel.fromEntity(localCust).toJson(),
-            businessId: currentBiz.id,
-          );
+        await localCache.saveOfflineCustomer(currentBiz.id, localCust);
+        await ref.read(syncProvider.notifier).enqueueOperation(
+          table: 'customers',
+          operation: SyncOperation.insert,
+          recordId: localCust.id,
+          payload: CustomerModel.fromEntity(localCust).toJson(),
+          businessId: currentBiz.id,
+        );
 
-          ref.invalidate(customersListProvider);
-          state = AsyncValue.data(localCust);
-          return localCust;
-        }
-
-        state = AsyncValue.error(failure.message, StackTrace.current);
-        return null;
+        ref.invalidate(customersListProvider);
+        state = AsyncValue.data(localCust);
+        return localCust;
       },
       (customer) async {
         await localCache.saveOfflineCustomer(currentBiz.id, customer);

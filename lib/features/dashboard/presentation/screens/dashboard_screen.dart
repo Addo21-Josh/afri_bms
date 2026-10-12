@@ -23,6 +23,11 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../alerts/presentation/providers/alerts_provider.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../../core/sync/presentation/providers/sync_provider.dart';
+import '../../../customers/presentation/providers/customers_provider.dart';
+import '../../../inventory/domain/entities/category_entity.dart';
+import '../../../inventory/domain/entities/product_entity.dart';
+import '../../../customers/domain/entities/customer_entity.dart';
+import '../../../sales/domain/entities/sale_entity.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -33,6 +38,22 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentTabIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _warmOfflineCache();
+    });
+  }
+
+  void _warmOfflineCache() {
+    // Proactively load and cache categories, products, customers & sales in the background
+    ref.read(productCategoriesProvider.future).catchError((_) => <ProductCategoryEntity>[]);
+    ref.read(customersListProvider.future).catchError((_) => <CustomerEntity>[]);
+    ref.read(productsListProvider.future).catchError((_) => <ProductEntity>[]);
+    ref.read(salesListProvider.future).catchError((_) => <SaleEntity>[]);
+  }
 
   Widget _buildOverviewTab(BuildContext context) {
     final currentBiz = ref.watch(currentBusinessProvider);

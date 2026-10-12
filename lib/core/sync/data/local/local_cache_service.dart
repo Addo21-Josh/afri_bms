@@ -10,6 +10,10 @@ import 'package:afri_bms/features/customers/domain/entities/customer_entity.dart
 import 'package:afri_bms/features/customers/data/models/customer_model.dart';
 import 'package:afri_bms/features/sales/domain/entities/sale_entity.dart';
 import 'package:afri_bms/features/sales/data/models/sale_model.dart';
+import 'package:afri_bms/features/business/domain/entities/business_entity.dart';
+import 'package:afri_bms/features/business/domain/entities/branch_entity.dart';
+import 'package:afri_bms/features/business/data/models/business_model.dart';
+import 'package:afri_bms/features/business/data/models/branch_model.dart';
 
 class LocalCacheService {
   static const String _cacheFileName = 'afri_offline_cache.json';
@@ -49,17 +53,24 @@ class LocalCacheService {
   // ─── PRODUCTS CACHE ───
   Future<void> cacheProducts(String businessId, List<ProductEntity> products) async {
     final cache = await _readCache();
-    final jsonList = products.map((p) => ProductModel.fromEntity(p).toJson()).toList();
+    final jsonList = products.map((p) => ProductModel.fromEntity(p).toCacheJson()).toList();
     cache['products_$businessId'] = jsonList;
     await _writeCache(cache);
   }
 
-  Future<List<ProductEntity>> getCachedProducts(String businessId) async {
+  Future<List<ProductEntity>> getCachedProducts(String businessId, {String? branchId}) async {
     final cache = await _readCache();
     final list = cache['products_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      return list.map((json) => ProductModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+      return list.map((json) {
+        final map = json as Map<String, dynamic>;
+        final model = ProductModel.fromJson(map);
+        return model.toEntity(
+          currentBranchId: branchId,
+          cachedBranchStock: (map['current_branch_stock'] as num?)?.toInt(),
+        );
+      }).toList();
     } catch (e) {
       AppLogger.w('Error parsing cached products: $e');
       return [];
@@ -195,5 +206,45 @@ class LocalCacheService {
     final sales = await getCachedSales(businessId);
     sales.insert(0, sale);
     await cacheSales(businessId, sales);
+  }
+
+  // ─── BUSINESSES CACHE ───
+  Future<void> cacheBusinesses(String userId, List<BusinessEntity> businesses) async {
+    final cache = await _readCache();
+    final jsonList = businesses.map((b) => BusinessModel.fromEntity(b).toJson()).toList();
+    cache['businesses_$userId'] = jsonList;
+    await _writeCache(cache);
+  }
+
+  Future<List<BusinessEntity>> getCachedBusinesses(String userId) async {
+    final cache = await _readCache();
+    final list = cache['businesses_$userId'] as List<dynamic>?;
+    if (list == null) return [];
+    try {
+      return list.map((json) => BusinessModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+    } catch (e) {
+      AppLogger.w('Error parsing cached businesses: $e');
+      return [];
+    }
+  }
+
+  // ─── BRANCHES CACHE ───
+  Future<void> cacheBranches(String businessId, List<BranchEntity> branches) async {
+    final cache = await _readCache();
+    final jsonList = branches.map((b) => BranchModel.fromEntity(b).toJson()).toList();
+    cache['branches_$businessId'] = jsonList;
+    await _writeCache(cache);
+  }
+
+  Future<List<BranchEntity>> getCachedBranches(String businessId) async {
+    final cache = await _readCache();
+    final list = cache['branches_$businessId'] as List<dynamic>?;
+    if (list == null) return [];
+    try {
+      return list.map((json) => BranchModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+    } catch (e) {
+      AppLogger.w('Error parsing cached branches: $e');
+      return [];
+    }
   }
 }

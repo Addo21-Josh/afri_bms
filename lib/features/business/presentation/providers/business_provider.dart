@@ -8,6 +8,8 @@ import 'package:afri_bms/features/business/domain/repositories/branch_repository
 import 'package:afri_bms/features/business/data/datasources/business_remote_datasource.dart';
 import 'package:afri_bms/features/business/data/repositories/business_repository_impl.dart';
 import 'package:afri_bms/features/business/data/repositories/branch_repository_impl.dart';
+import 'package:afri_bms/core/sync/presentation/providers/sync_provider.dart';
+import 'package:afri_bms/core/utils/logger.dart';
 
 part 'business_provider.g.dart';
 
@@ -35,11 +37,24 @@ Future<List<BusinessEntity>> userBusinesses(UserBusinessesRef ref) async {
   if (user == null) return [];
 
   final repo = ref.watch(businessRepositoryProvider);
+  final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    return await localCache.getCachedBusinesses(user.id);
+  }
+
   final result = await repo.getUserBusinesses(user.id);
 
   return result.fold(
-    (failure) => throw failure.message,
-    (businesses) => businesses,
+    (failure) async {
+      AppLogger.w('Businesses fetch failed: ${failure.message}. Falling back to offline cache.');
+      return await localCache.getCachedBusinesses(user.id);
+    },
+    (businesses) async {
+      await localCache.cacheBusinesses(user.id, businesses);
+      return businesses;
+    },
   );
 }
 
@@ -71,11 +86,24 @@ Future<List<BranchEntity>> businessBranches(BusinessBranchesRef ref) async {
   if (activeBiz == null) return [];
 
   final repo = ref.watch(branchRepositoryProvider);
+  final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    return await localCache.getCachedBranches(activeBiz.id);
+  }
+
   final result = await repo.getBranches(activeBiz.id);
 
   return result.fold(
-    (failure) => throw failure.message,
-    (branches) => branches,
+    (failure) async {
+      AppLogger.w('Branches fetch failed: ${failure.message}. Falling back to offline cache.');
+      return await localCache.getCachedBranches(activeBiz.id);
+    },
+    (branches) async {
+      await localCache.cacheBranches(activeBiz.id, branches);
+      return branches;
+    },
   );
 }
 

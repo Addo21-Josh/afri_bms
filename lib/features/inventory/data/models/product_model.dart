@@ -21,6 +21,7 @@ class ProductModel {
   final List<String> imageUrls;
   final List<ProductVariantModel> variants;
   final List<StockModel> stocks;
+  final int currentBranchStock;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -42,6 +43,7 @@ class ProductModel {
     this.imageUrls = const [],
     this.variants = const [],
     this.stocks = const [],
+    this.currentBranchStock = 0,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -65,6 +67,7 @@ class ProductModel {
       imageUrls: e.imageUrls,
       variants: e.variants.map((v) => ProductVariantModel.fromEntity(v)).toList(),
       stocks: e.stocks.map((s) => StockModel.fromEntity(s)).toList(),
+      currentBranchStock: e.currentBranchStock,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );
@@ -90,6 +93,7 @@ class ProductModel {
         .toList();
 
     final rawImages = json['image_urls'] as List<dynamic>? ?? [];
+    final cachedStock = (json['current_branch_stock'] as num?)?.toInt() ?? 0;
 
     return ProductModel(
       id: json['id'] as String,
@@ -109,6 +113,7 @@ class ProductModel {
       imageUrls: rawImages.map((e) => e.toString()).toList(),
       variants: variantsList,
       stocks: stocksList,
+      currentBranchStock: cachedStock,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -118,6 +123,7 @@ class ProductModel {
     );
   }
 
+  /// Minimal JSON payload for remote database mutations
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -137,14 +143,46 @@ class ProductModel {
     };
   }
 
-  ProductEntity toEntity({String? currentBranchId}) {
+  /// Comprehensive JSON payload for offline local disk cache
+  Map<String, dynamic> toCacheJson({int? overrideStock}) {
+    return {
+      'id': id,
+      'business_id': businessId,
+      'category_id': categoryId,
+      if (category != null) 'product_categories': category!.toJson(),
+      'name': name,
+      'description': description,
+      'sku': sku,
+      'barcode': barcode,
+      'cost_price': costPrice,
+      'selling_price': sellingPrice,
+      'currency': currency,
+      'unit': unit,
+      'reorder_level': reorderLevel,
+      'is_active': isActive,
+      'image_urls': imageUrls,
+      'product_variants': variants.map((v) => v.toJson()).toList(),
+      'stock': stocks.map((s) => s.toJson()).toList(),
+      'current_branch_stock': overrideStock ?? currentBranchStock,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+    };
+  }
+
+  ProductEntity toEntity({String? currentBranchId, int? cachedBranchStock}) {
     int branchStock = 0;
-    if (currentBranchId != null) {
-      branchStock = stocks
-          .where((s) => s.branchId == currentBranchId)
-          .fold<int>(0, (prev, s) => prev + s.quantity);
-    } else {
-      branchStock = stocks.fold<int>(0, (prev, s) => prev + s.quantity);
+    if (cachedBranchStock != null) {
+      branchStock = cachedBranchStock;
+    } else if (currentBranchStock > 0) {
+      branchStock = currentBranchStock;
+    } else if (stocks.isNotEmpty) {
+      if (currentBranchId != null) {
+        branchStock = stocks
+            .where((s) => s.branchId == currentBranchId)
+            .fold<int>(0, (prev, s) => prev + s.quantity);
+      } else {
+        branchStock = stocks.fold<int>(0, (prev, s) => prev + s.quantity);
+      }
     }
 
     return ProductEntity(

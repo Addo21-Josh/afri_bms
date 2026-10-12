@@ -37,6 +37,16 @@ final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((ref) asy
   final searchQuery = ref.watch(salesSearchQueryProvider);
   final repo = ref.watch(salesRepositoryProvider);
   final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    var cached = await localCache.getCachedSales(currentBiz.id);
+    if (searchQuery.isNotEmpty) {
+      final q = searchQuery.toLowerCase();
+      cached = cached.where((s) => s.saleNumber.toLowerCase().contains(q) || (s.customerName?.toLowerCase().contains(q) ?? false)).toList();
+    }
+    return cached;
+  }
 
   final result = await repo.getSales(
     businessId: currentBiz.id,
