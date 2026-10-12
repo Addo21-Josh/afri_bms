@@ -37,6 +37,23 @@ class CustomerModel extends CustomerEntity {
     );
   }
 
+  factory CustomerModel.fromEntity(CustomerEntity entity) {
+    return CustomerModel(
+      id: entity.id,
+      businessId: entity.businessId,
+      name: entity.name,
+      phone: entity.phone,
+      email: entity.email,
+      address: entity.address,
+      creditLimit: entity.creditLimit,
+      outstandingBalance: entity.outstandingBalance,
+      notes: entity.notes,
+      isActive: entity.isActive,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

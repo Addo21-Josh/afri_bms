@@ -29,6 +29,23 @@ class SaleItemModel {
     required this.createdAt,
   });
 
+  factory SaleItemModel.fromEntity(SaleItemEntity e) {
+    return SaleItemModel(
+      id: e.id,
+      saleId: e.saleId,
+      productId: e.productId,
+      variantId: e.variantId,
+      productName: e.productName,
+      variantName: e.variantName,
+      unitCostPrice: e.unitCostPrice,
+      unitPrice: e.unitPrice,
+      quantity: e.quantity,
+      discountAmount: e.discountAmount,
+      totalPrice: e.totalPrice,
+      createdAt: e.createdAt,
+    );
+  }
+
   factory SaleItemModel.fromJson(Map<String, dynamic> json) {
     return SaleItemModel(
       id: json['id'] as String,

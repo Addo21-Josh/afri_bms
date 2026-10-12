@@ -225,9 +225,10 @@ class SyncNotifier extends StateNotifier<SyncState> {
       );
 
       // 2. Pull inbound delta updates
-      if (_businessId != null && _businessId!.isNotEmpty) {
+      final bId = _businessId;
+      if (bId != null && bId.isNotEmpty) {
         state = state.copyWith(progress: 0.7, statusMessage: 'Fetching latest cloud updates...');
-        await _deltaService.pullAllDeltas(_businessId!);
+        await _deltaService.pullAllDeltas(bId);
       }
 
       final now = DateTime.now();

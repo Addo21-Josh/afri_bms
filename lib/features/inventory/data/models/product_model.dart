@@ -46,6 +46,30 @@ class ProductModel {
     required this.updatedAt,
   });
 
+  factory ProductModel.fromEntity(ProductEntity e) {
+    return ProductModel(
+      id: e.id,
+      businessId: e.businessId,
+      categoryId: e.categoryId,
+      category: e.category != null ? ProductCategoryModel.fromEntity(e.category!) : null,
+      name: e.name,
+      description: e.description,
+      sku: e.sku,
+      barcode: e.barcode,
+      costPrice: e.costPrice,
+      sellingPrice: e.sellingPrice,
+      currency: e.currency,
+      unit: e.unit,
+      reorderLevel: e.reorderLevel,
+      isActive: e.isActive,
+      imageUrls: e.imageUrls,
+      variants: e.variants.map((v) => ProductVariantModel.fromEntity(v)).toList(),
+      stocks: e.stocks.map((s) => StockModel.fromEntity(s)).toList(),
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+    );
+  }
+
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     // Parse category join if present
     ProductCategoryModel? catModel;

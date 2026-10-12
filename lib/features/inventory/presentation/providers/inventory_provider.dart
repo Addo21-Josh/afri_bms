@@ -121,9 +121,9 @@ final stockMovementsProvider = FutureProvider.autoDispose<List<StockMovementEnti
 
 // Inventory controller for mutations
 class InventoryController extends StateNotifier<AsyncValue<void>> {
-  final Ref ref;
-
   InventoryController(this.ref) : super(const AsyncValue.data(null));
+
+  final Ref ref;
 
   Future<ProductEntity?> createProduct({
     String? categoryId,
@@ -280,7 +280,6 @@ class InventoryController extends StateNotifier<AsyncValue<void>> {
             name: name,
             description: description,
             createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
           );
 
           await ref.read(localCacheServiceProvider).saveOfflineCategory(currentBiz.id, localCat);

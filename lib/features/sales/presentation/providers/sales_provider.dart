@@ -195,7 +195,7 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
             taxAmount: cartState.taxAmount,
             totalAmount: cartState.totalAmount,
             paymentMethod: paymentMethod,
-            status: SaleStatus.completed,
+            paymentStatus: PaymentStatus.paid,
             amountTendered: amountTendered,
             changeGiven: changeGiven,
             customerId: effectiveCustomerId,
@@ -205,7 +205,6 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
             notes: notes ?? cartState.notes,
             items: localItems,
             createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
           );
 
           // 1. Save sale to local cache

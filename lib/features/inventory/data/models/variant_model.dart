@@ -25,6 +25,21 @@ class ProductVariantModel {
     required this.createdAt,
   });
 
+  factory ProductVariantModel.fromEntity(ProductVariantEntity e) {
+    return ProductVariantModel(
+      id: e.id,
+      productId: e.productId,
+      name: e.name,
+      sku: e.sku,
+      barcode: e.barcode,
+      costPrice: e.costPrice,
+      sellingPrice: e.sellingPrice,
+      attributes: e.attributes,
+      isActive: e.isActive,
+      createdAt: e.createdAt,
+    );
+  }
+
   factory ProductVariantModel.fromJson(Map<String, dynamic> json) {
     return ProductVariantModel(
       id: json['id'] as String,

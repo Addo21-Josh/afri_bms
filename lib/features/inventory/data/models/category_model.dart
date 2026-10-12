@@ -17,6 +17,17 @@ class ProductCategoryModel {
     required this.createdAt,
   });
 
+  factory ProductCategoryModel.fromEntity(ProductCategoryEntity e) {
+    return ProductCategoryModel(
+      id: e.id,
+      businessId: e.businessId,
+      name: e.name,
+      description: e.description,
+      isActive: e.isActive,
+      createdAt: e.createdAt,
+    );
+  }
+
   factory ProductCategoryModel.fromJson(Map<String, dynamic> json) {
     return ProductCategoryModel(
       id: json['id'] as String,

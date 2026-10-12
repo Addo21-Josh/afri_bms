@@ -21,6 +21,19 @@ class StockModel {
     required this.updatedAt,
   });
 
+  factory StockModel.fromEntity(StockEntity e) {
+    return StockModel(
+      id: e.id,
+      productId: e.productId,
+      variantId: e.variantId,
+      branchId: e.branchId,
+      quantity: e.quantity,
+      batchNumber: e.batchNumber,
+      expiryDate: e.expiryDate,
+      updatedAt: e.updatedAt,
+    );
+  }
+
   factory StockModel.fromJson(Map<String, dynamic> json) {
     return StockModel(
       id: json['id'] as String,

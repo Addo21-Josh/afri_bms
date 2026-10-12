@@ -48,6 +48,32 @@ class SaleModel {
     required this.createdAt,
   });
 
+  factory SaleModel.fromEntity(SaleEntity e) {
+    return SaleModel(
+      id: e.id,
+      businessId: e.businessId,
+      branchId: e.branchId,
+      cashierId: e.cashierId,
+      cashierName: e.cashierName,
+      saleNumber: e.saleNumber,
+      subtotal: e.subtotal,
+      discountAmount: e.discountAmount,
+      taxAmount: e.taxAmount,
+      totalAmount: e.totalAmount,
+      paymentMethod: e.paymentMethod.name,
+      paymentStatus: e.paymentStatus.name,
+      amountTendered: e.amountTendered,
+      changeGiven: e.changeGiven,
+      customerId: e.customerId,
+      paymentReference: e.paymentReference,
+      customerName: e.customerName,
+      customerPhone: e.customerPhone,
+      notes: e.notes,
+      items: e.items.map((i) => SaleItemModel.fromEntity(i)).toList(),
+      createdAt: e.createdAt,
+    );
+  }
+
   factory SaleModel.fromJson(Map<String, dynamic> json) {
     // Extract cashier name if profiles join is present
     String? cName;

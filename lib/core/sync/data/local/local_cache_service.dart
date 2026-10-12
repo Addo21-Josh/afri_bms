@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import '../../../../core/utils/logger.dart';
-import '../../../inventory/domain/entities/product_entity.dart';
-import '../../../inventory/domain/entities/category_entity.dart';
-import '../../../inventory/data/models/product_model.dart';
-import '../../../inventory/data/models/category_model.dart';
-import '../../../customers/domain/entities/customer_entity.dart';
-import '../../../customers/data/models/customer_model.dart';
-import '../../../sales/domain/entities/sale_entity.dart';
-import '../../../sales/data/models/sale_model.dart';
+import 'package:afri_bms/core/utils/logger.dart';
+import 'package:afri_bms/features/inventory/domain/entities/product_entity.dart';
+import 'package:afri_bms/features/inventory/domain/entities/category_entity.dart';
+import 'package:afri_bms/features/inventory/data/models/product_model.dart';
+import 'package:afri_bms/features/inventory/data/models/category_model.dart';
+import 'package:afri_bms/features/customers/domain/entities/customer_entity.dart';
+import 'package:afri_bms/features/customers/data/models/customer_model.dart';
+import 'package:afri_bms/features/sales/domain/entities/sale_entity.dart';
+import 'package:afri_bms/features/sales/data/models/sale_model.dart';
 
 class LocalCacheService {
   static const String _cacheFileName = 'afri_offline_cache.json';

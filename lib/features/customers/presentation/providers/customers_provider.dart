@@ -43,7 +43,11 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
       final cached = await localCache.getCachedCustomers(currentBiz.id);
       if (searchQuery.isNotEmpty) {
         final query = searchQuery.toLowerCase();
-        return cached.where((c) => c.name.toLowerCase().contains(query) || (c.phone?.contains(query) ?? false)).toList();
+        return cached.where((CustomerEntity c) {
+          final name = c.name.toLowerCase();
+          final phone = c.phone?.toLowerCase() ?? '';
+          return name.contains(query) || phone.contains(query);
+        }).toList();
       }
       return cached;
     },
@@ -75,9 +79,9 @@ final customerSalesHistoryProvider = FutureProvider.autoDispose.family<List<Sale
 });
 
 class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
-  final Ref ref;
-
   CustomerController(this.ref) : super(const AsyncValue.data(null));
+
+  final Ref ref;
 
   Future<CustomerEntity?> createCustomer({
     required String name,
