@@ -68,4 +68,16 @@ class BusinessRepositoryImpl implements BusinessRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteBusiness(String businessId) async {
+    try {
+      await remoteDatasource.deleteBusiness(businessId);
+      return const Right(null);
+    } on AppException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

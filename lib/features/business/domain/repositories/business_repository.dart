@@ -14,4 +14,5 @@ abstract class BusinessRepository {
   Future<Either<Failure, List<BusinessEntity>>> getUserBusinesses(String userId);
   Future<Either<Failure, BusinessEntity>> updateBusiness(BusinessEntity business);
   Future<Either<Failure, List<BranchEntity>>> getBusinessBranches(String businessId);
+  Future<Either<Failure, void>> deleteBusiness(String businessId);
 }

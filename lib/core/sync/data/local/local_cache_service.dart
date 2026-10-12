@@ -247,4 +247,34 @@ class LocalCacheService {
       return [];
     }
   }
+
+  // ─── ACTIVE BUSINESS SELECTION ───
+  Future<void> saveSelectedBusinessId(String userId, String businessId) async {
+    final cache = await _readCache();
+    cache['selected_business_$userId'] = businessId;
+    await _writeCache(cache);
+  }
+
+  Future<String?> getSelectedBusinessId(String userId) async {
+    final cache = await _readCache();
+    return cache['selected_business_$userId'] as String?;
+  }
+
+  Future<void> clearSelectedBusinessId(String userId) async {
+    final cache = await _readCache();
+    cache.remove('selected_business_$userId');
+    await _writeCache(cache);
+  }
+
+  Future<void> removeCachedBusiness(String userId, String businessId) async {
+    final cache = await _readCache();
+    final list = cache['businesses_$userId'] as List<dynamic>?;
+    if (list != null) {
+      cache['businesses_$userId'] = list.where((item) => (item as Map<String, dynamic>)['id'] != businessId).toList();
+    }
+    if (cache['selected_business_$userId'] == businessId) {
+      cache.remove('selected_business_$userId');
+    }
+    await _writeCache(cache);
+  }
 }

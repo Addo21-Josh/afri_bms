@@ -53,24 +53,53 @@ Future<List<BusinessEntity>> userBusinesses(UserBusinessesRef ref) async {
   );
 }
 
+// Provider to load the user's previously chosen active business ID from cache
+final savedBusinessIdProvider = FutureProvider<String?>((ref) async {
+  final user = Supabase.instance.client.auth.currentUser;
+  if (user == null) return null;
+  return await ref.watch(localCacheServiceProvider).getSelectedBusinessId(user.id);
+});
+
 // Current Selected Business State
 @riverpod
 class CurrentBusiness extends _$CurrentBusiness {
   @override
   BusinessEntity? build() {
     final businessesAsync = ref.watch(userBusinessesProvider);
+    final savedId = ref.watch(savedBusinessIdProvider).value;
+
     return businessesAsync.maybeWhen(
-      data: (businesses) => businesses.isNotEmpty ? businesses.first : null,
+      data: (businesses) {
+        if (businesses.isEmpty) return null;
+        if (savedId != null) {
+          final matched = businesses.where((b) => b.id == savedId).firstOrNull;
+          if (matched != null) return matched;
+        }
+        if (state != null && businesses.any((b) => b.id == state!.id)) {
+          return businesses.firstWhere((b) => b.id == state!.id);
+        }
+        return businesses.first;
+      },
       orElse: () => null,
     );
   }
 
   void select(BusinessEntity business) {
     state = business;
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      ref.read(localCacheServiceProvider).saveSelectedBusinessId(user.id, business.id);
+      ref.invalidate(savedBusinessIdProvider);
+    }
   }
 
   void clear() {
     state = null;
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      ref.read(localCacheServiceProvider).clearSelectedBusinessId(user.id);
+      ref.invalidate(savedBusinessIdProvider);
+    }
   }
 }
 
@@ -193,6 +222,34 @@ class BusinessController extends _$BusinessController {
         ref.read(currentBusinessProvider.notifier).select(updated);
         ref.invalidate(userBusinessesProvider);
         return AsyncValue.data(updated);
+      },
+    );
+  }
+
+  Future<bool> deleteBusiness(String businessId) async {
+    state = const AsyncValue.loading();
+    final repo = ref.read(businessRepositoryProvider);
+    final user = Supabase.instance.client.auth.currentUser;
+
+    final result = await repo.deleteBusiness(businessId);
+
+    return result.fold(
+      (failure) {
+        state = AsyncValue.error(failure.message, StackTrace.current);
+        return false;
+      },
+      (_) async {
+        if (user != null) {
+          await ref.read(localCacheServiceProvider).removeCachedBusiness(user.id, businessId);
+        }
+        final current = ref.read(currentBusinessProvider);
+        if (current?.id == businessId) {
+          ref.read(currentBusinessProvider.notifier).clear();
+        }
+        ref.invalidate(userBusinessesProvider);
+        ref.invalidate(savedBusinessIdProvider);
+        state = const AsyncValue.data(null);
+        return true;
       },
     );
   }

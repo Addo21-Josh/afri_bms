@@ -27,6 +27,7 @@ abstract class BusinessRemoteDatasource {
   });
   Future<BranchEntity> updateBranch(BranchEntity branch);
   Future<void> deleteBranch(String branchId);
+  Future<void> deleteBusiness(String businessId);
 }
 
 class BusinessRemoteDatasourceImpl implements BusinessRemoteDatasource {
@@ -242,6 +243,23 @@ class BusinessRemoteDatasourceImpl implements BusinessRemoteDatasource {
           .eq('id', branchId);
     } catch (e) {
       AppLogger.e('Delete Branch Error: $e');
+      throw AppException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> deleteBusiness(String businessId) async {
+    try {
+      // First clean up user roles and branches for this business if needed
+      try {
+        await _supabaseClient.from('user_roles').delete().eq('business_id', businessId);
+      } catch (_) {}
+      try {
+        await _supabaseClient.from('branches').delete().eq('business_id', businessId);
+      } catch (_) {}
+      await _supabaseClient.from('businesses').delete().eq('id', businessId);
+    } catch (e) {
+      AppLogger.e('Delete Business Error: $e');
       throw AppException(e.toString());
     }
   }

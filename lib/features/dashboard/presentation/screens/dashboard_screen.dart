@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../business/presentation/widgets/branch_selector.dart';
+import '../../../business/presentation/widgets/business_switcher_dialog.dart';
 import '../../../inventory/presentation/providers/inventory_provider.dart';
 import '../../../inventory/presentation/screens/product_list_screen.dart';
 import '../../../users/domain/entities/staff_user_entity.dart';
@@ -265,6 +266,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          visualDensity: VisualDensity.compact,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: () => showBusinessSwitcherModal(context),
+                        icon: const Icon(Icons.swap_horiz, size: 16),
+                        label: const Text('Switch', style: TextStyle(fontSize: 12)),
                       ),
                     ],
                   ),
@@ -1022,6 +1034,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             subtitle: const Text('Export JSON database snapshot & automated backups'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/backup'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.swap_horiz_rounded, color: Colors.indigo),
+            title: const Text('Switch / Manage Business'),
+            subtitle: const Text('Change active company or delete unused workspaces'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => showBusinessSwitcherModal(context),
           ),
           const Divider(),
           ListTile(
