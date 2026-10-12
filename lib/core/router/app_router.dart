@@ -24,6 +24,9 @@ import '../../features/expenses/presentation/screens/expense_list_screen.dart';
 import '../../features/debts/presentation/screens/debt_list_screen.dart';
 import '../../features/debts/presentation/screens/debt_detail_screen.dart';
 import '../../features/reports/presentation/screens/reports_hub_screen.dart';
+import '../../features/alerts/presentation/screens/alerts_screen.dart';
+import '../../features/smart/presentation/screens/smart_insights_screen.dart';
+import '../../features/smart/presentation/screens/auto_reorder_screen.dart';
 import 'auth_guard.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -134,6 +137,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/reports',
         builder: (context, state) => const ReportsHubScreen(),
+      ),
+      GoRoute(
+        path: '/alerts',
+        builder: (context, state) => const AlertsScreen(),
+      ),
+      GoRoute(
+        path: '/smart-insights',
+        builder: (context, state) => const SmartInsightsScreen(),
+      ),
+      GoRoute(
+        path: '/auto-reorder',
+        builder: (context, state) => const AutoReorderScreen(),
       ),
     ],
   );

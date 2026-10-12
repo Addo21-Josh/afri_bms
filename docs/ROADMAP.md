@@ -336,24 +336,24 @@
 
 #### 9.1 Alerts
 
-- [ ] Low stock alerts (push notification + in-app)
-- [ ] Overdue debt alerts
-- [ ] Expiring product alerts
-- [ ] Daily sales summary notification
+- [x] Low stock alerts (push notification + in-app)
+- [x] Overdue debt alerts
+- [x] Expiring product alerts
+- [x] Daily sales summary notification
 
 #### 9.2 Smart Features
 
-- [ ] Auto-reorder suggestions (products below reorder level)
-- [ ] Branch performance comparison (Enterprise)
-- [ ] Sales velocity (items/day)
-- [ ] Most profitable products ranking
-- [ ] Customer purchase patterns
+- [x] Auto-reorder suggestions (products below reorder level)
+- [x] Branch performance comparison (Enterprise)
+- [x] Sales velocity (items/day)
+- [x] Most profitable products ranking
+- [x] Customer purchase patterns
 
 #### 9.3 Data Export
 
-- [ ] Export reports as CSV
-- [ ] Export reports as PDF
-- [ ] Share exported files
+- [x] Export reports as CSV
+- [x] Export reports as PDF
+- [x] Share exported files
 
 **Milestone**: Smart alerts working. Auto-reorder suggestions. Reports exportable.
 

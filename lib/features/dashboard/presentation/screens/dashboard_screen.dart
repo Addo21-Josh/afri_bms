@@ -20,6 +20,7 @@ import '../../../reports/presentation/widgets/revenue_line_chart.dart';
 import '../../../reports/presentation/widgets/top_products_bar_chart.dart';
 import '../../../reports/domain/entities/report_entities.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../alerts/presentation/providers/alerts_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -943,6 +944,30 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.psychology_outlined, color: Colors.deepPurple),
+            title: const Text('Smart Intelligence & Velocity'),
+            subtitle: const Text('Stockout run-out forecast, profitability & habits'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/smart-insights'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.add_shopping_cart, color: Colors.blueAccent),
+            title: const Text('Auto-Reorder Generator'),
+            subtitle: const Text('Instant purchase order for low-stock items'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/auto-reorder'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.notifications_active_outlined, color: Colors.amber),
+            title: const Text('Alerts & Notifications'),
+            subtitle: const Text('Low stock warnings, overdue credit & targets'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/alerts'),
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.track_changes, color: Colors.orange),
             title: const Text('Stock Movement Audit'),
             subtitle: const Text('Inventory additions, deductions and adjustments'),
@@ -1091,6 +1116,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ? AppBar(
               title: Text(isStaffOrSales ? 'Store Dashboard' : 'Afri_BMS Dashboard'),
               actions: [
+                IconButton(
+                  tooltip: 'Alerts & Notifications',
+                  icon: Badge(
+                    isLabelVisible: ref.watch(unreadAlertsCountProvider) > 0,
+                    label: Text('${ref.watch(unreadAlertsCountProvider)}'),
+                    child: const Icon(Icons.notifications_outlined),
+                  ),
+                  onPressed: () => context.push('/alerts'),
+                ),
                 IconButton(
                   icon: const Icon(Icons.refresh),
                   onPressed: () {

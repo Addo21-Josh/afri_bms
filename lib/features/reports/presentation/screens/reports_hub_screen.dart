@@ -9,6 +9,9 @@ import '../widgets/expense_pie_chart.dart';
 import '../widgets/top_products_bar_chart.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../services/report_export_service.dart';
+import '../../../sales/presentation/providers/sales_provider.dart';
+import '../../../inventory/presentation/providers/inventory_provider.dart';
 
 class ReportsHubScreen extends ConsumerStatefulWidget {
   const ReportsHubScreen({super.key});
@@ -63,6 +66,82 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
       appBar: AppBar(
         title: const Text('Reports & Analytics'),
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Smart Insights & Velocity',
+            icon: const Icon(Icons.psychology_outlined),
+            onPressed: () => context.push('/smart-insights'),
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Export Data',
+            icon: const Icon(Icons.file_download_outlined),
+            onSelected: (val) async {
+              final bizName = currentBiz?.name ?? 'Afri_BMS Store';
+              if (val == 'sales_csv') {
+                final sales = ref.read(salesListProvider).value ?? [];
+                await ReportExportService.exportSalesCsv(
+                  sales: sales,
+                  currency: currency,
+                  businessName: bizName,
+                );
+              } else if (val == 'inventory_csv') {
+                final products = ref.read(productsListProvider).value ?? [];
+                await ReportExportService.exportInventoryCsv(
+                  products: products,
+                  currency: currency,
+                  businessName: bizName,
+                );
+              } else if (val == 'executive_pdf') {
+                final sData = ref.read(salesReportProvider).value;
+                final fData = ref.read(financialReportProvider).value;
+                final iData = ref.read(inventoryReportProvider).value;
+                if (sData != null && fData != null && iData != null) {
+                  await ReportExportService.exportExecutiveSummaryPdf(
+                    salesData: sData,
+                    financialData: fData,
+                    inventoryData: iData,
+                    currency: currency,
+                    businessName: bizName,
+                    branchName: ref.read(currentBranchProvider)?.name,
+                  );
+                }
+              }
+            },
+            itemBuilder: (ctx) => const [
+              PopupMenuItem(
+                value: 'sales_csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.table_chart_outlined, size: 20),
+                    SizedBox(width: 8),
+                    Text('Export Sales CSV'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'inventory_csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.inventory_2_outlined, size: 20),
+                    SizedBox(width: 8),
+                    Text('Export Inventory CSV'),
+                  ],
+                ),
+              ),
+              PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'executive_pdf',
+                child: Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf_outlined, size: 20, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Export Executive PDF'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
