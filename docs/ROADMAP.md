@@ -399,33 +399,33 @@
 
 #### 11.1 Internationalization
 
-- [ ] Complete `app_en.arb` with all strings
-- [ ] i18n framework setup with `flutter_localizations`
-- [ ] Language selector in settings
-- [ ] Date/time locale formatting
-- [ ] Currency locale formatting
-- [ ] RTL support preparation (for Arabic future)
+- [x] Complete `app_en.arb` with all strings
+- [x] i18n framework setup with `flutter_localizations`
+- [x] Language selector in settings (English 🇬🇧, Français 🇫🇷, Kiswahili 🇰🇪)
+- [x] Date/time locale formatting
+- [x] Currency locale formatting
+- [x] RTL support preparation (for Arabic future)
 
 #### 11.2 Settings
 
-- [ ] App settings screen (theme, language, notifications)
-- [ ] Business settings (name, logo, tax rate, currencies)
-- [ ] Branch settings
-- [ ] Account settings (profile, password, logout)
-- [ ] Printer settings (pair, test print, default printer)
-- [ ] Sync settings (interval, WiFi-only toggle)
-- [ ] About screen (version, licenses, support contact)
+- [x] App settings screen (theme, language, notifications)
+- [x] Business settings (name, logo, tax rate, currencies)
+- [x] Branch settings
+- [x] Account settings (profile, password, logout)
+- [x] Printer settings (pair, test print, default printer)
+- [x] Sync settings (interval, WiFi-only toggle)
+- [x] About screen (version, licenses, support contact)
 
 #### 11.3 UI Polish
 
-- [ ] All micro-animations implemented
-- [ ] Skeleton loading states
-- [ ] Empty states with illustrations
-- [ ] Error states with retry actions
-- [ ] Haptic feedback on key actions
-- [ ] Pull-to-refresh on all list screens
-- [ ] Keyboard handling (dismiss, next field)
-- [ ] Responsive layouts tested on multiple device sizes
+- [x] All micro-animations implemented
+- [x] Skeleton loading states (`SkeletonLoading`, `SkeletonListView`)
+- [x] Empty states with illustrations (`EmptyStateWidget`)
+- [x] Error states with retry actions (`ErrorStateWidget`)
+- [x] Haptic feedback on key actions (`AppHaptics`)
+- [x] Pull-to-refresh on all list screens
+- [x] Keyboard handling (dismiss, next field)
+- [x] Responsive layouts tested on multiple device sizes
 
 **Milestone**: All strings externalized. Settings complete. UI polished and consistent.
 

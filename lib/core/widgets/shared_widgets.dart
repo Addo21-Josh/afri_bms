@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppScaffold extends StatelessWidget {
-  final Widget body;
-  final String? title;
-  final Widget? floatingActionButton;
-  final List<Widget>? actions;
-
   const AppScaffold({
     super.key,
     required this.body,
@@ -13,6 +8,11 @@ class AppScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.actions,
   });
+
+  final Widget body;
+  final String? title;
+  final Widget? floatingActionButton;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +44,6 @@ class LoadingOverlay extends StatelessWidget {
 }
 
 class EmptyStateWidget extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final IconData icon;
-  final Widget? action;
-
   const EmptyStateWidget({
     super.key,
     required this.title,
@@ -56,6 +51,11 @@ class EmptyStateWidget extends StatelessWidget {
     this.icon = Icons.inbox_outlined,
     this.action,
   });
+
+  final String title;
+  final String? subtitle;
+  final IconData icon;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +102,14 @@ class EmptyStateWidget extends StatelessWidget {
 }
 
 class ErrorStateWidget extends StatelessWidget {
-  final String message;
-  final VoidCallback? onRetry;
-
   const ErrorStateWidget({
     super.key,
     required this.message,
     this.onRetry,
   });
+
+  final String message;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {

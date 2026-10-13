@@ -1052,9 +1052,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Business Settings'),
-            subtitle: const Text('Currency, tax, and company profile'),
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text('Settings'),
+            subtitle: const Text('Preferences, printing, branches & business profile'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings'),
           ),
