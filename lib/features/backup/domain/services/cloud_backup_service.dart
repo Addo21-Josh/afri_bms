@@ -34,13 +34,13 @@ class CloudBackupService {
   }) async {
     AppLogger.i('Generating full JSON backup for $businessName ($businessId)...');
 
-    // 1. Gather all entity tables
-    final tables = ['products', 'categories', 'customers', 'sales', 'sale_items', 'debts', 'expenses', 'suppliers'];
+    // 1. Gather all entity tables with direct business_id column
+    final directTables = ['products', 'categories', 'customers', 'sales', 'debts', 'expenses', 'suppliers'];
     final Map<String, dynamic> backupData = {};
     int totalRecords = 0;
     final Map<String, int> counts = {};
 
-    for (final table in tables) {
+    for (final table in directTables) {
       try {
         final records = await _supabase.from(table).select().eq('business_id', businessId);
         final list = records as List<dynamic>;
@@ -52,6 +52,31 @@ class CloudBackupService {
         backupData[table] = [];
         counts[table] = 0;
       }
+    }
+
+    // Pull sale_items belonging to the backed-up sales
+    try {
+      final saleIds = (backupData['sales'] as List<dynamic>?)
+              ?.map((s) => s['id'] as String)
+              .toList() ??
+          [];
+      if (saleIds.isNotEmpty) {
+        final saleItems = await _supabase
+            .from('sale_items')
+            .select()
+            .inFilter('sale_id', saleIds);
+        final list = saleItems as List<dynamic>;
+        backupData['sale_items'] = list;
+        counts['sale_items'] = list.length;
+        totalRecords += list.length;
+      } else {
+        backupData['sale_items'] = [];
+        counts['sale_items'] = 0;
+      }
+    } catch (e) {
+      AppLogger.w('Backup: could not pull sale_items: $e');
+      backupData['sale_items'] = [];
+      counts['sale_items'] = 0;
     }
 
     final backupPayload = {
@@ -127,7 +152,9 @@ class CloudBackupService {
       for (final r in records) {
         try {
           final recordMap = Map<String, dynamic>.from(r as Map);
-          recordMap['business_id'] = businessId; // ensure target business
+          if (table != 'sale_items') {
+            recordMap['business_id'] = businessId; // ensure target business
+          }
           await _supabase.from(table).upsert(recordMap, onConflict: 'id');
           success++;
         } catch (e) {

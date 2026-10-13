@@ -7,6 +7,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/services/cloud_backup_service.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../inventory/presentation/providers/inventory_provider.dart';
+import '../../../customers/presentation/providers/customers_provider.dart';
+import '../../../sales/presentation/providers/sales_provider.dart';
+import '../../../expenses/presentation/providers/expenses_provider.dart';
+import '../../../debts/presentation/providers/debts_provider.dart';
+import '../../../suppliers/presentation/providers/suppliers_provider.dart';
 
 final cloudBackupServiceProvider = Provider<CloudBackupService>((ref) {
   return CloudBackupService(Supabase.instance.client);
@@ -80,6 +86,92 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     }
   }
 
+  Future<void> _restoreFromJson(Map<String, dynamic> parsed, {String? sourceName}) async {
+    final business = ref.read(currentBusinessProvider);
+    if (business == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No active business selected to restore data into.')),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final backupService = ref.read(cloudBackupServiceProvider);
+      final results = await backupService.restoreFromBackupJson(
+        businessId: business.id,
+        backupJson: parsed,
+      );
+
+      // Refresh all feature providers to display newly restored records
+      ref.invalidate(productsListProvider);
+      ref.invalidate(productCategoriesProvider);
+      ref.invalidate(customersListProvider);
+      ref.invalidate(salesListProvider);
+      ref.invalidate(expensesListProvider);
+      ref.invalidate(debtsListProvider);
+      ref.invalidate(suppliersListProvider);
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Restoration Complete'),
+            content: Text(
+              '${sourceName != null ? 'Data from "$sourceName" has been restored into "${business.name}".\n\n' : ''}'
+              'Restored records:\n${results.entries.map((e) => '• ${e.key}: ${e.value}').join('\n')}',
+            ),
+            actions: [
+              FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('Done')),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Restoration failed: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _confirmRestoreFile(File file, String fileName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Restore from Backup?'),
+        content: Text(
+          'Are you sure you want to restore records from "$fileName"?\n\n'
+          'This will import all products, customers, sales, and transactions from this snapshot into your active business.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore Data')),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        final content = await file.readAsString();
+        final parsed = jsonDecode(content) as Map<String, dynamic>;
+        await _restoreFromJson(parsed, sourceName: fileName);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed reading backup file: $e'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    }
+  }
+
   void _showRestoreDialog() {
     final textController = TextEditingController();
 
@@ -114,39 +206,15 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               if (raw.isEmpty) return;
 
               Navigator.pop(dialogCtx);
-              setState(() => _isLoading = true);
-
               try {
                 final Map<String, dynamic> parsed = jsonDecode(raw) as Map<String, dynamic>;
-                final business = ref.read(currentBusinessProvider);
-                if (business == null) return;
-
-                final backupService = ref.read(cloudBackupServiceProvider);
-                final results = await backupService.restoreFromBackupJson(
-                  businessId: business.id,
-                  backupJson: parsed,
-                );
-
-                if (mounted) {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text('Restoration Complete'),
-                      content: Text('Restored records:\n${results.entries.map((e) => '• ${e.key}: ${e.value}').join('\n')}'),
-                      actions: [
-                        FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('Done')),
-                      ],
-                    ),
-                  );
-                }
+                await _restoreFromJson(parsed, sourceName: 'Pasted JSON');
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Restoration failed: $e'), backgroundColor: Colors.red),
+                    SnackBar(content: Text('Invalid JSON formatting: $e'), backgroundColor: Colors.red),
                   );
                 }
-              } finally {
-                if (mounted) setState(() => _isLoading = false);
               }
             },
             child: const Text('Restore Data'),
@@ -296,6 +364,11 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      IconButton(
+                        tooltip: 'Restore this snapshot',
+                        icon: const Icon(Icons.settings_backup_restore, size: 20, color: Colors.teal),
+                        onPressed: _isLoading ? null : () => _confirmRestoreFile(file, name),
+                      ),
                       IconButton(
                         tooltip: 'Share / Export',
                         icon: const Icon(Icons.share, size: 20),
