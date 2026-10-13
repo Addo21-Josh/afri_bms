@@ -88,7 +88,9 @@ class SettingsScreen extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -106,7 +108,6 @@ class SettingsScreen extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
@@ -153,9 +154,12 @@ class SettingsScreen extends ConsumerWidget {
               ),
               title: Row(
                 children: [
-                  Text(
-                    currentTier.displayName,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Flexible(
+                    child: Text(
+                      currentTier.displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Container(
