@@ -205,14 +205,14 @@ class UpgradePromptSheet extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.rocket_launch_rounded, size: 20),
-                const SizedBox(width: 8),
+                Icon(Icons.rocket_launch_rounded, size: 20),
+                SizedBox(width: 8),
                 Text(
                   'View Plans & Upgrade',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

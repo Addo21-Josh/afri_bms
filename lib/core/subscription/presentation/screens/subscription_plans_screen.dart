@@ -593,8 +593,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
     }
 
     final activeBiz = ref.read(currentBusinessProvider);
-    final email = (activeBiz?.email.isNotEmpty == true)
-        ? activeBiz!.email
+    final bizEmail = activeBiz?.email;
+    final String email = (bizEmail != null && bizEmail.isNotEmpty)
+        ? bizEmail
         : 'billing@afribms.com';
     final amountInGhs = _isYearly ? targetTier.yearlyPriceGhs : targetTier.monthlyPriceGhs;
 

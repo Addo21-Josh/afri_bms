@@ -1,18 +1,28 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../config/paystack_config.dart';
 import '../../../../core/utils/logger.dart';
+import '../models/subscription_tier.dart';
 
-class PaystackInitResponse {
-  final String authorizationUrl;
-  final String accessCode;
-  final String reference;
+final paystackSubscriptionServiceProvider = Provider<PaystackSubscriptionService>((ref) {
+  return PaystackSubscriptionService();
+});
 
-  PaystackInitResponse({
-    required this.authorizationUrl,
-    required this.accessCode,
-    required this.reference,
+class PaystackInitResult {
+  PaystackInitResult({
+    required this.success,
+    this.authorizationUrl,
+    this.accessCode,
+    this.reference,
+    this.errorMessage,
   });
+
+  final bool success;
+  final String? authorizationUrl;
+  final String? accessCode;
+  final String? reference;
+  final String? errorMessage;
 }
 
 class PaystackSubscriptionService {
@@ -25,15 +35,30 @@ class PaystackSubscriptionService {
   );
 
   /// Initializes a Paystack transaction in GHS (Ghana Cedis)
-  /// [amountInPesewas]: e.g., 50 GHS = 5000 pesewas
-  Future<PaystackInitResponse?> initializePayment({
+  /// [amountInGhs]: e.g., 50 GHS -> 5000 pesewas
+  Future<PaystackInitResult> initializePayment({
     required String email,
-    required int amountInPesewas,
-    required String businessId,
-    required String planName,
+    required int amountInGhs,
+    required SubscriptionTier tier,
+    required bool isYearly,
+    Map<String, dynamic>? metadata,
     String currency = 'GHS',
   }) async {
     try {
+      final amountInPesewas = amountInGhs * 100;
+      final payload = {
+        'email': email,
+        'amount': amountInPesewas,
+        'currency': currency,
+        'channels': ['mobile_money', 'card'],
+        'metadata': {
+          'tier': tier.name,
+          'billing_cycle': isYearly ? 'yearly' : 'monthly',
+          'app': 'Afri_BMS',
+          ...?metadata,
+        },
+      };
+
       final response = await _dio.post(
         '/transaction/initialize',
         options: Options(
@@ -42,31 +67,23 @@ class PaystackSubscriptionService {
             'Content-Type': 'application/json',
           },
         ),
-        data: {
-          'email': email,
-          'amount': amountInPesewas,
-          'currency': currency,
-          'channels': ['mobile_money', 'card'],
-          'metadata': {
-            'business_id': businessId,
-            'plan': planName,
-            'app': 'Afri_BMS',
-          },
-        },
+        data: payload,
       );
 
       if (response.data != null && response.data['status'] == true) {
         final data = response.data['data'];
-        return PaystackInitResponse(
-          authorizationUrl: data['authorization_url'] as String,
-          accessCode: data['access_code'] as String,
-          reference: data['reference'] as String,
+        return PaystackInitResult(
+          success: true,
+          authorizationUrl: data['authorization_url'] as String?,
+          accessCode: data['access_code'] as String?,
+          reference: data['reference'] as String?,
         );
       }
-      return null;
+      final msg = response.data?['message']?.toString() ?? 'Initialization failed';
+      return PaystackInitResult(success: false, errorMessage: msg);
     } catch (e) {
       AppLogger.e('Paystack initialization failed: $e');
-      return null;
+      return PaystackInitResult(success: false, errorMessage: e.toString());
     }
   }
 
