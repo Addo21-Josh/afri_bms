@@ -53,12 +53,25 @@ class SaleReceiptScreen extends ConsumerWidget {
                       children: [
                         // Store Logo / Icon
                         Container(
-                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.12),
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          child: const Icon(Icons.check_circle, color: Colors.green, size: 40),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.asset(
+                              'assets/logo/main_logo.jpg',
+                              height: 56,
+                              width: 56,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 12),
 

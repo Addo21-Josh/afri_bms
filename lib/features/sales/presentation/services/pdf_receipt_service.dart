@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -20,6 +21,14 @@ class PdfReceiptService {
     final dateFormat = DateFormat('dd MMM yyyy, hh:mm a');
     final formattedDate = dateFormat.format(sale.createdAt);
 
+    pw.MemoryImage? logoImage;
+    try {
+      final logoBytes = await rootBundle.load('assets/logo/monochrome_logo.jpg');
+      logoImage = pw.MemoryImage(logoBytes.buffer.asUint8List());
+    } catch (_) {
+      // Fallback gracefully if asset is unavailable or in a test environment
+    }
+
     final subtotalFormatted = (sale.subtotal / 100).toStringAsFixed(2);
     final totalFormatted = (sale.totalAmount / 100).toStringAsFixed(2);
     final tenderedFormatted = (sale.amountTendered / 100).toStringAsFixed(2);
@@ -37,6 +46,16 @@ class PdfReceiptService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
+              if (logoImage != null) ...[
+                pw.Center(
+                  child: pw.Image(
+                    logoImage,
+                    width: isThermal ? 40 : 50,
+                    height: isThermal ? 40 : 50,
+                  ),
+                ),
+                pw.SizedBox(height: 6),
+              ],
               // Business Header
               pw.Text(
                 business?.name ?? 'Afri_BMS Store',

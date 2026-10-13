@@ -525,7 +525,15 @@ class SettingsScreen extends ConsumerWidget {
       applicationName: 'Afri_BMS',
       applicationVersion: '1.0.0+1 (Build 101)',
       applicationLegalese: '© 2026 Afri_BMS. Built for retail and inventory in African markets.',
-      applicationIcon: const Icon(Icons.store_mall_directory, size: 48, color: Colors.teal),
+      applicationIcon: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          'assets/logo/main_logo.jpg',
+          width: 48,
+          height: 48,
+          fit: BoxFit.cover,
+        ),
+      ),
       children: const [
         SizedBox(height: 16),
         Text(
