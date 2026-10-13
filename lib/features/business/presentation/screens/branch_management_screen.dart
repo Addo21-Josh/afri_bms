@@ -4,12 +4,31 @@ import 'package:afri_bms/core/utils/validators.dart';
 import 'package:afri_bms/core/widgets/shared_widgets.dart';
 import '../providers/business_provider.dart';
 import '../../domain/entities/branch_entity.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class BranchManagementScreen extends ConsumerWidget {
   const BranchManagementScreen({super.key});
 
   void _showBranchDialog(BuildContext context, WidgetRef ref, [BranchEntity? branch]) {
     final isEditing = branch != null;
+    if (!isEditing) {
+      final currentCount = ref.read(businessBranchesProvider).value?.length ?? 0;
+      final gate = ref.read(featureGateProvider);
+      final check = gate.checkBranchLimit(currentCount);
+      if (check.isBlocked) {
+        UpgradePromptSheet.show(
+          context,
+          featureName: check.featureName ?? 'Branch Locations',
+          customMessage: check.reason,
+          currentTier: gate.tier,
+          suggestedTier: check.requiredTier,
+        );
+        return;
+      }
+    }
+
     final nameController = TextEditingController(text: branch?.name ?? '');
     final addressController = TextEditingController(text: branch?.address ?? '');
     final phoneController = TextEditingController(text: branch?.phone ?? '');

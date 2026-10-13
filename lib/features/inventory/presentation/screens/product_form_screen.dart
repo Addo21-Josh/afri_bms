@@ -7,6 +7,9 @@ import '../providers/inventory_provider.dart';
 import 'barcode_scanner_screen.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/widgets/shared_widgets.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
   final ProductEntity? existingProduct;
@@ -239,6 +242,20 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
       final initialStock = int.tryParse(_initialStockController.text.trim()) ?? 0;
 
       if (widget.existingProduct == null) {
+        final currentCount = ref.read(productsListProvider).value?.length ?? 0;
+        final gate = ref.read(featureGateProvider);
+        final check = gate.checkProductLimit(currentCount);
+        if (check.isBlocked) {
+          UpgradePromptSheet.show(
+            context,
+            featureName: check.featureName ?? 'Product Catalog',
+            customMessage: check.reason,
+            currentTier: gate.tier,
+            suggestedTier: check.requiredTier,
+          );
+          return;
+        }
+
         final newProduct = await ref.read(inventoryControllerProvider.notifier).createProduct(
           categoryId: _selectedCategoryId,
           name: _nameController.text.trim(),

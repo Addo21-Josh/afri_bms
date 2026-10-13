@@ -152,6 +152,7 @@ class BusinessRemoteDatasourceImpl implements BusinessRemoteDatasource {
             'phone': business.phone,
             'email': business.email,
             'address': business.address,
+            'subscription_tier': business.subscriptionTier,
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('id', business.id)

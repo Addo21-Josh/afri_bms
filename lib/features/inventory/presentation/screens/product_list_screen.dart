@@ -9,6 +9,9 @@ import '../../../users/domain/entities/staff_user_entity.dart';
 import 'package:afri_bms/features/business/presentation/widgets/branch_selector.dart';
 import '../../../../core/widgets/shared_widgets.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class ProductListScreen extends ConsumerStatefulWidget {
   const ProductListScreen({super.key});
@@ -56,7 +59,22 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       floatingActionButton: isStaff
           ? null
           : FloatingActionButton.extended(
-              onPressed: () => context.push('/inventory/add'),
+              onPressed: () {
+                final currentProducts = productsAsync.value?.length ?? 0;
+                final gate = ref.read(featureGateProvider);
+                final check = gate.checkProductLimit(currentProducts);
+                if (check.isBlocked) {
+                  UpgradePromptSheet.show(
+                    context,
+                    featureName: check.featureName ?? 'Product Catalog',
+                    customMessage: check.reason,
+                    currentTier: gate.tier,
+                    suggestedTier: check.requiredTier,
+                  );
+                  return;
+                }
+                context.push('/inventory/add');
+              },
               icon: const Icon(Icons.add),
               label: const Text('Add Product'),
             ),

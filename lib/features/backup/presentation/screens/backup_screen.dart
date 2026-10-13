@@ -15,6 +15,9 @@ import '../../../debts/presentation/providers/debts_provider.dart';
 import '../../../suppliers/presentation/providers/suppliers_provider.dart';
 import '../../../../core/sync/presentation/providers/sync_provider.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 final cloudBackupServiceProvider = Provider<CloudBackupService>((ref) {
   return CloudBackupService(Supabase.instance.client);
@@ -56,6 +59,18 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _handleCreateBackup() async {
     final business = ref.read(currentBusinessProvider);
     if (business == null) return;
+
+    final gate = ref.read(featureGateProvider);
+    if (!gate.limits.cloudBackup) {
+      UpgradePromptSheet.show(
+        context,
+        featureName: 'Cloud Backup & Snapshot Export',
+        customMessage: 'Full automated and cloud backups require Afri_BMS Pro or Enterprise.',
+        currentTier: gate.tier,
+        suggestedTier: SubscriptionTier.pro,
+      );
+      return;
+    }
 
     setState(() => _isBackingUp = true);
 
@@ -307,6 +322,19 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                     subtitle: const Text('Generates and archives backup at 00:00 every day'),
                     value: _autoBackupEnabled,
                     onChanged: (val) {
+                      if (val) {
+                        final gate = ref.read(featureGateProvider);
+                        if (!gate.limits.cloudBackup) {
+                          UpgradePromptSheet.show(
+                            context,
+                            featureName: 'Automatic Daily Cloud Backup',
+                            customMessage: 'Daily scheduled automated cloud backups require Afri_BMS Pro or Enterprise.',
+                            currentTier: gate.tier,
+                            suggestedTier: SubscriptionTier.pro,
+                          );
+                          return;
+                        }
+                      }
                       setState(() => _autoBackupEnabled = val);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(val ? 'Daily automatic backups enabled.' : 'Daily automatic backups paused.')),

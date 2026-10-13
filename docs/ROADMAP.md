@@ -435,11 +435,11 @@
 
 ### 12.1 Freemium Gating
 
-- [ ] Implement `FeatureGate` service
-- [ ] Add limit checks to all gated features
-- [ ] Upgrade prompt UI
-- [ ] Subscription purchase flow (Google Play / Paystack)
-- [ ] Tier change handling (upgrade/downgrade)
+- [x] Implement `FeatureGate` service
+- [x] Add limit checks to all gated features
+- [x] Upgrade prompt UI
+- [x] Subscription purchase flow (Google Play / Paystack)
+- [x] Tier change handling (upgrade/downgrade)
 
 ### 12.2 Testing
 

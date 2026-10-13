@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/supplier_entity.dart';
 import '../providers/suppliers_provider.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class SupplierFormDialog extends ConsumerStatefulWidget {
   final SupplierEntity? supplierToEdit;
@@ -52,9 +55,25 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final isEditing = widget.supplierToEdit != null;
+    if (!isEditing) {
+      final currentCount = ref.read(suppliersListProvider).value?.length ?? 0;
+      final gate = ref.read(featureGateProvider);
+      final check = gate.checkSupplierLimit(currentCount);
+      if (check.isBlocked) {
+        UpgradePromptSheet.show(
+          context,
+          featureName: check.featureName ?? 'Suppliers Directory',
+          customMessage: check.reason,
+          currentTier: gate.tier,
+          suggestedTier: check.requiredTier,
+        );
+        return;
+      }
+    }
+
     setState(() => _isLoading = true);
 
-    final isEditing = widget.supplierToEdit != null;
     SupplierEntity? result;
 
     if (isEditing) {

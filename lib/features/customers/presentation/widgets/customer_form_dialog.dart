@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../providers/customers_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class CustomerFormDialog extends ConsumerStatefulWidget {
   final CustomerEntity? customerToEdit;
@@ -55,12 +58,28 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final isEditing = widget.customerToEdit != null;
+    if (!isEditing) {
+      final currentCount = ref.read(customersListProvider).value?.length ?? 0;
+      final gate = ref.read(featureGateProvider);
+      final check = gate.checkCustomerLimit(currentCount);
+      if (check.isBlocked) {
+        UpgradePromptSheet.show(
+          context,
+          featureName: check.featureName ?? 'Customer Directory',
+          customMessage: check.reason,
+          currentTier: gate.tier,
+          suggestedTier: check.requiredTier,
+        );
+        return;
+      }
+    }
+
     setState(() => _isLoading = true);
 
     final creditLimitVal = double.tryParse(_creditLimitController.text.trim()) ?? 0;
     final creditLimitMinor = (creditLimitVal * 100).round();
 
-    final isEditing = widget.customerToEdit != null;
     CustomerEntity? result;
 
     if (isEditing) {

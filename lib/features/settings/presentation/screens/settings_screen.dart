@@ -8,6 +8,10 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../users/presentation/providers/staff_provider.dart';
 import '../../../../core/sync/presentation/providers/sync_provider.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/screens/subscription_plans_screen.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -22,6 +26,7 @@ class SettingsScreen extends ConsumerWidget {
     final currentThemeMode = ref.watch(themeModeProvider);
     final printerConfig = ref.watch(printerConfigProvider);
     final currentBiz = ref.watch(currentBusinessProvider);
+    final currentTier = ref.watch(currentSubscriptionTierProvider);
     final userRole = ref.watch(currentUserRoleProvider).valueOrNull;
     final syncState = ref.watch(syncProvider);
     final user = Supabase.instance.client.auth.currentUser;
@@ -83,27 +88,105 @@ class SettingsScreen extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colorScheme.secondaryContainer,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            (userRole?.displayName ?? 'Administrator').toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSecondaryContainer,
-                              letterSpacing: 0.5,
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                (userRole?.displayName ?? 'Administrator').toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSecondaryContainer,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: currentTier.badgeColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                currentTier.shortName.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ─── SECTION: SUBSCRIPTION & BILLING ───
+          _buildSectionHeader(context, 'Subscription & Billing'),
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: currentTier.badgeColor.withOpacity(0.35)),
+            ),
+            child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: currentTier.badgeColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(currentTier.icon, color: currentTier.badgeColor, size: 22),
+              ),
+              title: Row(
+                children: [
+                  Text(
+                    currentTier.displayName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: currentTier.badgeColor,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      currentTier.shortName.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Text(
+                currentTier.isPaid
+                    ? 'Active Plan • Manage subscription or upgrade'
+                    : 'Free Starter • Upgrade to Pro for cloud sync & thermal printing',
+                style: const TextStyle(fontSize: 12),
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SubscriptionPlansScreen()),
+                );
+              },
             ),
           ),
           const SizedBox(height: 20),
@@ -501,6 +584,18 @@ class SettingsScreen extends ConsumerWidget {
             ),
             FilledButton(
               onPressed: () {
+                final gate = ref.read(featureGateProvider);
+                if (!gate.limits.thermalPrinting) {
+                  Navigator.pop(ctx);
+                  UpgradePromptSheet.show(
+                    context,
+                    featureName: 'Thermal Receipt Printing',
+                    customMessage: 'Pairing and printing to physical ESC/POS thermal printers requires Afri_BMS Pro or Enterprise.',
+                    currentTier: gate.tier,
+                    suggestedTier: SubscriptionTier.pro,
+                  );
+                  return;
+                }
                 final name = nameController.text.trim();
                 ref.read(printerConfigProvider.notifier).updatePrinter(
                       name: name.isNotEmpty ? name : 'POS-58 Bluetooth',

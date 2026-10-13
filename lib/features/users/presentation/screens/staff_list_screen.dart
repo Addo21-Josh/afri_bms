@@ -4,9 +4,31 @@ import '../../domain/entities/staff_user_entity.dart';
 import '../providers/staff_provider.dart';
 import '../widgets/assign_role_dialog.dart';
 import '../../../../core/widgets/shared_widgets.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class StaffListScreen extends ConsumerWidget {
   const StaffListScreen({super.key});
+
+  void _onAddStaff(BuildContext context, WidgetRef ref, int currentCount) {
+    final gate = ref.read(featureGateProvider);
+    final check = gate.checkStaffLimit(currentCount);
+    if (check.isBlocked) {
+      UpgradePromptSheet.show(
+        context,
+        featureName: check.featureName ?? 'Staff Accounts',
+        customMessage: check.reason,
+        currentTier: gate.tier,
+        suggestedTier: check.requiredTier,
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (_) => const AssignRoleDialog(),
+    );
+  }
 
   Color _getRoleColor(UserRoleType role, ColorScheme colors) {
     switch (role) {
@@ -33,10 +55,8 @@ class StaffListScreen extends ConsumerWidget {
       title: 'Staff & Team',
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (_) => const AssignRoleDialog(),
-          );
+          final count = staffListAsync.value?.length ?? 0;
+          _onAddStaff(context, ref, count);
         },
         icon: const Icon(Icons.person_add_outlined),
         label: const Text('Add Staff'),
@@ -49,12 +69,7 @@ class StaffListScreen extends ConsumerWidget {
               subtitle: 'Add staff accounts to collaborate in managing sales and inventory across your branches.',
               icon: Icons.people_outline,
               action: FilledButton.icon(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => const AssignRoleDialog(),
-                  );
-                },
+                onPressed: () => _onAddStaff(context, ref, 0),
                 icon: const Icon(Icons.person_add_outlined),
                 label: const Text('Add First Staff Member'),
               ),

@@ -12,6 +12,9 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../services/report_export_service.dart';
 import '../../../sales/presentation/providers/sales_provider.dart';
 import '../../../inventory/presentation/providers/inventory_provider.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class ReportsHubScreen extends ConsumerStatefulWidget {
   const ReportsHubScreen({super.key});
@@ -76,6 +79,17 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
             tooltip: 'Export Data',
             icon: const Icon(Icons.file_download_outlined),
             onSelected: (val) async {
+              final gate = ref.read(featureGateProvider);
+              if (!gate.limits.dataExport) {
+                UpgradePromptSheet.show(
+                  context,
+                  featureName: 'Data Export (CSV & PDF)',
+                  customMessage: 'Exporting sales, inventory spreadsheets and executive reports is available on Afri_BMS Pro & Enterprise.',
+                  currentTier: gate.tier,
+                  suggestedTier: SubscriptionTier.pro,
+                );
+                return;
+              }
               final bizName = currentBiz?.name ?? 'Afri_BMS Store';
               if (val == 'sales_csv') {
                 final sales = ref.read(salesListProvider).value ?? [];

@@ -9,11 +9,35 @@ import '../../../users/presentation/providers/staff_provider.dart';
 import '../../../users/domain/entities/staff_user_entity.dart';
 import '../../../../core/widgets/shared_widgets.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   const ProductDetailScreen({super.key, required this.productId});
 
   final String productId;
+
+  void _openBarcodeDialog(BuildContext context, WidgetRef ref, dynamic product) {
+    final gate = ref.read(featureGateProvider);
+    if (!gate.limits.barcodeGeneration) {
+      UpgradePromptSheet.show(
+        context,
+        featureName: 'Barcode & QR Code Generation',
+        customMessage: 'Generating and exporting barcodes and label sheets is available on Afri_BMS Pro & Enterprise.',
+        currentTier: gate.tier,
+        suggestedTier: SubscriptionTier.pro,
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (_) => BarcodeGeneratorDialog(
+        product: product,
+        currency: product.currency,
+      ),
+    );
+  }
 
   void _showAdjustStockDialog(BuildContext context, WidgetRef ref, int currentStock, String branchId) {
     final qtyCtrl = TextEditingController(text: currentStock.toString());
@@ -155,15 +179,7 @@ class ProductDetailScreen extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.qr_code_2),
                 tooltip: 'Barcode & Labels',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => BarcodeGeneratorDialog(
-                      product: product,
-                      currency: product.currency,
-                    ),
-                  );
-                },
+                onPressed: () => _openBarcodeDialog(context, ref, product),
               ),
               IconButton(
                 icon: const Icon(Icons.edit_outlined),
@@ -455,15 +471,7 @@ class ProductDetailScreen extends ConsumerWidget {
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => BarcodeGeneratorDialog(
-                                  product: product,
-                                  currency: product.currency,
-                                ),
-                              );
-                            },
+                            onPressed: () => _openBarcodeDialog(context, ref, product),
                             icon: const Icon(Icons.qr_code_2),
                             label: const Text('View Barcode & Print Labels'),
                           ),

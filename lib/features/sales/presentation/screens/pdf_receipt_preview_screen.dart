@@ -8,6 +8,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entities/sale_entity.dart';
 import '../services/pdf_receipt_service.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class PdfReceiptPreviewScreen extends ConsumerStatefulWidget {
   const PdfReceiptPreviewScreen({
@@ -117,6 +120,19 @@ class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScree
             tooltip: _isThermalFormat ? 'Switch to A5 Page' : 'Switch to Thermal 80mm',
             icon: Icon(_isThermalFormat ? Icons.receipt_long : Icons.print_outlined),
             onPressed: () {
+              if (!_isThermalFormat) {
+                final gate = ref.read(featureGateProvider);
+                if (!gate.limits.thermalPrinting) {
+                  UpgradePromptSheet.show(
+                    context,
+                    featureName: 'Thermal Receipt Printing',
+                    customMessage: 'Thermal 80mm/58mm printing is available on Afri_BMS Pro & Enterprise.',
+                    currentTier: gate.tier,
+                    suggestedTier: SubscriptionTier.pro,
+                  );
+                  return;
+                }
+              }
               setState(() => _isThermalFormat = !_isThermalFormat);
             },
           ),
