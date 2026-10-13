@@ -5,9 +5,9 @@ import '../providers/staff_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 
 class AssignRoleDialog extends ConsumerStatefulWidget {
-  final StaffUserEntity? existingStaff;
-
   const AssignRoleDialog({super.key, this.existingStaff});
+
+  final StaffUserEntity? existingStaff;
 
   @override
   ConsumerState<AssignRoleDialog> createState() => _AssignRoleDialogState();
@@ -83,134 +83,152 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
 
     return AlertDialog(
       title: Text(widget.existingStaff == null ? 'Add Staff Member' : 'Edit Staff Role'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (staffState.hasError) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    staffState.error.toString(),
-                    style: TextStyle(color: theme.colorScheme.onErrorContainer, fontSize: 13),
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (widget.existingStaff == null) ...[
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name',
-                    hintText: 'e.g. Kwame Mensah',
-                    prefixIcon: Icon(Icons.person_outline),
-                  ),
-                  validator: (val) {
-                    if (val == null || val.trim().isEmpty) return 'Full name is required';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 14),
-              ],
-              TextFormField(
-                controller: _emailController,
-                enabled: widget.existingStaff == null,
-                decoration: const InputDecoration(
-                  labelText: 'Staff Email Address',
-                  hintText: 'e.g. staff@example.com',
-                  prefixIcon: Icon(Icons.email_outlined),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) return 'Email is required';
-                  if (!val.contains('@') || !val.contains('.')) return 'Invalid email';
-                  return null;
-                },
-              ),
-              if (widget.existingStaff == null) ...[
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Temporary Password',
-                    hintText: 'Set a temporary login password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+      actionsOverflowButtonSpacing: 8,
+      content: SizedBox(
+        width: double.maxFinite,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (staffState.hasError) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      staffState.error.toString(),
+                      style: TextStyle(color: theme.colorScheme.onErrorContainer, fontSize: 13),
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(height: 12),
+                ],
+                if (widget.existingStaff == null) ...[
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Full Name',
+                      hintText: 'e.g. Kwame Mensah',
+                      prefixIcon: Icon(Icons.person_outline),
+                    ),
+                    validator: (val) {
+                      if (val == null || val.trim().isEmpty) return 'Full name is required';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                ],
+                TextFormField(
+                  controller: _emailController,
+                  enabled: widget.existingStaff == null,
+                  decoration: const InputDecoration(
+                    labelText: 'Staff Email Address',
+                    hintText: 'e.g. staff@example.com',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.length < 6) return 'Password must be at least 6 characters';
+                    if (val == null || val.trim().isEmpty) return 'Email is required';
+                    if (!val.contains('@') || !val.contains('.')) return 'Invalid email';
                     return null;
                   },
                 ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number (Optional)',
-                    hintText: 'e.g. +233 50 123 4567',
-                    prefixIcon: Icon(Icons.phone_outlined),
+                if (widget.existingStaff == null) ...[
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Temporary Password',
+                      hintText: 'Set a temporary login password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                    ),
+                    validator: (val) {
+                      if (val == null || val.length < 6) return 'Password must be at least 6 characters';
+                      return null;
+                    },
                   ),
-                  keyboardType: TextInputType.phone,
-                ),
-              ],
-              const SizedBox(height: 14),
-              DropdownButtonFormField<UserRoleType>(
-                value: _selectedRole,
-                decoration: const InputDecoration(
-                  labelText: 'Assigned Role',
-                  prefixIcon: Icon(Icons.badge_outlined),
-                ),
-                items: [
-                  UserRoleType.branchManager,
-                  UserRoleType.salesperson,
-                  UserRoleType.cashier,
-                  UserRoleType.admin,
-                ].map((role) {
-                  return DropdownMenuItem(
-                    value: role,
-                    child: Text(role.displayName),
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _selectedRole = val);
-                },
-              ),
-              const SizedBox(height: 14),
-              branchesAsync.when(
-                data: (branches) => DropdownButtonFormField<String?>(
-                  value: _selectedBranchId,
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone Number (Optional)',
+                      hintText: 'e.g. +233 50 123 4567',
+                      prefixIcon: Icon(Icons.phone_outlined),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                ],
+                const SizedBox(height: 14),
+                DropdownButtonFormField<UserRoleType>(
+                  initialValue: _selectedRole,
+                  isExpanded: true,
                   decoration: const InputDecoration(
-                    labelText: 'Branch Assignment',
-                    prefixIcon: Icon(Icons.store_outlined),
+                    labelText: 'Assigned Role',
+                    prefixIcon: Icon(Icons.badge_outlined),
                   ),
                   items: [
-                    const DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text('All Branches (HQ / Floating)'),
-                    ),
-                    ...branches.map((b) => DropdownMenuItem<String?>(
-                          value: b.id,
-                          child: Text(b.name),
-                        )),
-                  ],
+                    UserRoleType.branchManager,
+                    UserRoleType.salesperson,
+                    UserRoleType.cashier,
+                    UserRoleType.admin,
+                  ].map((role) {
+                    return DropdownMenuItem(
+                      value: role,
+                      child: Text(
+                        role.displayName,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }).toList(),
                   onChanged: (val) {
-                    setState(() => _selectedBranchId = val);
+                    if (val != null) setState(() => _selectedRole = val);
                   },
                 ),
-                loading: () => const LinearProgressIndicator(),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-            ],
+                const SizedBox(height: 14),
+                branchesAsync.when(
+                  data: (branches) => DropdownButtonFormField<String?>(
+                    initialValue: _selectedBranchId,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Branch Assignment',
+                      prefixIcon: Icon(Icons.store_outlined),
+                    ),
+                    items: [
+                      const DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(
+                          'All Branches (HQ / Floating)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      ...branches.map((b) => DropdownMenuItem<String?>(
+                            value: b.id,
+                            child: Text(
+                              b.name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                    ],
+                    onChanged: (val) {
+                      setState(() => _selectedBranchId = val);
+                    },
+                  ),
+                  loading: () => const LinearProgressIndicator(),
+                  error: (err, stack) => const SizedBox.shrink(),
+                ),
+              ],
+            ),
           ),
         ),
       ),

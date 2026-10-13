@@ -448,41 +448,48 @@ class SettingsScreen extends ConsumerWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog(
           title: Text(l10n.settingsPrinter),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Printer Device Name / Model',
-                  hintText: 'e.g. MTP-II, POS-58, Epson TM-T20',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Paper Roll Width', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-              const SizedBox(height: 6),
-              Row(
+          actionsOverflowButtonSpacing: 8,
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ChoiceChip(
-                    label: const Text('58 mm (Standard Receipt)'),
-                    selected: selectedWidth == 58,
-                    onSelected: (val) {
-                      if (val) setDialogState(() => selectedWidth = 58);
-                    },
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Printer Device Name / Model',
+                      hintText: 'e.g. MTP-II, POS-58, Epson TM-T20',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  ChoiceChip(
-                    label: const Text('80 mm (Wide)'),
-                    selected: selectedWidth == 80,
-                    onSelected: (val) {
-                      if (val) setDialogState(() => selectedWidth = 80);
-                    },
+                  const SizedBox(height: 16),
+                  const Text('Paper Roll Width', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('58 mm (Standard)'),
+                        selected: selectedWidth == 58,
+                        onSelected: (val) {
+                          if (val) setDialogState(() => selectedWidth = 58);
+                        },
+                      ),
+                      ChoiceChip(
+                        label: const Text('80 mm (Wide)'),
+                        selected: selectedWidth == 80,
+                        onSelected: (val) {
+                          if (val) setDialogState(() => selectedWidth = 80);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
           actions: [
             TextButton(
