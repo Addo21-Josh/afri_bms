@@ -260,7 +260,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               ],
                             ),
                             Text(
-                              'Currency: ${currentBiz?.defaultCurrency ?? 'NGN'} • Branch: ${currentBranch?.name ?? 'All Branches'}',
+                              'Currency: ${currentBiz?.defaultCurrency ?? 'GHS'} • Branch: ${currentBranch?.name ?? 'All Branches'}',
                               style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
                             ),
                           ],

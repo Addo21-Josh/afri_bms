@@ -15,7 +15,7 @@ class BusinessSetupScreen extends ConsumerStatefulWidget {
 class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _bizNameController = TextEditingController();
-  final _currencyController = TextEditingController(text: 'NGN');
+  final _currencyController = TextEditingController(text: 'GHS');
   final _branchNameController = TextEditingController(text: 'Main Branch');
 
   @override

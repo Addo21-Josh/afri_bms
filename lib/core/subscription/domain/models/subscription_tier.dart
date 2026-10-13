@@ -53,6 +53,28 @@ enum SubscriptionTier {
     }
   }
 
+  int get monthlyPriceGhs {
+    switch (this) {
+      case SubscriptionTier.free:
+        return 0;
+      case SubscriptionTier.pro:
+        return 50;
+      case SubscriptionTier.enterprise:
+        return 150;
+    }
+  }
+
+  int get yearlyPriceGhs {
+    switch (this) {
+      case SubscriptionTier.free:
+        return 0;
+      case SubscriptionTier.pro:
+        return 500; // 2 months free
+      case SubscriptionTier.enterprise:
+        return 1500; // 2 months free
+    }
+  }
+
   int get monthlyPriceNgn {
     switch (this) {
       case SubscriptionTier.free:
@@ -72,6 +94,17 @@ enum SubscriptionTier {
         return 50000; // 2 months free discount
       case SubscriptionTier.enterprise:
         return 150000; // 2 months free discount
+    }
+  }
+
+  String formattedPrice(bool isYearly, {String currency = 'GHS'}) {
+    if (this == SubscriptionTier.free) return 'Free';
+    if (currency.toUpperCase() == 'GHS') {
+      final amount = isYearly ? yearlyPriceGhs : monthlyPriceGhs;
+      return 'GH₵${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}';
+    } else {
+      final amount = isYearly ? yearlyPriceNgn : monthlyPriceNgn;
+      return '₦${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}';
     }
   }
 

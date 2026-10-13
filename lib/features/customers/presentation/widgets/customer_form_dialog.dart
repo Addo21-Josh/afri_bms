@@ -127,7 +127,7 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
   Widget build(BuildContext context) {
     final isEditing = widget.customerToEdit != null;
     final currentBiz = ref.watch(currentBusinessProvider);
-    final currency = currentBiz?.defaultCurrency ?? 'NGN';
+    final currency = currentBiz?.defaultCurrency ?? 'GHS';
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

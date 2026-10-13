@@ -268,7 +268,7 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: _iconBox(context, Icons.storefront_outlined),
                   title: Text(l10n.businessSettingsTitle),
-                  subtitle: Text('Profile, currency (${currentBiz?.defaultCurrency ?? 'NGN'}), tax (${currentBiz?.taxRate ?? 0}%)'),
+                  subtitle: Text('Profile, currency (${currentBiz?.defaultCurrency ?? 'GHS'}), tax (${currentBiz?.taxRate ?? 0}%)'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/business-settings'),
                 ),

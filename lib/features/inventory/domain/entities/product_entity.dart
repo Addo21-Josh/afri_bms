@@ -36,7 +36,7 @@ class ProductEntity extends Equatable {
     this.barcode,
     required this.costPrice,
     required this.sellingPrice,
-    this.currency = 'NGN',
+    this.currency = 'GHS',
     this.unit = 'pcs',
     this.reorderLevel = 10,
     this.isActive = true,

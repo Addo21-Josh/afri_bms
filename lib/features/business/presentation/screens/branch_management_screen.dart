@@ -33,7 +33,7 @@ class BranchManagementScreen extends ConsumerWidget {
     final addressController = TextEditingController(text: branch?.address ?? '');
     final phoneController = TextEditingController(text: branch?.phone ?? '');
     final currencyController = TextEditingController(
-      text: branch?.currency ?? ref.read(currentBusinessProvider)?.defaultCurrency ?? 'NGN',
+      text: branch?.currency ?? ref.read(currentBusinessProvider)?.defaultCurrency ?? 'GHS',
     );
     bool isMain = branch?.isMain ?? false;
     final formKey = GlobalKey<FormState>();

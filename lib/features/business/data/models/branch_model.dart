@@ -14,7 +14,7 @@ class BranchModel with _$BranchModel {
     required String name,
     String? address,
     String? phone,
-    @Default('NGN') String currency,
+    @Default('GHS') String currency,
     @JsonKey(name: 'is_main') @Default(false) bool isMain,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
     @JsonKey(name: 'created_at') DateTime? createdAt,

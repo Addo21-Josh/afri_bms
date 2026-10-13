@@ -139,7 +139,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final cart = ref.watch(posCartProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currency = currentBiz?.defaultCurrency ?? 'NGN';
+    final currency = currentBiz?.defaultCurrency ?? 'GHS';
 
     return Scaffold(
       appBar: AppBar(

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 class CurrencyFormatter {
   static String format(
     int amountInMinorUnits, {
-    String currencyCode = 'NGN',
+    String currencyCode = 'GHS',
     String? locale,
   }) {
     final amount = amountInMinorUnits / 100;

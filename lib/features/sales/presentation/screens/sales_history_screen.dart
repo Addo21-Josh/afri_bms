@@ -46,7 +46,7 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
     final currentBiz = ref.watch(currentBusinessProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currency = currentBiz?.defaultCurrency ?? 'NGN';
+    final currency = currentBiz?.defaultCurrency ?? 'GHS';
     final dateFormat = DateFormat('dd MMM yyyy, HH:mm');
 
     return Scaffold(

@@ -137,7 +137,7 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
   Widget build(BuildContext context) {
     final supplierAsync = ref.watch(supplierDetailProvider(widget.supplierId));
     final currentBiz = ref.watch(currentBusinessProvider);
-    final currency = currentBiz?.defaultCurrency ?? 'NGN';
+    final currency = currentBiz?.defaultCurrency ?? 'GHS';
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 

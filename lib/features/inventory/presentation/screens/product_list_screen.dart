@@ -9,7 +9,6 @@ import '../../../users/domain/entities/staff_user_entity.dart';
 import 'package:afri_bms/features/business/presentation/widgets/branch_selector.dart';
 import '../../../../core/widgets/shared_widgets.dart';
 import '../../../../core/utils/currency_formatter.dart';
-import '../../../../core/subscription/domain/models/subscription_tier.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 

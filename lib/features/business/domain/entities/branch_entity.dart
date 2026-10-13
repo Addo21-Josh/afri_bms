@@ -10,7 +10,7 @@ class BranchEntity with _$BranchEntity {
     required String name,
     String? address,
     String? phone,
-    @Default('NGN') String currency,
+    @Default('GHS') String currency,
     @Default(false) bool isMain,
     @Default(true) bool isActive,
     DateTime? createdAt,

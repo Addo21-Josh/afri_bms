@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/subscription_tier.dart';
+import '../../domain/services/paystack_subscription_service.dart';
+import '../../../config/paystack_config.dart';
 import '../providers/subscription_provider.dart';
 import '../../../../features/business/presentation/providers/business_provider.dart';
 import '../../../../core/utils/haptics.dart';
@@ -262,16 +264,13 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
   }) {
     final theme = Theme.of(context);
     final isCurrent = tier == currentTier;
-    final price = _isYearly ? tier.yearlyPriceNgn : tier.monthlyPriceNgn;
     final cycleSuffix = tier == SubscriptionTier.free
         ? 'forever'
         : _isYearly
             ? '/year'
             : '/month';
 
-    final formattedPrice = price == 0
-        ? 'Free'
-        : '₦${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}';
+    final formattedPrice = tier.formattedPrice(_isYearly, currency: 'GHS');
 
     return Container(
       decoration: BoxDecoration(
@@ -544,12 +543,19 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           if (targetTier.isPaid) ...[
             Text('Payment Method', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            const ListTile(
+            ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.credit_card_rounded, color: Colors.teal),
-              title: Text('Paystack Checkout', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              subtitle: Text('Bank Transfer, Card, USSD & Apple Pay', style: TextStyle(fontSize: 11)),
-              trailing: Icon(Icons.radio_button_checked, color: Colors.teal),
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.payment_rounded, color: Colors.teal),
+              ),
+              title: const Text('Paystack (Ghana Cedis)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              subtitle: const Text('MTN MoMo, Telecel Cash, AT Money & Bank Cards', style: TextStyle(fontSize: 11)),
+              trailing: const Icon(Icons.radio_button_checked, color: Colors.teal),
             ),
             const SizedBox(height: 12),
           ],
@@ -566,7 +572,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             child: Text(
-              targetTier.isPaid ? 'Proceed to Activate' : 'Activate Free Tier',
+              targetTier.isPaid ? 'Proceed to Pay with Paystack' : 'Activate Free Tier',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ),
@@ -581,6 +587,202 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
   }
 
   Future<void> _processTierActivation(SubscriptionTier targetTier) async {
+    if (!targetTier.isPaid) {
+      await _applyTierChange(targetTier);
+      return;
+    }
+
+    final activeBiz = ref.read(currentBusinessProvider);
+    final email = (activeBiz?.email.isNotEmpty == true)
+        ? activeBiz!.email
+        : 'billing@afribms.com';
+    final amountInGhs = _isYearly ? targetTier.yearlyPriceGhs : targetTier.monthlyPriceGhs;
+
+    // Show loading dialog
+    if (!mounted) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Preparing Paystack Checkout...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final paystackService = ref.read(paystackSubscriptionServiceProvider);
+    final initResult = await paystackService.initializePayment(
+      email: email,
+      amountInGhs: amountInGhs,
+      tier: targetTier,
+      isYearly: _isYearly,
+      metadata: {
+        'business_id': activeBiz?.id,
+        'business_name': activeBiz?.name,
+      },
+    );
+
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop(); // dismiss loading
+    }
+
+    if (!initResult.success || initResult.authorizationUrl == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(initResult.errorMessage ?? 'Failed to initialize payment gateway.'),
+          ),
+        );
+      }
+      return;
+    }
+
+    // Launch checkout in browser / custom tab
+    await paystackService.openCheckout(initResult.authorizationUrl!);
+
+    if (!mounted) return;
+
+    // Show verification dialog with test bypass option
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.payment_rounded, color: Colors.teal),
+            SizedBox(width: 8),
+            Text('Paystack Payment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'A payment window has opened in your browser for GH₵$amountInGhs ($email).',
+              style: const TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SelectableText(
+                'Reference: ${initResult.reference}',
+                style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Complete the transaction using MTN Mobile Money, Telecel Cash, AT Money, or Bank Card.',
+              style: TextStyle(fontSize: 12, color: Colors.black87),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.teal, foregroundColor: Colors.white),
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await _verifyAndActivate(targetTier, initResult.reference!);
+            },
+            child: const Text('Verify Payment'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _verifyAndActivate(SubscriptionTier targetTier, String reference) async {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Verifying transaction with Paystack...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final paystackService = ref.read(paystackSubscriptionServiceProvider);
+    final verified = await paystackService.verifyPayment(reference);
+
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop(); // dismiss loading
+    }
+
+    if (verified) {
+      await _applyTierChange(targetTier);
+    } else {
+      if (mounted) {
+        // Offer Sandbox / Test Mode bypass if in test mode
+        final isTestMode = PaystackConfig.publicKey.startsWith('pk_test_');
+        if (isTestMode) {
+          final bypass = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Payment Verification Pending'),
+              content: const Text(
+                'Paystack returned pending/unpaid.\n\n'
+                'Since you are using Paystack Test Mode, would you like to bypass verification and activate for testing?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: const Text('Dismiss'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: const Text('Activate (Test Mode)'),
+                ),
+              ],
+            ),
+          );
+          if (bypass == true) {
+            await _applyTierChange(targetTier);
+            return;
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Payment verification failed or payment is incomplete. Please contact support if debited.'),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _applyTierChange(SubscriptionTier targetTier) async {
     final success = await ref
         .read(subscriptionControllerProvider.notifier)
         .changeTier(targetTier);

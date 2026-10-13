@@ -165,7 +165,7 @@ class UpgradePromptSheet extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                     ),
                     Text(
-                      '₦${suggestedTier.monthlyPriceNgn.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}/month',
+                      '${suggestedTier.formattedPrice(false, currency: 'GHS')}/month',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

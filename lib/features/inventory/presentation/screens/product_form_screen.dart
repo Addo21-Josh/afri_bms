@@ -234,7 +234,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       final currentBiz = ref.read(currentBusinessProvider);
-      final currency = currentBiz?.defaultCurrency ?? 'NGN';
+      final currency = currentBiz?.defaultCurrency ?? 'GHS';
 
       final cost = ((double.tryParse(_costPriceController.text.trim()) ?? 0) * 100).round();
       final sell = ((double.tryParse(_sellingPriceController.text.trim()) ?? 0) * 100).round();
