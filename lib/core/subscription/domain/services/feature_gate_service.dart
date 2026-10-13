@@ -131,6 +131,21 @@ class FeatureGateService {
     );
   }
 
+  GateResult checkMonthlySalesLimit(int currentSalesCount) {
+    if (limits.maxMonthlyTransactions == -1 || currentSalesCount < limits.maxMonthlyTransactions) {
+      return GateResult.allowed(tier);
+    }
+    return GateResult(
+      isAllowed: false,
+      featureName: 'Monthly Sales Transactions',
+      reason: "You've reached your limit of ${limits.maxMonthlyTransactions} monthly sales transactions. Upgrade to Pro for up to 5,000 transactions/month.",
+      currentTier: tier,
+      requiredTier: SubscriptionTier.pro,
+      currentCount: currentSalesCount,
+      maxAllowed: limits.maxMonthlyTransactions,
+    );
+  }
+
   // ─── Boolean Feature Access Checks ──────────────────────────────────────────
 
   GateResult canUseThermalPrinter() {

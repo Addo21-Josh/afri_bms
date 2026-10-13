@@ -443,9 +443,9 @@
 
 ### 12.2 Testing
 
-- [ ] Unit tests: 90%+ coverage on domain & data layers
-- [ ] Widget tests for critical UI components
-- [ ] Integration tests for core user flows
+- [x] Unit tests: 90%+ coverage on domain & data layers
+- [x] Widget tests for critical UI components
+- [x] Integration tests for core user flows
 - [ ] Manual testing on physical devices (Android + iOS)
 - [ ] Performance profiling (memory, CPU, battery)
 

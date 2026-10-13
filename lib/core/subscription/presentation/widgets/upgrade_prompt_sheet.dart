@@ -49,10 +49,11 @@ class UpgradePromptSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           // Drag handle
           Center(
             child: Container(
@@ -228,8 +229,9 @@ class UpgradePromptSheet extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   List<Widget> _buildPerksList(SubscriptionTier tier) {
     final perks = tier == SubscriptionTier.enterprise

@@ -26,13 +26,17 @@ class PaystackInitResult {
 }
 
 class PaystackSubscriptionService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://api.paystack.co',
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
-    ),
-  );
+  final Dio _dio;
+
+  PaystackSubscriptionService({Dio? dio})
+      : _dio = dio ??
+            Dio(
+              BaseOptions(
+                baseUrl: 'https://api.paystack.co',
+                connectTimeout: const Duration(seconds: 15),
+                receiveTimeout: const Duration(seconds: 15),
+              ),
+            );
 
   /// Initializes a Paystack transaction in GHS (Ghana Cedis)
   /// [amountInGhs]: e.g., 50 GHS -> 5000 pesewas
