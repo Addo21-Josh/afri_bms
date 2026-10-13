@@ -13,6 +13,8 @@ import '../../../sales/presentation/providers/sales_provider.dart';
 import '../../../expenses/presentation/providers/expenses_provider.dart';
 import '../../../debts/presentation/providers/debts_provider.dart';
 import '../../../suppliers/presentation/providers/suppliers_provider.dart';
+import '../../../../core/sync/presentation/providers/sync_provider.dart';
+import '../../../../core/utils/logger.dart';
 
 final cloudBackupServiceProvider = Provider<CloudBackupService>((ref) {
   return CloudBackupService(Supabase.instance.client);
@@ -26,7 +28,9 @@ class BackupScreen extends ConsumerStatefulWidget {
 }
 
 class _BackupScreenState extends ConsumerState<BackupScreen> {
-  bool _isLoading = false;
+  bool _isBackingUp = false;
+  bool _isRestoring = false;
+  bool get _isLoading => _isBackingUp || _isRestoring;
   bool _autoBackupEnabled = true;
   List<FileSystemEntity> _localBackups = [];
 
@@ -53,7 +57,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final business = ref.read(currentBusinessProvider);
     if (business == null) return;
 
-    setState(() => _isLoading = true);
+    setState(() => _isBackingUp = true);
 
     try {
       final backupService = ref.read(cloudBackupServiceProvider);
@@ -82,7 +86,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isBackingUp = false);
     }
   }
 
@@ -97,7 +101,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    setState(() => _isRestoring = true);
 
     try {
       final backupService = ref.read(cloudBackupServiceProvider);
@@ -114,6 +118,22 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       ref.invalidate(expensesListProvider);
       ref.invalidate(debtsListProvider);
       ref.invalidate(suppliersListProvider);
+
+      // Eagerly refresh and warm local cache so restored products show immediately
+      try {
+        final repo = ref.read(inventoryRepositoryProvider);
+        final prodsRes = await repo.getProducts(businessId: business.id);
+        prodsRes.fold((_) {}, (prods) async {
+          await ref.read(localCacheServiceProvider).cacheProducts(business.id, prods);
+        });
+
+        final catsRes = await repo.getCategories(business.id);
+        catsRes.fold((_) {}, (cats) async {
+          await ref.read(localCacheServiceProvider).cacheCategories(business.id, cats);
+        });
+      } catch (e) {
+        AppLogger.w('Failed to warm local cache after restore: $e');
+      }
 
       if (mounted) {
         showDialog(
@@ -137,7 +157,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isRestoring = false);
     }
   }
 
@@ -299,24 +319,85 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           ),
           const SizedBox(height: 16),
 
+          if (_isRestoring)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onPrimaryContainer),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Restoring store data from backup snapshot... Please do not close.',
+                      style: TextStyle(
+                        color: colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (_isBackingUp)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onSecondaryContainer),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Creating and saving backup snapshot...',
+                      style: TextStyle(
+                        color: colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           // Primary Actions
           Row(
             children: [
               Expanded(
                 child: FilledButton.icon(
                   onPressed: _isLoading ? null : _handleCreateBackup,
-                  icon: _isLoading
+                  icon: _isBackingUp
                       ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : const Icon(Icons.backup_outlined),
-                  label: const Text('Create Backup Now'),
+                  label: Text(_isBackingUp ? 'Backing Up...' : 'Create Backup Now'),
                   style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
                 ),
               ),
               const SizedBox(width: 12),
               OutlinedButton.icon(
                 onPressed: _isLoading ? null : _showRestoreDialog,
-                icon: const Icon(Icons.settings_backup_restore),
-                label: const Text('Restore Data'),
+                icon: _isRestoring
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.settings_backup_restore),
+                label: Text(_isRestoring ? 'Restoring...' : 'Restore Data'),
                 style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
               ),
             ],
