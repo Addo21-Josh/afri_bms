@@ -41,19 +41,19 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.08),
-                            theme.colorScheme.primary.withOpacity(0.02),
+                            theme.colorScheme.primary.withValues(alpha: 0.08),
+                            theme.colorScheme.primary.withValues(alpha: 0.02),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+                        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: currentTier.badgeColor.withOpacity(0.15),
+                            backgroundColor: currentTier.badgeColor.withValues(alpha: 0.15),
                             radius: 24,
                             child: Icon(currentTier.icon, color: currentTier.badgeColor, size: 26),
                           ),
@@ -110,7 +110,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                   Center(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       padding: const EdgeInsets.all(4),
@@ -212,7 +212,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   )
@@ -281,14 +281,14 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           color: isPopular
               ? tier.badgeColor
               : isCurrent
-                  ? theme.colorScheme.primary.withOpacity(0.5)
+                  ? theme.colorScheme.primary.withValues(alpha: 0.5)
                   : Colors.grey.shade300,
           width: isPopular ? 2 : 1,
         ),
         boxShadow: isPopular
             ? [
                 BoxShadow(
-                  color: tier.badgeColor.withOpacity(0.12),
+                  color: tier.badgeColor.withValues(alpha: 0.12),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -436,7 +436,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
   }
 
   void _handlePlanSelection(SubscriptionTier targetTier, String priceText) {
-    AppHaptics.selectionClick();
+    AppHaptics.selection();
     final isUpgrade = targetTier.index > ref.read(currentSubscriptionTierProvider).index;
 
     showModalBottomSheet<void>(
@@ -480,7 +480,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: targetTier.badgeColor.withOpacity(0.12),
+                backgroundColor: targetTier.badgeColor.withValues(alpha: 0.12),
                 child: Icon(targetTier.icon, color: targetTier.badgeColor),
               ),
               const SizedBox(width: 12),
@@ -507,7 +507,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
@@ -544,12 +544,12 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           if (targetTier.isPaid) ...[
             Text('Payment Method', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            ListTile(
+            const ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.credit_card_rounded, color: Colors.teal),
-              title: const Text('Paystack Checkout', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              subtitle: const Text('Bank Transfer, Card, USSD & Apple Pay', style: TextStyle(fontSize: 11)),
-              trailing: const Icon(Icons.radio_button_checked, color: Colors.teal),
+              leading: Icon(Icons.credit_card_rounded, color: Colors.teal),
+              title: Text('Paystack Checkout', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              subtitle: Text('Bank Transfer, Card, USSD & Apple Pay', style: TextStyle(fontSize: 11)),
+              trailing: Icon(Icons.radio_button_checked, color: Colors.teal),
             ),
             const SizedBox(height: 12),
           ],

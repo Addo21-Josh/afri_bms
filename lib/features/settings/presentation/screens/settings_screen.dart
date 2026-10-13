@@ -140,13 +140,13 @@ class SettingsScreen extends ConsumerWidget {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: currentTier.badgeColor.withOpacity(0.35)),
+              side: BorderSide(color: currentTier.badgeColor.withValues(alpha: 0.35)),
             ),
             child: ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: currentTier.badgeColor.withOpacity(0.12),
+                  color: currentTier.badgeColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(currentTier.icon, color: currentTier.badgeColor, size: 22),
