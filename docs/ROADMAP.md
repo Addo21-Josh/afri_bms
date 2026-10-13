@@ -459,7 +459,7 @@
 
 ### 12.4 App Store Preparation
 
-- [ ] App icon (all sizes)
+- [x] App icon (all sizes)
 - [ ] Splash screen
 - [ ] App store screenshots (phone + tablet)
 - [ ] App store description (English)
