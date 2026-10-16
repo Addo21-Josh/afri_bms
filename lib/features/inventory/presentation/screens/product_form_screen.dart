@@ -10,11 +10,13 @@ import '../../../../core/widgets/shared_widgets.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
+import '../../../users/domain/entities/staff_user_entity.dart';
+import '../../../users/presentation/providers/staff_provider.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
-  final ProductEntity? existingProduct;
-
   const ProductFormScreen({super.key, this.existingProduct});
+
+  final ProductEntity? existingProduct;
 
   @override
   ConsumerState<ProductFormScreen> createState() => _ProductFormScreenState();
@@ -322,8 +324,42 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(productCategoriesProvider);
     final invState = ref.watch(inventoryControllerProvider);
+    final userRole = ref.watch(currentUserRoleProvider).value;
+    final canManageProducts = userRole == UserRoleType.admin || userRole == UserRoleType.branchManager;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    if (!canManageProducts) {
+      return AppScaffold(
+        title: 'Access Restricted',
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.lock_outline, size: 64, color: colorScheme.error),
+                const SizedBox(height: 16),
+                Text(
+                  'Permission Denied',
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Only Business Administrators and Branch Managers are authorized to add or edit products.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                FilledButton.tonal(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Go Back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return AppScaffold(
       title: widget.existingProduct == null ? 'Add Product' : 'Edit Product',

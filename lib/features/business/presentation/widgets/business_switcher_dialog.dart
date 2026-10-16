@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/business_provider.dart';
 import '../../domain/entities/business_entity.dart';
+import '../../../users/domain/entities/staff_user_entity.dart';
+import '../../../users/presentation/providers/staff_provider.dart';
 
 void showBusinessSwitcherModal(BuildContext context) {
   showModalBottomSheet(
@@ -80,6 +82,8 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
     final businessesAsync = ref.watch(userBusinessesProvider);
     final currentBiz = ref.watch(currentBusinessProvider);
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final userRole = ref.watch(currentUserRoleProvider).value;
+    final isOwnerOrAdmin = userRole == UserRoleType.admin;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -261,7 +265,7 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                                     height: 24,
                                     child: CircularProgressIndicator(strokeWidth: 2),
                                   )
-                                else if (isOwner && businesses.length > 1)
+                                else if (isOwnerOrAdmin && isOwner && businesses.length > 1)
                                   IconButton(
                                     icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
                                     tooltip: 'Delete Business',
@@ -289,20 +293,22 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                 child: Text('Error loading businesses: $err', style: TextStyle(color: colorScheme.error)),
               ),
             ),
-            const SizedBox(height: 20),
 
-            // Add Business Button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.add_business_outlined),
-                label: const Text('Add Another Business'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  context.push('/business-setup');
-                },
+            // Add Business Button (Only for verified Admins / Owners)
+            if (isOwnerOrAdmin) ...[
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.add_business_outlined),
+                  label: const Text('Add Another Business'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    context.push('/business-setup');
+                  },
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

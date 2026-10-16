@@ -32,12 +32,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(productsListProvider);
     final userRole = ref.watch(currentUserRoleProvider).value;
-    final isStaff = userRole == UserRoleType.salesperson || userRole == UserRoleType.cashier;
+    // Explicit permission: Only admin and branch manager can create new products
+    final canManageInventory = userRole == UserRoleType.admin || userRole == UserRoleType.branchManager;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return AppScaffold(
-      title: isStaff ? 'Product Catalog' : 'Inventory & Products',
+      title: canManageInventory ? 'Inventory & Products' : 'Product Catalog',
       actions: [
         IconButton(
           icon: const Icon(Icons.qr_code_scanner_outlined),
@@ -55,9 +56,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           },
         ),
       ],
-      floatingActionButton: isStaff
-          ? null
-          : FloatingActionButton.extended(
+      floatingActionButton: canManageInventory
+          ? FloatingActionButton.extended(
               onPressed: () {
                 final currentProducts = productsAsync.value?.length ?? 0;
                 final gate = ref.read(featureGateProvider);
@@ -76,7 +76,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
               },
               icon: const Icon(Icons.add),
               label: const Text('Add Product'),
-            ),
+            )
+          : null,
       body: Column(
         children: [
           // Branch selector header
@@ -138,7 +139,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
                     itemCount: products.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (context, index) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final product = products[index];
 

@@ -197,12 +197,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               Text('No Business Assigned', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               const Text('You have not set up a business or been assigned to any business by an administrator yet.', textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () => context.push('/business-setup'),
-                icon: const Icon(Icons.add_business),
-                label: const Text('Set Up Business'),
-              ),
+              if (!isStaffOrSales) ...[
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => context.push('/business-setup'),
+                  icon: const Icon(Icons.add_business),
+                  label: const Text('Set Up Business'),
+                ),
+              ],
             ],
           ),
         ),
@@ -278,17 +280,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          visualDensity: VisualDensity.compact,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      if (!isStaffOrSales) ...[
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            visualDensity: VisualDensity.compact,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () => showBusinessSwitcherModal(context),
+                          icon: const Icon(Icons.swap_horiz, size: 16),
+                          label: const Text('Switch', style: TextStyle(fontSize: 12)),
                         ),
-                        onPressed: () => showBusinessSwitcherModal(context),
-                        icon: const Icon(Icons.swap_horiz, size: 16),
-                        label: const Text('Switch', style: TextStyle(fontSize: 12)),
-                      ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 12),

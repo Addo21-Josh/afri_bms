@@ -165,14 +165,15 @@ class ProductDetailScreen extends ConsumerWidget {
     final productAsync = ref.watch(productDetailProvider(productId));
     final currentBranch = ref.watch(currentBranchProvider);
     final userRole = ref.watch(currentUserRoleProvider).value;
-    final isStaff = userRole == UserRoleType.salesperson || userRole == UserRoleType.cashier;
+    // Explicit permission: Only Admin and Branch Manager can edit products, adjust stock, or view cost prices
+    final canManageProducts = userRole == UserRoleType.admin || userRole == UserRoleType.branchManager;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return AppScaffold(
       title: 'Product Details',
       actions: [
-        if (!isStaff)
+        if (canManageProducts)
           productAsync.maybeWhen(
             data: (product) => Row(
             children: [
@@ -317,28 +318,30 @@ class ProductDetailScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Cost Price', style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                            Text(
-                              CurrencyFormatter.format(product.costPrice, currencyCode: product.currency),
-                              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Profit Margin', style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                            Text(
-                              '$profitMargin%',
-                              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.green),
-                            ),
-                          ],
-                        ),
+                        if (canManageProducts) ...[
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Cost Price', style: TextStyle(color: colorScheme.onSurfaceVariant)),
+                              Text(
+                                CurrencyFormatter.format(product.costPrice, currencyCode: product.currency),
+                                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Profit Margin', style: TextStyle(color: colorScheme.onSurfaceVariant)),
+                              Text(
+                                '$profitMargin%',
+                                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -361,7 +364,7 @@ class ProductDetailScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Stock Status', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                            if (currentBranch != null)
+                            if (canManageProducts && currentBranch != null)
                               TextButton.icon(
                                 onPressed: () => _showAdjustStockDialog(
                                   context,
