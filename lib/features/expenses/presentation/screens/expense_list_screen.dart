@@ -369,75 +369,97 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: colorScheme.outlineVariant),
                       ),
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: colorScheme.errorContainer.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(_getCategoryIcon(null), color: colorScheme.error, size: 22),
-                        ),
-                        title: Text(
-                          exp.description,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Column(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 2),
-                            Text('$dateFormatted • ${exp.categoryName ?? 'Uncategorized'}'),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.surfaceContainerHighest,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    exp.paymentMethod.replaceAll('_', ' ').toUpperCase(),
-                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                if (exp.receiptUrl != null && exp.receiptUrl!.isNotEmpty) ...[
-                                  const SizedBox(width: 6),
-                                  Icon(Icons.attachment, size: 14, color: colorScheme.primary),
-                                ],
-                              ],
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: colorScheme.errorContainer.withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(_getCategoryIcon(null), color: colorScheme.error, size: 22),
                             ),
-                          ],
-                        ),
-                        isThreeLine: true,
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '- ${CurrencyFormatter.format(exp.amount, currencyCode: currency)}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: colorScheme.error,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    exp.description,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    '$dateFormatted • ${exp.categoryName ?? 'Uncategorized'}',
+                                    style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: colorScheme.surfaceContainerHighest,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          exp.paymentMethod.replaceAll('_', ' ').toUpperCase(),
+                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      if (exp.receiptUrl != null && exp.receiptUrl!.isNotEmpty) ...[
+                                        const SizedBox(width: 6),
+                                        Icon(Icons.attachment, size: 14, color: colorScheme.primary),
+                                      ],
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_vert, size: 20),
-                              padding: EdgeInsets.zero,
-                              onSelected: (val) {
-                                if (val == 'edit') {
-                                  _openExpenseForm(exp);
-                                } else if (val == 'delete') {
-                                  _confirmDeleteExpense(exp);
-                                }
-                              },
-                              itemBuilder: (_) => [
-                                const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text('Delete', style: TextStyle(color: Colors.red)),
+                            const SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    '- ${CurrencyFormatter.format(exp.amount, currencyCode: currency)}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                SizedBox(
+                                  height: 28,
+                                  width: 28,
+                                  child: PopupMenuButton<String>(
+                                    icon: const Icon(Icons.more_vert, size: 18),
+                                    padding: EdgeInsets.zero,
+                                    onSelected: (val) {
+                                      if (val == 'edit') {
+                                        _openExpenseForm(exp);
+                                      } else if (val == 'delete') {
+                                        _confirmDeleteExpense(exp);
+                                      }
+                                    },
+                                    itemBuilder: (_) => [
+                                      const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                                      const PopupMenuItem(
+                                        value: 'delete',
+                                        child: Text('Delete', style: TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

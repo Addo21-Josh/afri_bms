@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../providers/sync_provider.dart';
 import '../../domain/models/sync_queue_item.dart';
+import '../../../utils/user_friendly_error.dart';
 
 class SyncCenterScreen extends ConsumerWidget {
   const SyncCenterScreen({super.key});
@@ -345,7 +346,7 @@ class SyncCenterScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  'Error: ${item.lastError}',
+                  'Notice: ${UserFriendlyError.toFriendly(item.lastError)}',
                   style: TextStyle(color: Colors.red.shade800, fontSize: 11),
                 ),
               ),

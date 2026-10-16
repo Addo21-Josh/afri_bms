@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/debt_entity.dart';
 import '../providers/debts_provider.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class RecordDebtPaymentDialog extends ConsumerStatefulWidget {
   const RecordDebtPaymentDialog({
@@ -106,7 +107,15 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
       } else {
         final err = ref.read(debtControllerProvider).errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(err ?? 'Failed to record repayment')),
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                err,
+                defaultMessage: 'Unable to record payment. Please check details and try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }

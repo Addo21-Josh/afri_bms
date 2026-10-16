@@ -376,7 +376,10 @@ class _SalesReportsTab extends ConsumerWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(c.categoryName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  Expanded(
+                                    child: Text(c.categoryName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  ),
+                                  const SizedBox(width: 8),
                                   Text(
                                     '${CurrencyFormatter.format(c.totalRevenue, currencyCode: currency)} (${c.percentage.toStringAsFixed(1)}%)',
                                     style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
@@ -475,8 +478,13 @@ class _FinancialReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Profit & Loss Statement',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          Expanded(
+                            child: Text(
+                              'Profit & Loss Statement',
+                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -583,7 +591,8 @@ class _FinancialReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Cash Inflow (Sales)'),
+                          const Expanded(child: Text('Total Cash Inflow (Sales)')),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.format(data.totalCashIn, currencyCode: currency),
                             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
@@ -594,7 +603,8 @@ class _FinancialReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Cash Outflow (Expenses + COGS)'),
+                          const Expanded(child: Text('Total Cash Outflow (Expenses + COGS)')),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.format(data.totalCashOut, currencyCode: currency),
                             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
@@ -605,7 +615,8 @@ class _FinancialReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Net Cash Flow', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Expanded(child: Text('Net Cash Flow', style: TextStyle(fontWeight: FontWeight.bold))),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.format(data.netCashFlow, currencyCode: currency),
                             style: TextStyle(
@@ -692,7 +703,8 @@ class _InventoryReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Valuation at Cost (Asset Cost)'),
+                          const Expanded(child: Text('Valuation at Cost (Asset Cost)')),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.format(data.totalCostValue, currencyCode: currency),
                             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -703,7 +715,8 @@ class _InventoryReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Valuation at Retail Price'),
+                          const Expanded(child: Text('Valuation at Retail Price')),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.format(data.totalRetailValue, currencyCode: currency),
                             style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary),
@@ -714,7 +727,8 @@ class _InventoryReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Potential Gross Profit'),
+                          const Expanded(child: Text('Potential Gross Profit')),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.format(data.potentialProfit, currencyCode: currency),
                             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
@@ -922,9 +936,13 @@ class _ReportKpiCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -954,30 +972,37 @@ class _StatementRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                fontSize: fontSize,
-              ),
-            ),
-            if (subtitle != null)
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
-                subtitle!,
-                style: const TextStyle(fontSize: 11, color: Colors.grey),
+                title,
+                style: TextStyle(
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                  fontSize: fontSize,
+                ),
               ),
-          ],
+              if (subtitle != null)
+                Text(
+                  subtitle!,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+            ],
+          ),
         ),
-        Text(
-          amount,
-          style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: color,
-            fontSize: fontSize,
+        const SizedBox(width: 8),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            amount,
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: color,
+              fontSize: fontSize,
+            ),
           ),
         ),
       ],
@@ -1003,17 +1028,25 @@ class _AgingRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: 8),
-            Text(title, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          ],
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
+                ),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 8),
         Text(
           amount,
           style: TextStyle(fontWeight: FontWeight.bold, color: color),

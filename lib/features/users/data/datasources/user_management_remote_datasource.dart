@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 import '../../domain/entities/staff_user_entity.dart';
 import '../models/staff_user_model.dart';
 
@@ -139,7 +140,7 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
 
       if (profileResponse == null) {
         throw AppException(
-          'Could not create staff account for "$userEmail". Please ensure the staff management SQL function is created in your Supabase project.',
+          'Unable to create staff account for "$userEmail". Please verify the email address or upgrade your subscription plan to add more team members.',
         );
       }
 
@@ -179,7 +180,8 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
       return StaffUserModel.fromJson(insertedData);
     } catch (e) {
       AppLogger.e('Assign Staff Role Error: $e');
-      throw AppException(e.toString());
+      if (e is AppException) rethrow;
+      throw AppException(UserFriendlyError.toFriendly(e));
     }
   }
 
@@ -203,7 +205,8 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
       await _supabaseClient.from('user_roles').update(updates).eq('id', roleId);
     } catch (e) {
       AppLogger.e('Update Staff Role Error: $e');
-      throw AppException(e.toString());
+      if (e is AppException) rethrow;
+      throw AppException(UserFriendlyError.toFriendly(e));
     }
   }
 
@@ -213,7 +216,8 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
       await _supabaseClient.from('user_roles').delete().eq('id', roleId);
     } catch (e) {
       AppLogger.e('Remove Staff Role Error: $e');
-      throw AppException(e.toString());
+      if (e is AppException) rethrow;
+      throw AppException(UserFriendlyError.toFriendly(e));
     }
   }
 

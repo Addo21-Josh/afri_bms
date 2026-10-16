@@ -12,6 +12,7 @@ import '../../../../core/subscription/presentation/providers/subscription_provid
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 import '../../../users/domain/entities/staff_user_entity.dart';
 import '../../../users/presentation/providers/staff_provider.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
   const ProductFormScreen({super.key, this.existingProduct});
@@ -280,8 +281,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               const SnackBar(content: Text('Product created successfully!')),
             );
           } else {
-            final errorMsg = ref.read(inventoryControllerProvider).error?.toString() ??
-                'Failed to create product. Check database connection or tables.';
+            final rawError = ref.read(inventoryControllerProvider).error;
+            final errorMsg = UserFriendlyError.toFriendly(
+              rawError ?? 'Unable to create product. Please try again.',
+            );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(errorMsg),
@@ -310,11 +313,24 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         );
 
         final success = await ref.read(inventoryControllerProvider.notifier).updateProduct(updated);
-        if (mounted && success) {
-          context.pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Product updated successfully!')),
-          );
+        if (mounted) {
+          if (success) {
+            context.pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Product updated successfully!')),
+            );
+          } else {
+            final rawError = ref.read(inventoryControllerProvider).error;
+            final errorMsg = UserFriendlyError.toFriendly(
+              rawError ?? 'Unable to update product. Please try again.',
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMsg),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
         }
       }
     }
@@ -377,9 +393,28 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                     color: colorScheme.errorContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    invState.error.toString(),
-                    style: TextStyle(color: colorScheme.onErrorContainer),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: colorScheme.onErrorContainer, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          UserFriendlyError.toFriendly(invState.error),
+                          style: TextStyle(color: colorScheme.onErrorContainer),
+                        ),
+                      ),
+                      if (UserFriendlyError.isLimitOrUpgradeError(invState.error)) ...[
+                        const SizedBox(width: 8),
+                        FilledButton.tonal(
+                          onPressed: () => UpgradePromptSheet.show(
+                            context,
+                            featureName: 'Product Limit',
+                            customMessage: UserFriendlyError.toFriendly(invState.error),
+                          ),
+                          child: const Text('Upgrade'),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),

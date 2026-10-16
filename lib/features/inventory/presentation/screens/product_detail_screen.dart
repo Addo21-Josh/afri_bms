@@ -12,6 +12,7 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/subscription/domain/models/subscription_tier.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   const ProductDetailScreen({super.key, required this.productId});
@@ -144,11 +145,26 @@ class ProductDetailScreen extends ConsumerWidget {
                     batchNumber: batchCtrl.text.trim().isNotEmpty ? batchCtrl.text.trim() : null,
                     expiryDate: selectedExpiry,
                   );
-                  if (ctx.mounted && success) {
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Stock count and audit log updated successfully')),
-                    );
+                  if (ctx.mounted) {
+                    if (success) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Stock count and audit log updated successfully')),
+                      );
+                    } else {
+                      final rawError = ref.read(inventoryControllerProvider).error;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            UserFriendlyError.toFriendly(
+                              rawError,
+                              defaultMessage: 'Unable to update stock audit. Please try again.',
+                            ),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                      );
+                    }
                   }
                 }
               },

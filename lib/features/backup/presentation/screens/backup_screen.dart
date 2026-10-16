@@ -18,6 +18,7 @@ import '../../../../core/utils/logger.dart';
 import '../../../../core/subscription/domain/models/subscription_tier.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 final cloudBackupServiceProvider = Provider<CloudBackupService>((ref) {
   return CloudBackupService(Supabase.instance.client);
@@ -97,7 +98,15 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to generate backup: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                e,
+                defaultMessage: 'Unable to generate backup file. Please try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     } finally {
@@ -168,7 +177,15 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Restoration failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                e,
+                defaultMessage: 'Unable to restore data from backup file. Please verify file integrity and try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     } finally {

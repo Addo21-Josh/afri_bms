@@ -104,20 +104,28 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
           children: List.generate(widget.categories.length, (i) {
             final cat = widget.categories[i];
             final color = _palette[i % _palette.length];
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  '${cat.categoryName}: ${CurrencyFormatter.format(cat.totalAmount, currencyCode: widget.currency)}',
-                  style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-                ),
-              ],
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 64,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      '${cat.categoryName}: ${CurrencyFormatter.format(cat.totalAmount, currencyCode: widget.currency)}',
+                      style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             );
           }),
         ),

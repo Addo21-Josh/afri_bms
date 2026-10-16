@@ -5,6 +5,7 @@ import '../providers/suppliers_provider.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class SupplierFormDialog extends ConsumerStatefulWidget {
   final SupplierEntity? supplierToEdit;
@@ -111,6 +112,21 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
           SnackBar(
             content: Text(isEditing ? 'Supplier updated successfully' : 'Supplier added successfully'),
             backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        final rawError = ref.read(supplierControllerProvider).error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                rawError,
+                defaultMessage: isEditing
+                    ? 'Unable to update supplier. Please try again.'
+                    : 'Unable to add supplier. Please try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

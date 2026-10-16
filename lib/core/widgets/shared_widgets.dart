@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/user_friendly_error.dart';
+import '../subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
@@ -111,34 +113,16 @@ class ErrorStateWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  /// Sanitizes raw error messages and socket exceptions into clear, user-friendly language
+  /// Sanitizes raw error messages and exceptions into clear, user-friendly language
   static String cleanMessage(String raw) {
-    var text = raw.trim();
-    if (text.startsWith('AppException:')) {
-      text = text.substring('AppException:'.length).trim();
-    }
-    if (text.startsWith('Exception:')) {
-      text = text.substring('Exception:'.length).trim();
-    }
-    if (text.contains('SocketException') ||
-        text.contains('ClientException') ||
-        text.contains('Failed host lookup') ||
-        text.contains('errno = 7') ||
-        text.contains('Connection refused') ||
-        text.contains('Network is unreachable')) {
-      return 'Unable to reach the server. Please check your internet connection.';
-    }
-    if (text.contains('uri=http')) {
-      final idx = text.indexOf('uri=http');
-      text = text.substring(0, idx).trim();
-    }
-    return text.isEmpty ? 'An unexpected error occurred. Please try again.' : text;
+    return UserFriendlyError.toFriendly(raw);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final displayMessage = cleanMessage(message);
+    final isLimit = UserFriendlyError.isLimitOrUpgradeError(message);
 
     return Center(
       child: Padding(
@@ -148,26 +132,42 @@ class ErrorStateWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              isLimit ? Icons.workspace_premium_outlined : Icons.error_outline,
               size: 56,
-              color: theme.colorScheme.error,
+              color: isLimit ? theme.colorScheme.primary : theme.colorScheme.error,
             ),
             const SizedBox(height: 16),
             Text(
               displayMessage,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.error,
+                color: isLimit ? theme.colorScheme.onSurface : theme.colorScheme.error,
               ),
               textAlign: TextAlign.center,
             ),
-            if (onRetry != null) ...[
-              const SizedBox(height: 16),
-              FilledButton.tonalIcon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
-              ),
-            ],
+            const SizedBox(height: 16),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                if (isLimit)
+                  FilledButton.icon(
+                    onPressed: () => UpgradePromptSheet.show(
+                      context,
+                      featureName: 'Plan Limits',
+                      customMessage: displayMessage,
+                    ),
+                    icon: const Icon(Icons.star),
+                    label: const Text('Upgrade Plan'),
+                  ),
+                if (onRetry != null)
+                  FilledButton.tonalIcon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Try Again'),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

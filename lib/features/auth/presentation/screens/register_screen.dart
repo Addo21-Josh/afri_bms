@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 import '../providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -49,7 +50,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(next.error.toString()),
+            content: Text(UserFriendlyError.toFriendly(next.error)),
             backgroundColor: colorScheme.error,
           ),
         );

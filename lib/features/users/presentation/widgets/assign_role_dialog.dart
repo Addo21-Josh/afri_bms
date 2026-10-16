@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/staff_user_entity.dart';
 import '../providers/staff_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/utils/user_friendly_error.dart';
+import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
+import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
 class AssignRoleDialog extends ConsumerStatefulWidget {
   const AssignRoleDialog({super.key, this.existingStaff});
@@ -45,6 +49,23 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
+      // Check feature gate tier limit before assigning a new staff member
+      if (widget.existingStaff == null) {
+        final staffList = ref.read(businessStaffListProvider).value ?? [];
+        final gate = ref.read(featureGateProvider);
+        final limitCheck = gate.checkStaffLimit(staffList.length);
+        if (limitCheck.isBlocked) {
+          UpgradePromptSheet.show(
+            context,
+            featureName: limitCheck.featureName ?? 'Staff Accounts',
+            customMessage: limitCheck.reason,
+            currentTier: gate.tier,
+            suggestedTier: limitCheck.requiredTier,
+          );
+          return;
+        }
+      }
+
       bool success = false;
       if (widget.existingStaff == null) {
         success = await ref.read(staffControllerProvider.notifier).assignStaff(
@@ -94,18 +115,66 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (staffState.hasError) ...[
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      staffState.error.toString(),
-                      style: TextStyle(color: theme.colorScheme.onErrorContainer, fontSize: 13),
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final friendlyMsg = UserFriendlyError.toFriendly(staffState.error);
+                      final isLimit = UserFriendlyError.isLimitOrUpgradeError(staffState.error);
+
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.3)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.info_outline, size: 18, color: theme.colorScheme.error),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    friendlyMsg,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onErrorContainer,
+                                      fontSize: 13,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (isLimit) ...[
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    visualDensity: VisualDensity.compact,
+                                    foregroundColor: theme.colorScheme.error,
+                                    textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  ),
+                                  icon: const Icon(Icons.upgrade, size: 16),
+                                  label: const Text('Upgrade Plan'),
+                                  onPressed: () {
+                                    final gate = ref.read(featureGateProvider);
+                                    UpgradePromptSheet.show(
+                                      context,
+                                      featureName: 'Staff Accounts',
+                                      currentTier: gate.tier,
+                                      suggestedTier: SubscriptionTier.pro,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 12),
                 ],

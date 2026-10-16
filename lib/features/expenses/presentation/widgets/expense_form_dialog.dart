@@ -8,6 +8,7 @@ import '../../domain/entities/expense_entity.dart';
 import '../providers/expenses_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import 'expense_category_dialog.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class ExpenseFormDialog extends ConsumerStatefulWidget {
   const ExpenseFormDialog({super.key, this.expense});
@@ -117,7 +118,15 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
       if (mounted) {
         setState(() => _isUploadingImage = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick receipt: $e')),
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                e,
+                defaultMessage: 'Unable to attach receipt. Please try another image.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -178,7 +187,15 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
       } else {
         final err = ref.read(expenseControllerProvider).errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(err ?? 'Failed to save expense')),
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                err,
+                defaultMessage: 'Unable to save expense. Please try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }

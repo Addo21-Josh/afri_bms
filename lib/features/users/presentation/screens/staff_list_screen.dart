@@ -4,9 +4,9 @@ import '../../domain/entities/staff_user_entity.dart';
 import '../providers/staff_provider.dart';
 import '../widgets/assign_role_dialog.dart';
 import '../../../../core/widgets/shared_widgets.dart';
-import '../../../../core/subscription/domain/models/subscription_tier.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class StaffListScreen extends ConsumerWidget {
   const StaffListScreen({super.key});
@@ -50,6 +50,22 @@ class StaffListScreen extends ConsumerWidget {
     final staffListAsync = ref.watch(businessStaffListProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    ref.listen<AsyncValue<void>>(staffControllerProvider, (_, next) {
+      if (next.hasError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                next.error,
+                defaultMessage: 'Unable to update staff account. Please try again.',
+              ),
+            ),
+            backgroundColor: colorScheme.error,
+          ),
+        );
+      }
+    });
 
     return AppScaffold(
       title: 'Staff & Team',

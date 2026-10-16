@@ -8,6 +8,7 @@ import '../screens/sale_receipt_screen.dart';
 import '../../../customers/presentation/providers/customers_provider.dart';
 import '../../../customers/domain/entities/customer_entity.dart';
 import '../../../customers/presentation/widgets/customer_form_dialog.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class CheckoutDialog extends ConsumerStatefulWidget {
   const CheckoutDialog({
@@ -592,17 +593,32 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                                     : null,
                               );
 
-                          if (context.mounted && completedSale != null) {
-                            Navigator.pop(context); // Close checkout dialog
-                            // Open Digital Receipt Screen
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => SaleReceiptScreen(
-                                  sale: completedSale,
-                                  currency: widget.currency,
+                          if (context.mounted) {
+                            if (completedSale != null) {
+                              Navigator.pop(context); // Close checkout dialog
+                              // Open Digital Receipt Screen
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => SaleReceiptScreen(
+                                    sale: completedSale,
+                                    currency: widget.currency,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              final rawError = ref.read(salesCheckoutControllerProvider).error;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    UserFriendlyError.toFriendly(
+                                      rawError,
+                                      defaultMessage: 'Unable to complete sale. Please check details and try again.',
+                                    ),
+                                  ),
+                                  backgroundColor: Theme.of(context).colorScheme.error,
+                                ),
+                              );
+                            }
                           }
                         },
                   icon: checkoutState.isLoading

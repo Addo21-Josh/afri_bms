@@ -6,6 +6,7 @@ import '../providers/debts_provider.dart';
 import '../../../customers/presentation/providers/customers_provider.dart';
 import '../../../suppliers/presentation/providers/suppliers_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class CreateDebtDialog extends ConsumerStatefulWidget {
   const CreateDebtDialog({super.key, this.initialType = DebtType.receivable});
@@ -78,7 +79,15 @@ class _CreateDebtDialogState extends ConsumerState<CreateDebtDialog> {
       } else {
         final err = ref.read(debtControllerProvider).errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(err ?? 'Failed to create debt record')),
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                err,
+                defaultMessage: 'Unable to record debt. Please check the details and try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }

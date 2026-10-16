@@ -6,6 +6,7 @@ import '../providers/business_provider.dart';
 import '../../domain/entities/business_entity.dart';
 import '../../../users/domain/entities/staff_user_entity.dart';
 import '../../../users/presentation/providers/staff_provider.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 void showBusinessSwitcherModal(BuildContext context) {
   showModalBottomSheet(
@@ -65,8 +66,11 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
           SnackBar(content: Text('"${business.name}" deleted successfully.')),
         );
       } else {
-        final errorMsg = ref.read(businessControllerProvider).error?.toString() ??
-            'Failed to delete business. Check network or admin privileges.';
+        final rawError = ref.read(businessControllerProvider).error;
+        final errorMsg = UserFriendlyError.toFriendly(
+          rawError,
+          defaultMessage: 'Unable to delete business. Please check your admin privileges or network connection.',
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMsg),

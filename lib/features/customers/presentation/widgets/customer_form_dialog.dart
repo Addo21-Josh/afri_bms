@@ -6,6 +6,7 @@ import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 
 class CustomerFormDialog extends ConsumerStatefulWidget {
   final CustomerEntity? customerToEdit;
@@ -117,6 +118,21 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
           SnackBar(
             content: Text(isEditing ? 'Customer updated successfully' : 'Customer added successfully'),
             backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        final rawError = ref.read(customerControllerProvider).error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              UserFriendlyError.toFriendly(
+                rawError,
+                defaultMessage: isEditing
+                    ? 'Unable to update customer. Please try again.'
+                    : 'Unable to add customer. Please try again.',
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

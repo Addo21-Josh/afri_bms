@@ -4,23 +4,23 @@ import '../screens/subscription_plans_screen.dart';
 
 /// Modal bottom sheet displayed whenever a user encounters a feature or resource limit
 class UpgradePromptSheet extends StatelessWidget {
+  const UpgradePromptSheet({
+    super.key,
+    this.featureName = 'Subscription Upgrade',
+    this.customMessage,
+    this.currentTier = SubscriptionTier.free,
+    this.suggestedTier = SubscriptionTier.pro,
+  });
+
   final String featureName;
   final String? customMessage;
   final SubscriptionTier currentTier;
   final SubscriptionTier suggestedTier;
 
-  const UpgradePromptSheet({
-    super.key,
-    required this.featureName,
-    this.customMessage,
-    required this.currentTier,
-    this.suggestedTier = SubscriptionTier.pro,
-  });
-
   /// Static helper to trigger the upgrade bottom sheet from anywhere
   static Future<void> show(
     BuildContext context, {
-    required String featureName,
+    String featureName = 'Subscription Upgrade',
     String? customMessage,
     SubscriptionTier currentTier = SubscriptionTier.free,
     SubscriptionTier suggestedTier = SubscriptionTier.pro,

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:afri_bms/core/utils/validators.dart';
 import 'package:afri_bms/core/utils/logger.dart';
+import 'package:afri_bms/core/utils/user_friendly_error.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -46,7 +47,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = e.toString();
+          _errorMessage = UserFriendlyError.toFriendly(e);
         });
       }
     }

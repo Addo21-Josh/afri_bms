@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/utils/user_friendly_error.dart';
 import '../providers/business_provider.dart';
 import '../../../users/domain/entities/staff_user_entity.dart';
 import '../../../users/presentation/providers/staff_provider.dart';
@@ -55,7 +56,7 @@ class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(next.error.toString()),
+            content: Text(UserFriendlyError.toFriendly(next.error)),
             backgroundColor: colorScheme.error,
           ),
         );
