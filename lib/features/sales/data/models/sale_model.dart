@@ -134,6 +134,33 @@ class SaleModel {
       'customer_name': customerName,
       'customer_phone': customerPhone,
       'notes': notes,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
+
+  Map<String, dynamic> toCacheJson() {
+    return {
+      'id': id,
+      'business_id': businessId,
+      'branch_id': branchId,
+      'cashier_id': cashierId,
+      'cashier_name': cashierName,
+      'sale_number': saleNumber,
+      'subtotal': subtotal,
+      'discount_amount': discountAmount,
+      'tax_amount': taxAmount,
+      'total_amount': totalAmount,
+      'payment_method': paymentMethod,
+      'payment_status': paymentStatus,
+      'amount_tendered': amountTendered,
+      'change_given': changeGiven,
+      'customer_id': customerId,
+      'payment_reference': paymentReference,
+      'customer_name': customerName,
+      'customer_phone': customerPhone,
+      'notes': notes,
+      'sale_items': items.map((i) => i.toJson()).toList(),
+      'created_at': createdAt.toIso8601String(),
     };
   }
 

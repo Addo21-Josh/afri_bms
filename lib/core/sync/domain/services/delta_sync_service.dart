@@ -3,6 +3,13 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/utils/logger.dart';
+import '../../data/local/local_cache_service.dart';
+import '../../../../features/inventory/data/models/product_model.dart';
+import '../../../../features/customers/data/models/customer_model.dart';
+import '../../../../features/sales/data/models/sale_model.dart';
+import '../../../../features/suppliers/data/models/supplier_model.dart';
+import '../../../../features/expenses/data/models/expense_model.dart';
+import '../../../../features/debts/data/models/debt_model.dart';
 
 class DeltaSyncResult {
   final String table;
@@ -18,10 +25,11 @@ class DeltaSyncResult {
 
 class DeltaSyncService {
   final SupabaseClient _supabase;
+  final LocalCacheService? _localCache;
   static const String _metadataFileName = 'afri_delta_sync_meta.json';
   File? _metaFile;
 
-  DeltaSyncService(this._supabase);
+  DeltaSyncService(this._supabase, {LocalCacheService? localCache}) : _localCache = localCache;
 
   Future<File> _getFile() async {
     if (_metaFile != null) return _metaFile!;
@@ -79,6 +87,10 @@ class DeltaSyncService {
       final response = await query.order('updated_at', ascending: true).limit(500);
       final List<dynamic> records = response as List<dynamic>;
 
+      if (_localCache != null && records.isNotEmpty) {
+        await _applyRecordsToLocalCache(table, businessId, records);
+      }
+
       // Update sync marker
       await setLastSyncTime(table, businessId, now);
 
@@ -92,6 +104,44 @@ class DeltaSyncService {
     } catch (e) {
       AppLogger.e('Error pulling delta for $table: $e');
       return DeltaSyncResult(table: table, recordsReceived: 0, syncTimestamp: now);
+    }
+  }
+
+  Future<void> _applyRecordsToLocalCache(String table, String businessId, List<dynamic> records) async {
+    final cache = _localCache;
+    if (cache == null) return;
+    try {
+      for (final r in records) {
+        final map = r as Map<String, dynamic>;
+        switch (table) {
+          case 'products':
+            final product = ProductModel.fromJson(map).toEntity();
+            await cache.saveOfflineProduct(businessId, product);
+            break;
+          case 'customers':
+            final customer = CustomerModel.fromJson(map).toEntity();
+            await cache.saveOfflineCustomer(businessId, customer);
+            break;
+          case 'sales':
+            final sale = SaleModel.fromJson(map).toEntity();
+            await cache.saveOfflineSale(businessId, sale);
+            break;
+          case 'suppliers':
+            final supplier = SupplierModel.fromJson(map);
+            await cache.saveOfflineSupplier(businessId, supplier);
+            break;
+          case 'expenses':
+            final expense = ExpenseModel.fromJson(map);
+            await cache.saveOfflineExpense(businessId, expense);
+            break;
+          case 'debts':
+            final debt = DebtModel.fromJson(map);
+            await cache.saveOfflineDebt(businessId, debt);
+            break;
+        }
+      }
+    } catch (e) {
+      AppLogger.w('Failed to apply delta records to local cache for $table: $e');
     }
   }
 

@@ -7,6 +7,8 @@ enum UserRoleType {
   cashier,
   custom;
 
+  String get value => toDbString();
+
   static UserRoleType fromString(String role) {
     switch (role.toLowerCase()) {
       case 'admin':

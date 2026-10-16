@@ -13,11 +13,11 @@ _$BusinessModelImpl _$$BusinessModelImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       description: json['description'] as String?,
       logoUrl: json['logo_url'] as String?,
-      defaultCurrency: json['default_currency'] as String? ?? 'NGN',
+      defaultCurrency: json['default_currency'] as String? ?? 'GHS',
       supportedCurrencies: (json['supported_currencies'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
-          const ['NGN'],
+          const ['GHS'],
       taxRate: (json['tax_rate'] as num?)?.toDouble() ?? 0.0,
       address: json['address'] as String?,
       phone: json['phone'] as String?,

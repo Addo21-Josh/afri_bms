@@ -37,8 +37,7 @@ final productCategoriesProvider = FutureProvider.autoDispose<List<ProductCategor
   final syncState = ref.watch(syncProvider);
 
   if (!syncState.isOnline) {
-    final cached = await localCache.getCachedCategories(currentBiz.id);
-    if (cached.isNotEmpty) return cached;
+    return await localCache.getCachedCategories(currentBiz.id);
   }
 
   final repo = ref.watch(inventoryRepositoryProvider);
@@ -68,16 +67,14 @@ final productsListProvider = FutureProvider.autoDispose<List<ProductEntity>>((re
 
   if (!syncState.isOnline) {
     var cached = await localCache.getCachedProducts(currentBiz.id, branchId: currentBranch?.id);
-    if (cached.isNotEmpty) {
-      if (categoryId != null) {
-        cached = cached.where((p) => p.categoryId == categoryId).toList();
-      }
-      if (searchQuery.isNotEmpty) {
-        final q = searchQuery.toLowerCase();
-        cached = cached.where((p) => p.name.toLowerCase().contains(q) || (p.sku?.toLowerCase().contains(q) ?? false)).toList();
-      }
-      return cached;
+    if (categoryId != null) {
+      cached = cached.where((p) => p.categoryId == categoryId).toList();
     }
+    if (searchQuery.isNotEmpty) {
+      final q = searchQuery.toLowerCase();
+      cached = cached.where((p) => p.name.toLowerCase().contains(q) || (p.sku?.toLowerCase().contains(q) ?? false)).toList();
+    }
+    return cached;
   }
 
   final repo = ref.watch(inventoryRepositoryProvider);
@@ -110,12 +107,32 @@ final productsListProvider = FutureProvider.autoDispose<List<ProductEntity>>((re
 
 // Single product provider
 final productDetailProvider = FutureProvider.family<ProductEntity, String>((ref, productId) async {
+  final currentBiz = ref.watch(currentBusinessProvider);
   final currentBranch = ref.watch(currentBranchProvider);
   final repo = ref.watch(inventoryRepositoryProvider);
+  final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
 
+  // 1. If device is currently in offline mode, read directly from local cache
+  if (!syncState.isOnline) {
+    if (currentBiz != null) {
+      final cached = await localCache.getCachedProductById(currentBiz.id, productId, branchId: currentBranch?.id);
+      if (cached != null) return cached;
+    }
+    throw 'Product details not available in offline cache';
+  }
+
+  // 2. Fetch from repository
   final result = await repo.getProductById(productId, branchId: currentBranch?.id);
   return result.fold(
-    (failure) => throw failure.message,
+    (failure) async {
+      // 3. Fallback to local cache if remote fetch failed (e.g. offline or no internet)
+      if (currentBiz != null) {
+        final cached = await localCache.getCachedProductById(currentBiz.id, productId, branchId: currentBranch?.id);
+        if (cached != null) return cached;
+      }
+      throw failure.message;
+    },
     (product) => product,
   );
 });
@@ -124,6 +141,11 @@ final productDetailProvider = FutureProvider.family<ProductEntity, String>((ref,
 final stockMovementsProvider = FutureProvider.autoDispose<List<StockMovementEntity>>((ref) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return [];
+
+  final syncState = ref.watch(syncProvider);
+  if (!syncState.isOnline) {
+    return [];
+  }
 
   final currentBranch = ref.watch(currentBranchProvider);
   final repo = ref.watch(inventoryRepositoryProvider);
@@ -275,17 +297,54 @@ class InventoryController extends StateNotifier<AsyncValue<void>> {
   }
 
   Future<bool> updateProduct(ProductEntity product) async {
+    final currentBiz = ref.read(currentBusinessProvider);
     state = const AsyncValue.loading();
-    final repo = ref.read(inventoryRepositoryProvider);
+    final syncState = ref.read(syncProvider);
 
+    if (!syncState.isOnline && currentBiz != null) {
+      await ref.read(localCacheServiceProvider).saveOfflineProduct(currentBiz.id, product);
+      await ref.read(syncProvider.notifier).enqueueOperation(
+        table: 'products',
+        operation: SyncOperation.update,
+        recordId: product.id,
+        payload: ProductModel.fromEntity(product).toJson(),
+        businessId: currentBiz.id,
+      );
+      state = const AsyncValue.data(null);
+      ref.invalidate(productsListProvider);
+      ref.invalidate(productDetailProvider(product.id));
+      return true;
+    }
+
+    final repo = ref.read(inventoryRepositoryProvider);
     final result = await repo.updateProduct(product);
 
     return result.fold(
-      (failure) {
+      (failure) async {
+        if (currentBiz != null &&
+            (failure.message.contains('SocketException') ||
+             failure.message.contains('ClientException') ||
+             failure.message.contains('Failed host lookup'))) {
+          await ref.read(localCacheServiceProvider).saveOfflineProduct(currentBiz.id, product);
+          await ref.read(syncProvider.notifier).enqueueOperation(
+            table: 'products',
+            operation: SyncOperation.update,
+            recordId: product.id,
+            payload: ProductModel.fromEntity(product).toJson(),
+            businessId: currentBiz.id,
+          );
+          state = const AsyncValue.data(null);
+          ref.invalidate(productsListProvider);
+          ref.invalidate(productDetailProvider(product.id));
+          return true;
+        }
         state = AsyncValue.error(failure.message, StackTrace.current);
         return false;
       },
-      (_) {
+      (_) async {
+        if (currentBiz != null) {
+          await ref.read(localCacheServiceProvider).saveOfflineProduct(currentBiz.id, product);
+        }
         state = const AsyncValue.data(null);
         ref.invalidate(productsListProvider);
         ref.invalidate(productDetailProvider(product.id));
@@ -295,17 +354,52 @@ class InventoryController extends StateNotifier<AsyncValue<void>> {
   }
 
   Future<bool> deleteProduct(String productId) async {
+    final currentBiz = ref.read(currentBusinessProvider);
     state = const AsyncValue.loading();
-    final repo = ref.read(inventoryRepositoryProvider);
+    final syncState = ref.read(syncProvider);
 
+    if (!syncState.isOnline && currentBiz != null) {
+      await ref.read(localCacheServiceProvider).deleteOfflineProduct(currentBiz.id, productId);
+      await ref.read(syncProvider.notifier).enqueueOperation(
+        table: 'products',
+        operation: SyncOperation.delete,
+        recordId: productId,
+        payload: {'id': productId},
+        businessId: currentBiz.id,
+      );
+      state = const AsyncValue.data(null);
+      ref.invalidate(productsListProvider);
+      return true;
+    }
+
+    final repo = ref.read(inventoryRepositoryProvider);
     final result = await repo.deleteProduct(productId);
 
     return result.fold(
-      (failure) {
+      (failure) async {
+        if (currentBiz != null &&
+            (failure.message.contains('SocketException') ||
+             failure.message.contains('ClientException') ||
+             failure.message.contains('Failed host lookup'))) {
+          await ref.read(localCacheServiceProvider).deleteOfflineProduct(currentBiz.id, productId);
+          await ref.read(syncProvider.notifier).enqueueOperation(
+            table: 'products',
+            operation: SyncOperation.delete,
+            recordId: productId,
+            payload: {'id': productId},
+            businessId: currentBiz.id,
+          );
+          state = const AsyncValue.data(null);
+          ref.invalidate(productsListProvider);
+          return true;
+        }
         state = AsyncValue.error(failure.message, StackTrace.current);
         return false;
       },
-      (_) {
+      (_) async {
+        if (currentBiz != null) {
+          await ref.read(localCacheServiceProvider).deleteOfflineProduct(currentBiz.id, productId);
+        }
         state = const AsyncValue.data(null);
         ref.invalidate(productsListProvider);
         return true;

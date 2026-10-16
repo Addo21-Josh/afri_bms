@@ -111,9 +111,35 @@ class ErrorStateWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
+  /// Sanitizes raw error messages and socket exceptions into clear, user-friendly language
+  static String cleanMessage(String raw) {
+    var text = raw.trim();
+    if (text.startsWith('AppException:')) {
+      text = text.substring('AppException:'.length).trim();
+    }
+    if (text.startsWith('Exception:')) {
+      text = text.substring('Exception:'.length).trim();
+    }
+    if (text.contains('SocketException') ||
+        text.contains('ClientException') ||
+        text.contains('Failed host lookup') ||
+        text.contains('errno = 7') ||
+        text.contains('Connection refused') ||
+        text.contains('Network is unreachable')) {
+      return 'Unable to reach the server. Please check your internet connection.';
+    }
+    if (text.contains('uri=http')) {
+      final idx = text.indexOf('uri=http');
+      text = text.substring(0, idx).trim();
+    }
+    return text.isEmpty ? 'An unexpected error occurred. Please try again.' : text;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final displayMessage = cleanMessage(message);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -128,7 +154,7 @@ class ErrorStateWidget extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              message,
+              displayMessage,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),

@@ -70,7 +70,8 @@ final conflictResolverProvider = Provider<ConflictResolver>((ref) {
 });
 
 final deltaSyncServiceProvider = Provider<DeltaSyncService>((ref) {
-  return DeltaSyncService(Supabase.instance.client);
+  final localCache = ref.watch(localCacheServiceProvider);
+  return DeltaSyncService(Supabase.instance.client, localCache: localCache);
 });
 
 final syncQueueProcessorProvider = Provider<SyncQueueProcessor>((ref) {
@@ -197,16 +198,51 @@ class SyncNotifier extends StateNotifier<SyncState> {
     }
   }
 
+  /// Enqueue multiple offline mutations in a single batch
+  Future<void> enqueueOperations(List<SyncQueueItem> items) async {
+    if (items.isEmpty) return;
+    await _storage.enqueueAll(items);
+    await refreshQueue();
+    AppLogger.i('Enqueued ${items.length} offline operations in batch');
+
+    // Trigger one-off background worker registration as fallback
+    BackgroundSyncWorker.triggerOneOffSync();
+
+    // If online, immediately process queue
+    if (state.isOnline && !state.isSyncing) {
+      _triggerAutoSync();
+    }
+  }
+
+  /// Check live network connectivity and update state
+  Future<bool> checkLiveConnectivity() async {
+    try {
+      final results = await Connectivity().checkConnectivity();
+      final online = results.any((r) => r != ConnectivityResult.none);
+      state = state.copyWith(isOnline: online);
+      return online;
+    } catch (_) {
+      return state.isOnline;
+    }
+  }
+
   /// Manually trigger full push & pull sync
   Future<void> triggerSync() async {
     if (state.isSyncing) return;
-    if (!state.isOnline) {
-      state = state.copyWith(statusMessage: 'Cannot sync while offline');
+
+    // Check live connectivity in case status was stale
+    final online = await checkLiveConnectivity();
+    if (!online) {
+      state = state.copyWith(statusMessage: 'Cannot sync while offline. Check internet connection.');
       return;
     }
 
     final currentBiz = _ref.read(currentBusinessProvider);
     final bId = currentBiz?.id;
+
+    // Reset failed items so user-initiated sync retries them with active session
+    await _storage.retryFailedItems(businessId: bId);
+    await refreshQueue();
 
     state = state.copyWith(
       isSyncing: true,

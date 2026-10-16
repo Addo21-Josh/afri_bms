@@ -7,7 +7,7 @@ import '../providers/inventory_provider.dart';
 import 'barcode_scanner_screen.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/widgets/shared_widgets.dart';
-import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
@@ -359,7 +359,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   hintText: 'e.g. Golden Penny Spaghetti 500g',
                   prefixIcon: Icon(Icons.shopping_bag_outlined),
                 ),
-                validator: (val) => val == null || val.trim().isEmpty ? 'Product name is required' : null,
+                validator: (val) => Validators.required(val, 'Product name is required'),
               ),
               const SizedBox(height: 16),
 
@@ -375,7 +375,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                             cats.any((c) => c.id == _selectedCategoryId);
 
                         return DropdownButtonFormField<String?>(
-                          value: _selectedCategoryId,
+                          initialValue: _selectedCategoryId,
                           decoration: InputDecoration(
                             labelText: 'Category',
                             prefixIcon: const Icon(Icons.category_outlined),
@@ -415,7 +415,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   Expanded(
                     flex: 1,
                     child: DropdownButtonFormField<String>(
-                      value: _unit,
+                      initialValue: _unit,
                       decoration: const InputDecoration(labelText: 'Unit'),
                       items: ['pcs', 'kg', 'g', 'litre', 'carton', 'box', 'pack', 'set']
                           .map((u) => DropdownMenuItem(value: u, child: Text(u)))
@@ -453,7 +453,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         prefixIcon: Icon(Icons.price_check_outlined),
                       ),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Cost price is required' : null,
+                      validator: (val) => Validators.nonNegativeNumber(val, fieldName: 'Cost price'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -466,7 +466,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         prefixIcon: Icon(Icons.payments_outlined),
                       ),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Selling price is required' : null,
+                      validator: (val) => Validators.nonNegativeNumber(val, fieldName: 'Selling price'),
                     ),
                   ),
                 ],
@@ -487,6 +487,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           prefixIcon: Icon(Icons.warehouse_outlined),
                         ),
                         keyboardType: TextInputType.number,
+                        validator: (val) => Validators.nonNegativeInteger(val, fieldName: 'Initial stock'),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -499,6 +500,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         prefixIcon: Icon(Icons.notification_important_outlined),
                       ),
                       keyboardType: TextInputType.number,
+                      validator: (val) => Validators.nonNegativeInteger(val, fieldName: 'Reorder level'),
                     ),
                   ),
                 ],

@@ -4,6 +4,7 @@ import '../../domain/entities/supplier_entity.dart';
 import '../providers/suppliers_provider.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
+import '../../../../core/utils/validators.dart';
 
 class SupplierFormDialog extends ConsumerStatefulWidget {
   final SupplierEntity? supplierToEdit;
@@ -177,7 +178,7 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a supplier name' : null,
+                    validator: (v) => Validators.required(v, 'Please enter a supplier name'),
                   ),
                   const SizedBox(height: 14),
 
@@ -203,6 +204,7 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.phone,
+                    validator: (v) => Validators.phone(v, required: false),
                   ),
                   const SizedBox(height: 14),
 
@@ -215,6 +217,7 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
+                    validator: (v) => Validators.email(v, required: false),
                   ),
                   const SizedBox(height: 14),
 

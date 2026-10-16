@@ -28,6 +28,13 @@ import '../../../inventory/domain/entities/category_entity.dart';
 import '../../../inventory/domain/entities/product_entity.dart';
 import '../../../customers/domain/entities/customer_entity.dart';
 import '../../../sales/domain/entities/sale_entity.dart';
+import '../../../business/domain/entities/branch_entity.dart';
+import '../../../suppliers/domain/entities/supplier_entity.dart';
+import '../../../suppliers/presentation/providers/suppliers_provider.dart';
+import '../../../expenses/domain/entities/expense_entity.dart';
+import '../../../expenses/presentation/providers/expenses_provider.dart';
+import '../../../debts/domain/entities/debt_entity.dart';
+import '../../../debts/presentation/providers/debts_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -51,10 +58,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final currentBiz = ref.read(currentBusinessProvider);
     if (currentBiz == null) return;
     // Proactively load and cache categories, products, customers & sales in the background
+    ref.read(businessBranchesProvider.future).catchError((_) => <BranchEntity>[]);
     ref.read(productCategoriesProvider.future).catchError((_) => <ProductCategoryEntity>[]);
     ref.read(customersListProvider.future).catchError((_) => <CustomerEntity>[]);
     ref.read(productsListProvider.future).catchError((_) => <ProductEntity>[]);
     ref.read(salesListProvider.future).catchError((_) => <SaleEntity>[]);
+    ref.read(suppliersListProvider.future).catchError((_) => <SupplierEntity>[]);
+    ref.read(expensesListProvider.future).catchError((_) => <ExpenseEntity>[]);
+    ref.read(debtsListProvider.future).catchError((_) => <DebtEntity>[]);
+    ref.read(currentUserRoleProvider.future).catchError((_) => null);
   }
 
   Widget _buildOverviewTab(BuildContext context) {
@@ -173,9 +185,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       );
     }
 
-    if (businessesAsync.hasValue && businessesAsync.value!.isEmpty) {
+    if (businessesAsync.hasValue && businessesAsync.value!.isEmpty && currentBiz == null) {
       return Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,

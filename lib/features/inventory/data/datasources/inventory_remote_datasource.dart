@@ -197,7 +197,14 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
       return ProductModel.fromJson(response);
     } catch (e) {
       AppLogger.e('Get Product By Id Error: $e');
-      throw AppException(e.toString());
+      final str = e.toString();
+      if (str.contains('SocketException') ||
+          str.contains('ClientException') ||
+          str.contains('Failed host lookup') ||
+          str.contains('errno = 7')) {
+        throw AppException('Unable to connect to server. Please check your internet connection.');
+      }
+      throw AppException(str);
     }
   }
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/logger.dart';
@@ -67,7 +68,7 @@ class SalesRemoteDatasourceImpl implements SalesRemoteDatasource {
       String? saleId;
 
       try {
-        // Try atomic RPC procedure
+        // Try atomic RPC procedure with 6-second timeout
         final response = await _supabaseClient.rpc('process_sale', params: {
           'p_business_id': businessId,
           'p_branch_id': branchId,
@@ -85,10 +86,28 @@ class SalesRemoteDatasourceImpl implements SalesRemoteDatasource {
           'p_customer_phone': customerPhone,
           'p_notes': notes,
           'p_items': itemsJson,
-        });
+        }).timeout(const Duration(seconds: 6));
 
         saleId = response as String?;
       } catch (rpcError) {
+        // Fast-fail if the error was due to network disconnection or timeout
+        final err = rpcError.toString();
+        final isNetwork = rpcError is TimeoutException ||
+            err.contains('SocketException') ||
+            err.contains('ClientException') ||
+            err.contains('Failed host lookup') ||
+            err.contains('Connection refused') ||
+            err.contains('Network is unreachable') ||
+            err.contains('timed out') ||
+            err.contains('Connection reset') ||
+            err.contains('Software caused connection abort') ||
+            err.contains('HandshakeException');
+
+        if (isNetwork) {
+          AppLogger.w('process_sale remote RPC failed due to network ($rpcError). Aborting remote attempts.');
+          throw AppException('Network unavailable: $rpcError');
+        }
+
         AppLogger.w('process_sale RPC error or not applied, falling back to direct inserts: $rpcError');
 
         // Fallback in case stored procedure migration hasn't been run yet:
@@ -111,7 +130,7 @@ class SalesRemoteDatasourceImpl implements SalesRemoteDatasource {
           'customer_name': customerName,
           'customer_phone': customerPhone,
           'notes': notes,
-        }).select().single();
+        }).select().single().timeout(const Duration(seconds: 6));
 
         saleId = saleRow['id'] as String;
 
@@ -129,7 +148,7 @@ class SalesRemoteDatasourceImpl implements SalesRemoteDatasource {
           'total_price': item.totalPrice,
         }).toList();
 
-        await _supabaseClient.from('sale_items').insert(saleItemsData);
+        await _supabaseClient.from('sale_items').insert(saleItemsData).timeout(const Duration(seconds: 6));
 
         // 3. Decrement stock & record stock movement for each item
         for (final item in items) {
@@ -214,7 +233,7 @@ class SalesRemoteDatasourceImpl implements SalesRemoteDatasource {
         }
       }
 
-      return await getSaleById(saleId);
+      return await getSaleById(saleId).timeout(const Duration(seconds: 6));
     } catch (e) {
       AppLogger.e('Process Sale Error: $e');
       throw AppException(e.toString());

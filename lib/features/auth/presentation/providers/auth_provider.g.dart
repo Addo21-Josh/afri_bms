@@ -101,7 +101,7 @@ final getCurrentUserUseCaseProvider =
 
 typedef GetCurrentUserUseCaseRef
     = AutoDisposeProviderRef<GetCurrentUserUseCase>;
-String _$authControllerHash() => r'614ba643e4eba08ea946de3f552642eebf9b6260';
+String _$authControllerHash() => r'9693c064369dcced24dac7d8aad8882644fa7772';
 
 /// See also [AuthController].
 @ProviderFor(AuthController)

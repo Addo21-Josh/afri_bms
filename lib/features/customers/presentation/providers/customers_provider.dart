@@ -35,17 +35,15 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
 
   if (!syncState.isOnline) {
     final cached = await localCache.getCachedCustomers(currentBiz.id);
-    if (cached.isNotEmpty) {
-      if (searchQuery.isNotEmpty) {
-        final query = searchQuery.toLowerCase();
-        return cached.where((CustomerEntity c) {
-          final name = c.name.toLowerCase();
-          final phone = c.phone?.toLowerCase() ?? '';
-          return name.contains(query) || phone.contains(query);
-        }).toList();
-      }
-      return cached;
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.toLowerCase();
+      return cached.where((CustomerEntity c) {
+        final name = c.name.toLowerCase();
+        final phone = c.phone?.toLowerCase() ?? '';
+        return name.contains(query) || phone.contains(query);
+      }).toList();
     }
+    return cached;
   }
 
   final result = await repo.getCustomers(
@@ -74,18 +72,47 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
   );
 });
 
-// Single customer details provider
+// Single customer details provider with offline fallback
 final customerDetailProvider = FutureProvider.autoDispose.family<CustomerEntity, String>((ref, customerId) async {
+  final currentBiz = ref.watch(currentBusinessProvider);
   final repo = ref.watch(customerRepositoryProvider);
+  final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    if (currentBiz != null) {
+      final cached = await localCache.getCachedCustomerById(currentBiz.id, customerId);
+      if (cached != null) return cached;
+    }
+    throw 'Customer details not available in offline cache';
+  }
+
   final result = await repo.getCustomerById(customerId);
   return result.fold(
-    (failure) => throw failure.message,
+    (failure) async {
+      if (currentBiz != null) {
+        final cached = await localCache.getCachedCustomerById(currentBiz.id, customerId);
+        if (cached != null) return cached;
+      }
+      throw failure.message;
+    },
     (customer) => customer,
   );
 });
 
 // Customer purchase history provider
 final customerSalesHistoryProvider = FutureProvider.autoDispose.family<List<SaleEntity>, String>((ref, customerId) async {
+  final currentBiz = ref.watch(currentBusinessProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    if (currentBiz != null) {
+      final cached = await ref.watch(localCacheServiceProvider).getCachedSales(currentBiz.id);
+      return cached.where((s) => s.customerId == customerId).toList();
+    }
+    return [];
+  }
+
   final repo = ref.watch(customerRepositoryProvider);
   final result = await repo.getCustomerSales(customerId);
   return result.fold(

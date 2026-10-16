@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/sync/data/local/local_cache_service.dart';
 
 abstract class AuthRemoteDatasource {
   Future<UserModel> signIn(String email, String password);
@@ -154,18 +155,36 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future<UserModel?> getCurrentUser() async {
     try {
       final user = _supabaseClient.auth.currentUser;
-      if (user == null) return null;
-
-      final profileData = await _supabaseClient
-          .from('profiles')
-          .select()
-          .eq('id', user.id)
-          .maybeSingle();
-
-      if (profileData != null) {
-        return UserModel.fromJson(profileData);
+      if (user == null) {
+        // Fallback: check if we have a cached user ID for offline resilience
+        final cachedUserId = await LocalCacheService().getLastUserId();
+        if (cachedUserId != null && cachedUserId.isNotEmpty) {
+          return UserModel(
+            id: cachedUserId,
+            email: '',
+            fullName: 'Offline User',
+          );
+        }
+        return null;
       }
 
+      // Try fetching profile from remote — may fail when offline
+      try {
+        final profileData = await _supabaseClient
+            .from('profiles')
+            .select()
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (profileData != null) {
+          return UserModel.fromJson(profileData);
+        }
+      } catch (e) {
+        // Network failure — fall through to local data
+        AppLogger.w('Profile fetch failed (likely offline): $e');
+      }
+
+      // Fallback: construct from cached Supabase auth user metadata
       return UserModel(
         id: user.id,
         email: user.email ?? '',

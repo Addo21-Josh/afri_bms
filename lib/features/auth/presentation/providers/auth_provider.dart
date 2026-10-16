@@ -5,6 +5,7 @@ import 'package:afri_bms/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:afri_bms/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:afri_bms/features/auth/data/datasources/auth_remote_datasource.dart';
 import '../../../../core/utils/session_manager.dart';
+import '../../../../core/sync/presentation/providers/sync_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -63,6 +64,7 @@ class AuthController extends _$AuthController {
     state = result.fold(
       (failure) => AsyncValue.error(failure.message, StackTrace.current),
       (user) {
+        ref.read(localCacheServiceProvider).cacheLastUserId(user.id);
         SessionManager.invalidateAllSessionData(ref);
         return AsyncValue.data(user);
       },
@@ -86,7 +88,10 @@ class AuthController extends _$AuthController {
 
     state = result.fold(
       (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (user) => AsyncValue.data(user),
+      (user) {
+        ref.read(localCacheServiceProvider).cacheLastUserId(user.id);
+        return AsyncValue.data(user);
+      },
     );
   }
 
@@ -95,6 +100,7 @@ class AuthController extends _$AuthController {
     final signOutUser = ref.read(signOutUseCaseProvider);
     final result = await signOutUser();
 
+    await ref.read(localCacheServiceProvider).clearLastUserId();
     SessionManager.invalidateAllSessionData(ref);
     
     state = result.fold(

@@ -34,20 +34,52 @@ BranchRepository branchRepository(BranchRepositoryRef ref) {
 @riverpod
 Future<List<BusinessEntity>> userBusinesses(UserBusinessesRef ref) async {
   final user = Supabase.instance.client.auth.currentUser;
-  if (user == null) return [];
+  final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  // Determine the effective user ID — use Supabase auth first,
+  // then fall back to cached user ID for offline resilience.
+  String? userId = user?.id;
+
+  if (userId != null) {
+    // Cache this user ID for future offline access
+    await localCache.cacheLastUserId(userId);
+  } else {
+    // Offline or session expired — use the last known user ID
+    userId = await localCache.getLastUserId();
+    AppLogger.i('Offline fallback: using cached user ID ($userId) for business loading');
+  }
+
+  // If offline or without Supabase auth user, ALWAYS load cached businesses
+  if (!syncState.isOnline || userId == null) {
+    final cached = await localCache.getCachedBusinesses(userId);
+    if (cached.isNotEmpty) {
+      return cached;
+    }
+    // Fallback: Check if a single active business was cached
+    final activeBiz = await localCache.getActiveBusiness();
+    if (activeBiz != null) {
+      return [activeBiz];
+    }
+    if (userId == null) return [];
+  }
 
   final repo = ref.watch(businessRepositoryProvider);
-  final localCache = ref.watch(localCacheServiceProvider);
-
-  final result = await repo.getUserBusinesses(user.id);
+  final result = await repo.getUserBusinesses(userId);
 
   return result.fold(
     (failure) async {
       AppLogger.w('Businesses fetch failed: ${failure.message}. Falling back to offline cache.');
-      return await localCache.getCachedBusinesses(user.id);
+      final cached = await localCache.getCachedBusinesses(userId);
+      if (cached.isNotEmpty) return cached;
+      final activeBiz = await localCache.getActiveBusiness();
+      if (activeBiz != null) return [activeBiz];
+      return [];
     },
     (businesses) async {
-      await localCache.cacheBusinesses(user.id, businesses);
+      if (businesses.isNotEmpty) {
+        await localCache.cacheBusinesses(userId!, businesses);
+      }
       return businesses;
     },
   );
@@ -56,13 +88,20 @@ Future<List<BusinessEntity>> userBusinesses(UserBusinessesRef ref) async {
 // Provider to load the user's previously chosen active business ID from cache
 final savedBusinessIdProvider = FutureProvider<String?>((ref) async {
   final user = Supabase.instance.client.auth.currentUser;
-  if (user == null) return null;
-  return await ref.watch(localCacheServiceProvider).getSelectedBusinessId(user.id);
+  final localCache = ref.watch(localCacheServiceProvider);
+  String? userId = user?.id;
+
+  if (userId == null) {
+    // Offline fallback — try cached user ID
+    userId = await localCache.getLastUserId();
+  }
+  return await localCache.getSelectedBusinessId(userId);
 });
 
 // Current Selected Business State
 @riverpod
 class CurrentBusiness extends _$CurrentBusiness {
+  BusinessEntity? _lastKnown;
   String? _manualSelectedId;
 
   @override
@@ -72,33 +111,48 @@ class CurrentBusiness extends _$CurrentBusiness {
 
     return businessesAsync.maybeWhen(
       data: (businesses) {
-        if (businesses.isEmpty) return null;
+        if (businesses.isEmpty) {
+          // Fallback to synchronous in-memory cached active business if available
+          _lastKnown = ref.watch(localCacheServiceProvider).getActiveBusinessSync();
+          return _lastKnown;
+        }
+        BusinessEntity selected;
         if (savedId != null) {
           final matched = businesses.where((b) => b.id == savedId).firstOrNull;
-          if (matched != null) return matched;
+          selected = matched ?? businesses.first;
+        } else {
+          selected = businesses.first;
         }
-        return businesses.first;
+        ref.read(localCacheServiceProvider).cacheActiveBusiness(selected);
+        _lastKnown = selected;
+        return selected;
       },
-      orElse: () => null,
+      // CRITICAL: Preserve state using _lastKnown (NOT state) to avoid uninitialized provider error!
+      orElse: () => _lastKnown ?? ref.watch(localCacheServiceProvider).getActiveBusinessSync(),
     );
   }
 
-  void select(BusinessEntity business) {
+  void select(BusinessEntity business) async {
     _manualSelectedId = business.id;
+    _lastKnown = business;
     state = business;
+    ref.read(localCacheServiceProvider).cacheActiveBusiness(business);
     final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      ref.read(localCacheServiceProvider).saveSelectedBusinessId(user.id, business.id);
+    final userId = user?.id ?? await ref.read(localCacheServiceProvider).getLastUserId();
+    if (userId != null) {
+      await ref.read(localCacheServiceProvider).saveSelectedBusinessId(userId, business.id);
       ref.invalidate(savedBusinessIdProvider);
     }
   }
 
-  void clear() {
+  void clear() async {
     _manualSelectedId = null;
+    _lastKnown = null;
     state = null;
     final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      ref.read(localCacheServiceProvider).clearSelectedBusinessId(user.id);
+    final userId = user?.id ?? await ref.read(localCacheServiceProvider).getLastUserId();
+    if (userId != null) {
+      await ref.read(localCacheServiceProvider).clearSelectedBusinessId(userId);
       ref.invalidate(savedBusinessIdProvider);
     }
   }
@@ -112,16 +166,46 @@ Future<List<BranchEntity>> businessBranches(BusinessBranchesRef ref) async {
 
   final repo = ref.watch(branchRepositoryProvider);
   final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+
+  if (!syncState.isOnline) {
+    final cached = await localCache.getCachedBranches(activeBiz.id);
+    if (cached.isNotEmpty) return cached;
+    // Fallback: create default main branch if offline so nothing downstream breaks
+    return [
+      BranchEntity(
+        id: 'main_${activeBiz.id}',
+        businessId: activeBiz.id,
+        name: 'Main Branch',
+        currency: activeBiz.defaultCurrency,
+        isMain: true,
+        createdAt: DateTime.now(),
+      ),
+    ];
+  }
 
   final result = await repo.getBranches(activeBiz.id);
 
   return result.fold(
     (failure) async {
       AppLogger.w('Branches fetch failed: ${failure.message}. Falling back to offline cache.');
-      return await localCache.getCachedBranches(activeBiz.id);
+      final cached = await localCache.getCachedBranches(activeBiz.id);
+      if (cached.isNotEmpty) return cached;
+      return [
+        BranchEntity(
+          id: 'main_${activeBiz.id}',
+          businessId: activeBiz.id,
+          name: 'Main Branch',
+          currency: activeBiz.defaultCurrency,
+          isMain: true,
+          createdAt: DateTime.now(),
+        ),
+      ];
     },
     (branches) async {
-      await localCache.cacheBranches(activeBiz.id, branches);
+      if (branches.isNotEmpty) {
+        await localCache.cacheBranches(activeBiz.id, branches);
+      }
       return branches;
     },
   );
@@ -131,6 +215,9 @@ Future<List<BranchEntity>> businessBranches(BusinessBranchesRef ref) async {
 final userAssignedBranchIdProvider = FutureProvider.autoDispose<String?>((ref) async {
   final activeBiz = ref.watch(currentBusinessProvider);
   if (activeBiz == null) return null;
+
+  final syncState = ref.watch(syncProvider);
+  if (!syncState.isOnline) return null;
 
   final user = Supabase.instance.client.auth.currentUser;
   if (user == null) return null;
@@ -153,6 +240,9 @@ final userAssignedBranchIdProvider = FutureProvider.autoDispose<String?>((ref) a
 // Current Selected Branch State
 @riverpod
 class CurrentBranch extends _$CurrentBranch {
+  BranchEntity? _lastKnown;
+  String? _manualSelectedId;
+
   @override
   BranchEntity? build() {
     final branchesAsync = ref.watch(businessBranchesProvider);
@@ -160,22 +250,39 @@ class CurrentBranch extends _$CurrentBranch {
 
     return branchesAsync.maybeWhen(
       data: (branches) {
-        if (branches.isEmpty) return null;
-        if (assignedBranchId != null) {
-          final assigned = branches.where((b) => b.id == assignedBranchId).firstOrNull;
-          if (assigned != null) return assigned;
+        if (branches.isEmpty) {
+          _lastKnown = ref.watch(localCacheServiceProvider).getActiveBranchSync();
+          return _lastKnown;
         }
-        return branches.firstWhere((b) => b.isMain, orElse: () => branches.first);
+        BranchEntity selected;
+        if (_manualSelectedId != null) {
+          final matched = branches.where((b) => b.id == _manualSelectedId).firstOrNull;
+          selected = matched ?? branches.first;
+        } else if (assignedBranchId != null) {
+          final assigned = branches.where((b) => b.id == assignedBranchId).firstOrNull;
+          selected = assigned ?? branches.firstWhere((b) => b.isMain, orElse: () => branches.first);
+        } else {
+          selected = branches.firstWhere((b) => b.isMain, orElse: () => branches.first);
+        }
+        ref.read(localCacheServiceProvider).cacheActiveBranch(selected);
+        _lastKnown = selected;
+        return selected;
       },
-      orElse: () => null,
+      // CRITICAL: Preserve state using _lastKnown (NOT state) to avoid uninitialized provider error!
+      orElse: () => _lastKnown ?? ref.watch(localCacheServiceProvider).getActiveBranchSync(),
     );
   }
 
   void select(BranchEntity branch) {
+    _manualSelectedId = branch.id;
+    _lastKnown = branch;
     state = branch;
+    ref.read(localCacheServiceProvider).cacheActiveBranch(branch);
   }
 
   void clear() {
+    _manualSelectedId = null;
+    _lastKnown = null;
     state = null;
   }
 }
@@ -240,8 +347,9 @@ class BusinessController extends _$BusinessController {
         return false;
       },
       (_) async {
-        if (user != null) {
-          await ref.read(localCacheServiceProvider).removeCachedBusiness(user.id, businessId);
+        final effectiveUserId = user?.id ?? await ref.read(localCacheServiceProvider).getLastUserId();
+        if (effectiveUserId != null) {
+          await ref.read(localCacheServiceProvider).removeCachedBusiness(effectiveUserId, businessId);
         }
         final current = ref.read(currentBusinessProvider);
         if (current?.id == businessId) {

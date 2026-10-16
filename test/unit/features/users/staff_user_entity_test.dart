@@ -12,12 +12,17 @@ void main() {
       expect(UserRoleType.fromString('unknown_role'), equals(UserRoleType.custom));
     });
 
-    test('toDbString returns snake_case database value', () {
+    test('toDbString and value return snake_case database value', () {
       expect(UserRoleType.admin.toDbString(), equals('admin'));
+      expect(UserRoleType.admin.value, equals('admin'));
       expect(UserRoleType.branchManager.toDbString(), equals('branch_manager'));
+      expect(UserRoleType.branchManager.value, equals('branch_manager'));
       expect(UserRoleType.salesperson.toDbString(), equals('salesperson'));
+      expect(UserRoleType.salesperson.value, equals('salesperson'));
       expect(UserRoleType.cashier.toDbString(), equals('cashier'));
+      expect(UserRoleType.cashier.value, equals('cashier'));
       expect(UserRoleType.custom.toDbString(), equals('custom'));
+      expect(UserRoleType.custom.value, equals('custom'));
     });
 
     test('displayName returns user-facing title', () {

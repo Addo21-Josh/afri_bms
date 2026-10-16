@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/variant_entity.dart';
@@ -8,9 +9,9 @@ import '../../domain/repositories/inventory_repository.dart';
 import '../datasources/inventory_remote_datasource.dart';
 
 class InventoryRepositoryImpl implements InventoryRepository {
-  final InventoryRemoteDatasource remoteDatasource;
 
   InventoryRepositoryImpl({required this.remoteDatasource});
+  final InventoryRemoteDatasource remoteDatasource;
 
   @override
   Future<Either<Failure, List<ProductEntity>>> getProducts({
@@ -37,6 +38,8 @@ class InventoryRepositoryImpl implements InventoryRepository {
     try {
       final model = await remoteDatasource.getProductById(id);
       return Right(model.toEntity(currentBranchId: branchId));
+    } on AppException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

@@ -14,6 +14,10 @@ class DioClient {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
+        // Strict HTTPS enforcement: Cleartext HTTP is disabled at the OS level
+        // (android:usesCleartextTraffic="false" in AndroidManifest.xml and ATS on iOS).
+        // Standard platform-level X.509 CA trust stores validate all Supabase and
+        // Paystack TLS endpoints, avoiding brittle hardcoded certificate pin lockouts.
       ),
     );
 

@@ -1,6 +1,7 @@
 import 'package:workmanager/workmanager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/config/supabase_config.dart';
+import '../../../../core/storage/secure_local_storage.dart';
 import '../../../../core/utils/logger.dart';
 import '../../data/local/sync_queue_storage.dart';
 import 'conflict_resolver.dart';
@@ -15,22 +16,44 @@ void callbackDispatcher() {
     AppLogger.i('WorkManager background task triggered: $task');
 
     try {
-      // Ensure Supabase is initialized in background isolate
+      // Ensure Supabase is initialized in background isolate with encrypted secure storage
       try {
         Supabase.instance.client;
       } catch (_) {
         await Supabase.initialize(
           url: SupabaseConfig.url,
-          publishableKey: SupabaseConfig.anonKey,
+          anonKey: SupabaseConfig.anonKey,
+          authOptions: const FlutterAuthClientOptions(
+            localStorage: SecureLocalStorage(),
+          ),
         );
       }
 
+      final client = Supabase.instance.client;
+      var currentSession = client.auth.currentSession;
+      if (currentSession == null) {
+        try {
+          final sessionStr = await const SecureLocalStorage().accessToken();
+          if (sessionStr != null && sessionStr.isNotEmpty) {
+            final res = await client.auth.recoverSession(sessionStr);
+            currentSession = res.session;
+          }
+        } catch (e) {
+          AppLogger.w('Background sync worker session recovery error: $e');
+        }
+      }
+
+      if (currentSession == null) {
+        AppLogger.w('Background sync worker: no active Supabase session. Skipping queue to avoid RLS violation.');
+        return true;
+      }
+
       final storage = SyncQueueStorage();
-      final resolver = ConflictResolver(Supabase.instance.client);
+      final resolver = ConflictResolver(client);
       final processor = SyncQueueProcessor(
         storage: storage,
         conflictResolver: resolver,
-        supabase: Supabase.instance.client,
+        supabase: client,
       );
 
       final result = await processor.processQueue();
@@ -71,9 +94,8 @@ class BackgroundSyncWorker {
         frequency: const Duration(minutes: 15),
         constraints: Constraints(
           networkType: NetworkType.connected,
-          requiresBatteryNotLow: true,
         ),
-        existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
       );
     } catch (e) {
       AppLogger.w('Failed to register periodic background sync: $e');

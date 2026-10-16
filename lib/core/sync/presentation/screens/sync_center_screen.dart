@@ -147,9 +147,21 @@ class SyncCenterScreen extends ConsumerWidget {
 
             // Action Button
             FilledButton.icon(
-              onPressed: syncState.isSyncing || !syncState.isOnline
+              onPressed: syncState.isSyncing
                   ? null
-                  : () => syncNotifier.triggerSync(),
+                  : () async {
+                      final isOnline = await syncNotifier.checkLiveConnectivity();
+                      if (!isOnline && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Cannot sync: No internet connection detected.'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+                      await syncNotifier.triggerSync();
+                    },
               icon: syncState.isSyncing
                   ? const SizedBox(
                       width: 18,

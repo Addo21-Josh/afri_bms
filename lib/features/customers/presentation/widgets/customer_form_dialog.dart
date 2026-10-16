@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../providers/customers_provider.dart';
 import '../../../business/presentation/providers/business_provider.dart';
-import '../../../../core/subscription/domain/models/subscription_tier.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 
@@ -186,7 +186,7 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a customer name' : null,
+                    validator: (v) => Validators.required(v, 'Please enter a customer name'),
                   ),
                   const SizedBox(height: 14),
 
@@ -200,6 +200,7 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.phone,
+                    validator: (v) => Validators.phone(v, required: false),
                   ),
                   const SizedBox(height: 14),
 
@@ -212,6 +213,7 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
+                    validator: (v) => Validators.email(v, required: false),
                   ),
                   const SizedBox(height: 14),
 
@@ -237,6 +239,7 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                       border: const OutlineInputBorder(),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (v) => Validators.nonNegativeNumber(v, required: false, fieldName: 'Credit limit'),
                   ),
                   const SizedBox(height: 14),
 

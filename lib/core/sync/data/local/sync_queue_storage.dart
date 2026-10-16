@@ -42,18 +42,25 @@ class SyncQueueStorage {
   }
 
   Future<void> enqueue(SyncQueueItem item) async {
-    final items = await getAllItems();
-    // Prevent duplicate queuing of identical record and operation if still pending
-    final index = items.indexWhere((i) =>
-        i.table == item.table &&
-        i.recordId == item.recordId &&
-        i.operation == item.operation &&
-        i.status == SyncItemStatus.pending);
+    await enqueueAll([item]);
+  }
 
-    if (index >= 0) {
-      items[index] = item; // Update payload with latest changes
-    } else {
-      items.add(item);
+  Future<void> enqueueAll(List<SyncQueueItem> newItems) async {
+    if (newItems.isEmpty) return;
+    final items = await getAllItems();
+
+    for (final item in newItems) {
+      final index = items.indexWhere((i) =>
+          i.table == item.table &&
+          i.recordId == item.recordId &&
+          i.operation == item.operation &&
+          i.status == SyncItemStatus.pending);
+
+      if (index >= 0) {
+        items[index] = item; // Update payload with latest changes
+      } else {
+        items.add(item);
+      }
     }
     await _saveAllItems(items);
   }
@@ -96,7 +103,11 @@ class SyncQueueStorage {
     for (int i = 0; i < items.length; i++) {
       if (items[i].status == SyncItemStatus.failed) {
         if (businessId == null || businessId.isEmpty || items[i].businessId == businessId) {
-          items[i] = items[i].copyWith(status: SyncItemStatus.pending, lastError: null);
+          items[i] = items[i].copyWith(
+            status: SyncItemStatus.pending,
+            lastError: null,
+            attempts: 0,
+          );
         }
       }
     }

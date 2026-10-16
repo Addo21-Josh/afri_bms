@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/subscription_tier.dart';
 import '../../domain/services/feature_gate_service.dart';
+import '../../../config/paystack_config.dart';
 import '../../../../features/business/presentation/providers/business_provider.dart';
 import '../../../../core/utils/logger.dart';
 
@@ -25,10 +26,10 @@ final featureGateProvider = Provider<FeatureGateService>((ref) {
 
 /// Controller to handle subscription upgrades, downgrades, and billing state
 class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>> {
-  final Ref _ref;
-
   SubscriptionController(this._ref)
       : super(AsyncValue.data(_ref.read(currentSubscriptionTierProvider)));
+
+  final Ref _ref;
 
   /// Upgrades or changes subscription tier for the active business
   Future<bool> changeTier(SubscriptionTier newTier) async {
@@ -40,21 +41,45 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
 
     state = const AsyncValue.loading();
     try {
-      final updatedBiz = activeBiz.copyWith(subscriptionTier: newTier.id);
+      // 1. Invalidate and re-fetch user businesses to pull any tier changes applied
+      // by the backend Edge Function / webhook
+      _ref.invalidate(userBusinessesProvider);
+      final refreshedList = await _ref.read(userBusinessesProvider.future);
+      final refreshedBiz = refreshedList.where((b) => b.id == activeBiz.id).firstOrNull;
+
+      if (refreshedBiz != null && refreshedBiz.subscriptionTier == newTier.id) {
+        _ref.read(currentBusinessProvider.notifier).select(refreshedBiz);
+        state = AsyncValue.data(newTier);
+        return true;
+      }
+
+      // 2. If it was a free tier activation or test bypass, update business
+      final updatedBiz = (refreshedBiz ?? activeBiz).copyWith(subscriptionTier: newTier.id);
       final repo = _ref.read(businessRepositoryProvider);
       final result = await repo.updateBusiness(updatedBiz);
 
       return result.fold(
         (failure) {
-          AppLogger.e('Failed to change subscription tier: ${failure.message}');
-          state = AsyncValue.error(failure.message, StackTrace.current);
+          AppLogger.w('Subscription update note: ${failure.message}');
+          final isTestMode = PaystackConfig.publicKey.startsWith('pk_test_');
+          if (isTestMode) {
+            // In Test Mode, update in-memory active business so developer can test all features
+            AppLogger.i('Test mode active: setting in-memory tier to ${newTier.displayName}');
+            _ref.read(currentBusinessProvider.notifier).select(updatedBiz);
+            state = AsyncValue.data(newTier);
+            return true;
+          }
+          if (refreshedBiz != null) {
+            _ref.read(currentBusinessProvider.notifier).select(refreshedBiz);
+            state = AsyncValue.data(SubscriptionTier.fromString(refreshedBiz.subscriptionTier));
+          } else {
+            state = AsyncValue.error(failure.message, StackTrace.current);
+          }
           return false;
         },
         (savedBiz) {
           AppLogger.i('Subscription tier updated to ${newTier.displayName} for ${savedBiz.name}');
-          // Update the in-memory active business
           _ref.read(currentBusinessProvider.notifier).select(savedBiz);
-          // Invalidate user businesses so list updates
           _ref.invalidate(userBusinessesProvider);
           state = AsyncValue.data(newTier);
           return true;
@@ -62,6 +87,13 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
       );
     } catch (e, st) {
       AppLogger.e('Exception changing subscription tier: $e');
+      final isTestMode = PaystackConfig.publicKey.startsWith('pk_test_');
+      if (isTestMode) {
+        final updatedBiz = activeBiz.copyWith(subscriptionTier: newTier.id);
+        _ref.read(currentBusinessProvider.notifier).select(updatedBiz);
+        state = AsyncValue.data(newTier);
+        return true;
+      }
       state = AsyncValue.error(e, st);
       return false;
     }

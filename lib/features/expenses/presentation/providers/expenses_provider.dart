@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../../domain/entities/expense_entity.dart';
 import '../../domain/entities/expense_category_entity.dart';
 import '../../domain/repositories/expense_repository.dart';
 import '../../data/datasources/expenses_remote_datasource.dart';
 import '../../data/repositories/expense_repository_impl.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/sync/presentation/providers/sync_provider.dart';
+import '../../../../core/sync/domain/models/sync_queue_item.dart';
 
 final expensesRemoteDataSourceProvider = Provider<ExpensesRemoteDataSource>((ref) {
   return ExpensesRemoteDataSourceImpl(supabaseClient: Supabase.instance.client);
@@ -83,15 +86,41 @@ class ExpensesListNotifier extends AsyncNotifier<List<ExpenseEntity>> {
 
     final branch = ref.watch(currentBranchProvider);
     final filter = ref.watch(expenseFilterProvider);
+    final isOnline = ref.watch(syncProvider.select((s) => s.isOnline));
+    final localCache = ref.watch(localCacheServiceProvider);
+
+    if (!isOnline) {
+      final cached = await localCache.getCachedExpenses(business.id, branchId: branch?.id);
+      return _applyFilter(cached, filter);
+    }
+
     final repo = ref.watch(expenseRepositoryProvider);
 
-    return repo.getExpenses(
-      businessId: business.id,
-      branchId: branch?.id,
-      categoryId: filter.categoryId,
-      startDate: filter.startDate,
-      endDate: filter.endDate,
-    );
+    try {
+      final list = await repo.getExpenses(
+        businessId: business.id,
+        branchId: branch?.id,
+        categoryId: filter.categoryId,
+        startDate: filter.startDate,
+        endDate: filter.endDate,
+      );
+      if (filter.categoryId == null && filter.startDate == null) {
+        await localCache.cacheExpenses(business.id, list);
+      }
+      return list;
+    } catch (_) {
+      final cached = await localCache.getCachedExpenses(business.id, branchId: branch?.id);
+      return _applyFilter(cached, filter);
+    }
+  }
+
+  List<ExpenseEntity> _applyFilter(List<ExpenseEntity> list, ExpenseFilter filter) {
+    return list.where((e) {
+      if (filter.categoryId != null && e.categoryId != filter.categoryId) return false;
+      if (filter.startDate != null && e.expenseDate.isBefore(filter.startDate!)) return false;
+      if (filter.endDate != null && e.expenseDate.isAfter(filter.endDate!)) return false;
+      return true;
+    }).toList();
   }
 
   Future<void> refresh() async {
@@ -149,9 +178,61 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
     if (business == null || branch == null) return false;
 
     state = const ExpenseControllerState(isLoading: true);
+    final isOnline = _ref.read(syncProvider).isOnline;
+    final currentUser = Supabase.instance.client.auth.currentUser;
+
+    if (!isOnline) {
+      final offlineId = const Uuid().v4();
+      final now = DateTime.now();
+      final offlineExpense = ExpenseEntity(
+        id: offlineId,
+        businessId: business.id,
+        branchId: branch.id,
+        categoryId: categoryId,
+        amount: amount,
+        description: description,
+        paymentMethod: paymentMethod,
+        paymentReference: paymentReference,
+        expenseDate: expenseDate,
+        receiptUrl: receiptUrl,
+        recordedBy: currentUser?.id,
+        notes: notes,
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      final localCache = _ref.read(localCacheServiceProvider);
+      await localCache.saveOfflineExpense(business.id, offlineExpense);
+
+      await _ref.read(syncProvider.notifier).enqueueOperation(
+        table: 'expenses',
+        operation: SyncOperation.insert,
+        recordId: offlineId,
+        payload: {
+          'id': offlineId,
+          'business_id': business.id,
+          'branch_id': branch.id,
+          'category_id': categoryId,
+          'amount': amount,
+          'description': description,
+          'payment_method': paymentMethod,
+          'payment_reference': paymentReference,
+          'expense_date': expenseDate.toIso8601String(),
+          'receipt_url': receiptUrl,
+          'recorded_by': currentUser?.id,
+          'notes': notes,
+          'created_at': now.toIso8601String(),
+          'updated_at': now.toIso8601String(),
+        },
+      );
+
+      await _ref.read(expensesListProvider.notifier).refresh();
+      state = const ExpenseControllerState(isLoading: false);
+      return true;
+    }
+
     try {
       final repo = _ref.read(expenseRepositoryProvider);
-      final currentUser = Supabase.instance.client.auth.currentUser;
 
       final expense = ExpenseEntity(
         id: '',
@@ -170,7 +251,8 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
         updatedAt: DateTime.now(),
       );
 
-      await repo.createExpense(expense);
+      final created = await repo.createExpense(expense);
+      await _ref.read(localCacheServiceProvider).saveOfflineExpense(business.id, created);
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
       return true;
@@ -182,9 +264,41 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
 
   Future<bool> updateExpense(ExpenseEntity expense) async {
     state = const ExpenseControllerState(isLoading: true);
+    final business = _ref.read(currentBusinessProvider);
+    final isOnline = _ref.read(syncProvider).isOnline;
+
+    if (!isOnline && business != null) {
+      final localCache = _ref.read(localCacheServiceProvider);
+      await localCache.saveOfflineExpense(business.id, expense);
+
+      await _ref.read(syncProvider.notifier).enqueueOperation(
+        table: 'expenses',
+        operation: SyncOperation.update,
+        recordId: expense.id,
+        payload: {
+          'category_id': expense.categoryId,
+          'amount': expense.amount,
+          'description': expense.description,
+          'payment_method': expense.paymentMethod,
+          'payment_reference': expense.paymentReference,
+          'expense_date': expense.expenseDate.toIso8601String(),
+          'receipt_url': expense.receiptUrl,
+          'notes': expense.notes,
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+      );
+
+      await _ref.read(expensesListProvider.notifier).refresh();
+      state = const ExpenseControllerState(isLoading: false);
+      return true;
+    }
+
     try {
       final repo = _ref.read(expenseRepositoryProvider);
-      await repo.updateExpense(expense);
+      final updated = await repo.updateExpense(expense);
+      if (business != null) {
+        await _ref.read(localCacheServiceProvider).saveOfflineExpense(business.id, updated);
+      }
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
       return true;
@@ -196,9 +310,31 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
 
   Future<bool> deleteExpense(String expenseId) async {
     state = const ExpenseControllerState(isLoading: true);
+    final business = _ref.read(currentBusinessProvider);
+    final isOnline = _ref.read(syncProvider).isOnline;
+
+    if (!isOnline && business != null) {
+      final localCache = _ref.read(localCacheServiceProvider);
+      await localCache.deleteOfflineExpense(business.id, expenseId);
+
+      await _ref.read(syncProvider.notifier).enqueueOperation(
+        table: 'expenses',
+        operation: SyncOperation.delete,
+        recordId: expenseId,
+        payload: {},
+      );
+
+      await _ref.read(expensesListProvider.notifier).refresh();
+      state = const ExpenseControllerState(isLoading: false);
+      return true;
+    }
+
     try {
       final repo = _ref.read(expenseRepositoryProvider);
       await repo.deleteExpense(expenseId);
+      if (business != null) {
+        await _ref.read(localCacheServiceProvider).deleteOfflineExpense(business.id, expenseId);
+      }
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
       return true;

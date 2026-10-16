@@ -13,7 +13,7 @@ _$BranchModelImpl _$$BranchModelImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       address: json['address'] as String?,
       phone: json['phone'] as String?,
-      currency: json['currency'] as String? ?? 'NGN',
+      currency: json['currency'] as String? ?? 'GHS',
       isMain: json['is_main'] as bool? ?? false,
       isActive: json['is_active'] as bool? ?? true,
       createdAt: json['created_at'] == null

@@ -56,7 +56,7 @@ final branchRepositoryProvider = AutoDisposeProvider<BranchRepository>.internal(
 );
 
 typedef BranchRepositoryRef = AutoDisposeProviderRef<BranchRepository>;
-String _$userBusinessesHash() => r'40353227c8b489543946a853a1816a14975093e8';
+String _$userBusinessesHash() => r'4883b9cc1d261744ad3a5d9b25d73dcf79175003';
 
 /// See also [userBusinesses].
 @ProviderFor(userBusinesses)
@@ -72,7 +72,7 @@ final userBusinessesProvider =
 );
 
 typedef UserBusinessesRef = AutoDisposeFutureProviderRef<List<BusinessEntity>>;
-String _$businessBranchesHash() => r'2ff47ab157d0af23905cb5e01b12991eca0916d6';
+String _$businessBranchesHash() => r'472feb0b0ab072e0ca387654f9b2a1147dec37eb';
 
 /// See also [businessBranches].
 @ProviderFor(businessBranches)
@@ -88,7 +88,7 @@ final businessBranchesProvider =
 );
 
 typedef BusinessBranchesRef = AutoDisposeFutureProviderRef<List<BranchEntity>>;
-String _$currentBusinessHash() => r'b7d69804a7d1c50fe1b74a501a13acae27a369f9';
+String _$currentBusinessHash() => r'8ba6ac33046ca988b0e1e977ee49d82ba0cd9ba0';
 
 /// See also [CurrentBusiness].
 @ProviderFor(CurrentBusiness)
@@ -104,7 +104,7 @@ final currentBusinessProvider =
 );
 
 typedef _$CurrentBusiness = AutoDisposeNotifier<BusinessEntity?>;
-String _$currentBranchHash() => r'74e40a38f6c7e71de19197fd4ad03cb460406cf3';
+String _$currentBranchHash() => r'c8751f9617279a5ccd028c870713840e4bccb486';
 
 /// See also [CurrentBranch].
 @ProviderFor(CurrentBranch)
@@ -121,7 +121,7 @@ final currentBranchProvider =
 
 typedef _$CurrentBranch = AutoDisposeNotifier<BranchEntity?>;
 String _$businessControllerHash() =>
-    r'626ff284cc2bf5c81566b74e22d1803fc5f459ef';
+    r'6eb6ad9ea5398411c9d45eec45f03150f43e4512';
 
 /// See also [BusinessController].
 @ProviderFor(BusinessController)

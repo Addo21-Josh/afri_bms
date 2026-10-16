@@ -296,9 +296,9 @@ class _$BusinessModelImpl extends _BusinessModel {
       required this.name,
       this.description,
       @JsonKey(name: 'logo_url') this.logoUrl,
-      @JsonKey(name: 'default_currency') this.defaultCurrency = 'NGN',
+      @JsonKey(name: 'default_currency') this.defaultCurrency = 'GHS',
       @JsonKey(name: 'supported_currencies')
-      final List<String> supportedCurrencies = const ['NGN'],
+      final List<String> supportedCurrencies = const ['GHS'],
       @JsonKey(name: 'tax_rate') this.taxRate = 0.0,
       this.address,
       this.phone,

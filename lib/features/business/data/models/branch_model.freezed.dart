@@ -227,7 +227,7 @@ class _$BranchModelImpl extends _BranchModel {
       required this.name,
       this.address,
       this.phone,
-      this.currency = 'NGN',
+      this.currency = 'GHS',
       @JsonKey(name: 'is_main') this.isMain = false,
       @JsonKey(name: 'is_active') this.isActive = true,
       @JsonKey(name: 'created_at') this.createdAt,

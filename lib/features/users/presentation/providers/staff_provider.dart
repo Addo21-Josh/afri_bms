@@ -5,6 +5,7 @@ import '../../domain/repositories/user_management_repository.dart';
 import '../../data/datasources/user_management_remote_datasource.dart';
 import '../../data/repositories/user_management_repository_impl.dart';
 import '../../../business/presentation/providers/business_provider.dart';
+import '../../../../core/sync/presentation/providers/sync_provider.dart';
 
 final userManagementRemoteDatasourceProvider = Provider<UserManagementRemoteDatasource>((ref) {
   return UserManagementRemoteDatasourceImpl(Supabase.instance.client);
@@ -16,15 +17,53 @@ final userManagementRepositoryProvider = Provider<UserManagementRepository>((ref
 });
 
 // Fetch current user's role in active business
-final currentUserRoleProvider = FutureProvider.autoDispose<UserRoleType?>((ref) async {
+final currentUserRoleProvider = FutureProvider<UserRoleType?>((ref) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return null;
+
+  final localCache = ref.watch(localCacheServiceProvider);
+  final syncState = ref.watch(syncProvider);
+  final user = Supabase.instance.client.auth.currentUser;
+  final userId = user?.id ?? await localCache.getLastUserId();
+
+  Future<UserRoleType?> getCachedRole() async {
+    final cachedRole = await localCache.getCachedUserRole(currentBiz.id, userId);
+    if (cachedRole != null && cachedRole.isNotEmpty) {
+      return UserRoleType.fromString(cachedRole);
+    }
+    final syncRole = localCache.getUserRoleSync(currentBiz.id, userId);
+    if (syncRole != null && syncRole.isNotEmpty) {
+      return UserRoleType.fromString(syncRole);
+    }
+    // Only assume admin if the logged in user is explicitly the business owner
+    if (userId != null && currentBiz.ownerId == userId) {
+      return UserRoleType.admin;
+    }
+    return null;
+  }
+
+  if (!syncState.isOnline) {
+    final cached = await getCachedRole();
+    if (cached != null) return cached;
+  }
 
   final repo = ref.watch(userManagementRepositoryProvider);
   final result = await repo.getCurrentUserRole(currentBiz.id);
   return result.fold(
-    (failure) => null,
-    (role) => role,
+    (failure) async {
+      return await getCachedRole();
+    },
+    (role) async {
+      if (role != null) {
+        final uid = userId ?? Supabase.instance.client.auth.currentUser?.id;
+        if (uid != null) {
+          await localCache.cacheUserRole(currentBiz.id, uid, role.toDbString());
+        }
+        return role;
+      }
+      // If remote returned null (e.g. caught network error in datasource), check cache
+      return await getCachedRole();
+    },
   );
 });
 
@@ -43,9 +82,9 @@ final businessStaffListProvider = FutureProvider.autoDispose<List<StaffUserEntit
 
 // Staff controller for mutations (assign, update, remove)
 class StaffController extends StateNotifier<AsyncValue<void>> {
-  final Ref ref;
 
   StaffController(this.ref) : super(const AsyncValue.data(null));
+  final Ref ref;
 
   Future<bool> assignStaff({
     required String userEmail,

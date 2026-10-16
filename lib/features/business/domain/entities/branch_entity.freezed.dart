@@ -217,7 +217,7 @@ class _$BranchEntityImpl implements _BranchEntity {
       required this.name,
       this.address,
       this.phone,
-      this.currency = 'NGN',
+      this.currency = 'GHS',
       this.isMain = false,
       this.isActive = true,
       this.createdAt,
