@@ -13,6 +13,8 @@ import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.
 import '../../../users/domain/entities/staff_user_entity.dart';
 import '../../../users/presentation/providers/staff_provider.dart';
 import '../../../../core/utils/user_friendly_error.dart';
+import '../../domain/constants/product_unit.dart';
+import '../widgets/unit_picker_sheet.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
   const ProductFormScreen({super.key, this.existingProduct});
@@ -485,15 +487,29 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 1,
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _unit,
-                      decoration: const InputDecoration(labelText: 'Unit'),
-                      items: ['pcs', 'kg', 'g', 'litre', 'carton', 'box', 'pack', 'set']
-                          .map((u) => DropdownMenuItem(value: u, child: Text(u)))
-                          .toList(),
-                      onChanged: (val) {
-                        if (val != null) setState(() => _unit = val);
+                    child: InkWell(
+                      onTap: () {
+                        ProductUnitPickerSheet.show(
+                          context,
+                          currentUnit: _unit,
+                          onSelected: (val) => setState(() => _unit = val),
+                        );
                       },
+                      borderRadius: BorderRadius.circular(12),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Unit',
+                          suffixIcon: Icon(Icons.arrow_drop_down),
+                        ),
+                        child: Text(
+                          ProductUnits.formatShort(_unit),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -553,9 +569,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _initialStockController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Initial Stock Quantity',
-                          prefixIcon: Icon(Icons.warehouse_outlined),
+                          prefixIcon: const Icon(Icons.warehouse_outlined),
+                          suffixText: _unit,
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) => Validators.nonNegativeInteger(val, fieldName: 'Initial stock'),
@@ -566,9 +583,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _reorderLevelController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Low Stock Alert Level',
-                        prefixIcon: Icon(Icons.notification_important_outlined),
+                        prefixIcon: const Icon(Icons.notification_important_outlined),
+                        suffixText: _unit,
                       ),
                       keyboardType: TextInputType.number,
                       validator: (val) => Validators.nonNegativeInteger(val, fieldName: 'Reorder level'),

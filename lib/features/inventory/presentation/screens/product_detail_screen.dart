@@ -13,6 +13,7 @@ import '../../../../core/subscription/domain/models/subscription_tier.dart';
 import '../../../../core/subscription/presentation/providers/subscription_provider.dart';
 import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.dart';
 import '../../../../core/utils/user_friendly_error.dart';
+import '../../domain/constants/product_unit.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   const ProductDetailScreen({super.key, required this.productId});
@@ -40,7 +41,7 @@ class ProductDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showAdjustStockDialog(BuildContext context, WidgetRef ref, int currentStock, String branchId) {
+  void _showAdjustStockDialog(BuildContext context, WidgetRef ref, int currentStock, String branchId, String unit) {
     final qtyCtrl = TextEditingController(text: currentStock.toString());
     final reasonCtrl = TextEditingController();
     final batchCtrl = TextEditingController();
@@ -77,9 +78,10 @@ class ProductDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 TextField(
                   controller: qtyCtrl,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'New Total Quantity in Stock',
-                    prefixIcon: Icon(Icons.warehouse_outlined),
+                    prefixIcon: const Icon(Icons.warehouse_outlined),
+                    suffixText: unit,
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -287,11 +289,22 @@ class ProductDetailScreen extends ConsumerWidget {
                                     style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 4),
-                                  if (product.category != null)
-                                    Chip(
-                                      visualDensity: VisualDensity.compact,
-                                      label: Text(product.category!.name, style: const TextStyle(fontSize: 12)),
-                                    ),
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 4,
+                                    children: [
+                                      if (product.category != null)
+                                        Chip(
+                                          visualDensity: VisualDensity.compact,
+                                          label: Text(product.category!.name, style: const TextStyle(fontSize: 12)),
+                                        ),
+                                      Chip(
+                                        visualDensity: VisualDensity.compact,
+                                        avatar: const Icon(Icons.straighten, size: 14),
+                                        label: Text(ProductUnits.format(product.unit), style: const TextStyle(fontSize: 12)),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -387,6 +400,7 @@ class ProductDetailScreen extends ConsumerWidget {
                                   ref,
                                   product.currentBranchStock,
                                   currentBranch.id,
+                                  product.unit,
                                 ),
                                 icon: const Icon(Icons.edit, size: 16),
                                 label: const Text('Adjust Stock'),
