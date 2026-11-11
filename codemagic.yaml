@@ -1,0 +1,77 @@
+workflows:
+  android-workflow:
+    name: Afri_BMS Android CI/CD
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+      xcode: latest
+      java: 17
+      groups:
+        - google_play_credentials # Define GPLAY_SERVICE_ACCOUNT_KEY in Codemagic environment
+      vars:
+        PACKAGE_NAME: "com.example.afri_bms"
+    scripts:
+      - name: Set up local properties
+        script: |
+          echo "flutter.sdk=$FLUTTER_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Run linter and tests
+        script: |
+          flutter analyze
+          flutter test
+      - name: Build Android App Bundle (AAB)
+        script: |
+          flutter build appbundle --release
+      - name: Build Universal APK
+        script: |
+          flutter build apk --release
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/*.apk
+    publishing:
+      email:
+        recipients:
+          - dev@afribms.com
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GPLAY_SERVICE_ACCOUNT_KEY
+        track: internal
+        submit_as_draft: true
+
+  ios-workflow:
+    name: Afri_BMS iOS CI/CD
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+      xcode: latest
+      groups:
+        - app_store_credentials # Define APP_STORE_CONNECT_KEY in Codemagic environment
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Run linter and tests
+        script: |
+          flutter analyze
+          flutter test
+      - name: Build iOS IPA
+        script: |
+          flutter build ipa --release
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - dev@afribms.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

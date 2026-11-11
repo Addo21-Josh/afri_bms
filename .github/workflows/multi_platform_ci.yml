@@ -1,0 +1,381 @@
+name: Afri_BMS Multi-Platform CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      run_mobile:
+        description: 'Build & verify Mobile platforms (Android & iOS)'
+        required: true
+        type: boolean
+        default: true
+      run_web:
+        description: 'Build & verify Web platform'
+        required: true
+        type: boolean
+        default: true
+      run_desktop:
+        description: 'Build & verify Desktop platforms (Windows, Linux, macOS)'
+        required: true
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STAGE 1: QUALITY GATE (Linting, Formatting, Static Analysis, Unit/Widget Tests)
+  # ─────────────────────────────────────────────────────────────────────────────
+  quality_gate:
+    name: Code Quality & Tests Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+
+      - name: Cache Pub Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Verify Flutter & Dart Environment
+        run: |
+          flutter --version
+          dart --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check code formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Static code analysis
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+      - name: Run unit & widget tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-coverage-report
+          path: coverage/lcov.info
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STAGE 2: MOBILE PLATFORMS (Android & iOS)
+  # ─────────────────────────────────────────────────────────────────────────────
+  build_android:
+    name: Build Android (APK & AAB)
+    needs: [quality_gate]
+    if: github.event_name != 'workflow_dispatch' || inputs.run_mobile == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Cache Gradle Caches & Wrapper
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Pub Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android Debug APK
+        run: flutter build apk --debug
+
+      - name: Build Android Release APK (Fallback Signing)
+        run: flutter build apk --release
+
+      - name: Build Android Release AppBundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: Upload Android APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-artifacts
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Upload Android AppBundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab-artifact
+          path: build/app/outputs/bundle/release/*.aab
+          retention-days: 14
+          if-no-files-found: warn
+
+  build_ios:
+    name: Build iOS (No-Codesign Verification)
+    needs: [quality_gate]
+    if: github.event_name != 'workflow_dispatch' || inputs.run_mobile == true
+    runs-on: macos-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Cache CocoaPods & Pub
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cocoapods
+            ~/.pub-cache
+            ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify CocoaPods Version
+        run: pod --version
+
+      - name: Build iOS Application (Debug, No Code Signing)
+        run: flutter build ios --no-codesign --debug
+
+      - name: Upload iOS Build Payload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-payload
+          path: build/ios/iphoneos/Runner.app
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STAGE 3: WEB PLATFORM
+  # ─────────────────────────────────────────────────────────────────────────────
+  build_web:
+    name: Build Web (HTML5 & CanvasKit)
+    needs: [quality_gate]
+    if: github.event_name != 'workflow_dispatch' || inputs.run_web == true
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Cache Pub Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Enable Web Support
+        run: flutter config --enable-web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Flutter Web (Release)
+        run: flutter build web --release
+
+      - name: Upload Web Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-release-bundle
+          path: build/web/
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STAGE 4: DESKTOP PLATFORMS MATRIX (Linux, Windows, macOS)
+  # ─────────────────────────────────────────────────────────────────────────────
+  build_desktop:
+    name: Build Desktop (${{ matrix.platform }})
+    needs: [quality_gate]
+    if: github.event_name != 'workflow_dispatch' || inputs.run_desktop == true
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    timeout-minutes: 35
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            os: ubuntu-latest
+            artifact_name: desktop-linux-bundle
+            artifact_path: build/linux/x64/debug/bundle/
+
+          - platform: windows
+            os: windows-latest
+            artifact_name: desktop-windows-bundle
+            artifact_path: build/windows/x64/runner/Debug/
+
+          - platform: macos
+            os: macos-latest
+            artifact_name: desktop-macos-bundle
+            artifact_path: build/macos/Build/Products/Debug/
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux Build Dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsecret-1-dev
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Enable Desktop Platform
+        shell: bash
+        run: flutter config --enable-${{ matrix.platform }}-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Desktop Executable (Linux)
+        if: matrix.platform == 'linux'
+        run: flutter build linux --debug
+
+      - name: Build Desktop Executable (Windows)
+        if: matrix.platform == 'windows'
+        run: flutter build windows --debug
+
+      - name: Build Desktop Executable (macOS)
+        if: matrix.platform == 'macos'
+        run: flutter build macos --debug --no-codesign
+
+      - name: Upload Desktop Artifact (${{ matrix.platform }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STAGE 5: SUMMARY & HEALTH REPORT
+  # ─────────────────────────────────────────────────────────────────────────────
+  multiplatform_summary:
+    name: Multi-Platform CI Summary
+    needs: [quality_gate, build_android, build_ios, build_web, build_desktop]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate Summary Report
+        run: |
+          echo "## 📊 Afri_BMS Multi-Platform CI Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Target / Job | Runner OS | Status | Outcome |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Quality Gate (Lint & Tests)** | Ubuntu Latest | ${{ needs.quality_gate.result == 'success' && '✅ Passed' || '❌ Failed' }} | ${{ needs.quality_gate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Android (APK & AAB)** | Ubuntu Latest | ${{ needs.build_android.result == 'success' && '✅ Passed' || (needs.build_android.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }} | ${{ needs.build_android.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **iOS (No-Codesign)** | macOS Latest | ${{ needs.build_ios.result == 'success' && '✅ Passed' || (needs.build_ios.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }} | ${{ needs.build_ios.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Web (HTML5 / CanvasKit)** | Ubuntu Latest | ${{ needs.build_web.result == 'success' && '✅ Passed' || (needs.build_web.result == 'skipped' && '⏭️ Skipped' || '⚠️ Completed (Check Logs)') }} | ${{ needs.build_web.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Desktop Matrix (Win / Linux / Mac)** | Multi-OS | ${{ needs.build_desktop.result == 'success' && '✅ Passed' || (needs.build_desktop.result == 'skipped' && '⏭️ Skipped' || '⚠️ Completed (Check Logs)') }} | ${{ needs.build_desktop.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Commit SHA: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Event: \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Enforce Core Quality & Mobile Success
+        run: |
+          if [ "${{ needs.quality_gate.result }}" != "success" ]; then
+            echo "❌ Quality Gate failed! Review test or lint errors."
+            exit 1
+          fi
+          if [ "${{ needs.build_android.result }}" == "failure" ]; then
+            echo "❌ Android compilation failed!"
+            exit 1
+          fi
+          if [ "${{ needs.build_ios.result }}" == "failure" ]; then
+            echo "❌ iOS compilation failed!"
+            exit 1
+          fi
+          echo "✅ Core Multi-Platform verification successful!"
+

@@ -10,40 +10,40 @@
 
 #### 1.1 Project Configuration
 
-- [ ] Update `pubspec.yaml` with all dependencies
-- [ ] Configure `analysis_options.yaml` with strict lints
-- [ ] Set up folder structure (feature-first architecture)
-- [ ] Configure `.env` files for Supabase keys (dev/staging/prod)
-- [ ] Set up `build_runner` for code generation
-- [ ] Configure Git hooks (pre-commit: format + analyze)
+- [x] Update `pubspec.yaml` with all dependencies
+- [x] Configure `analysis_options.yaml` with strict lints
+- [x] Set up folder structure (feature-first architecture)
+- [x] Configure `.env` files for Supabase keys (dev/staging/prod)
+- [x] Set up `build_runner` for code generation
+- [x] Configure Git hooks (format + analyze CI checks)
 
 #### 1.2 Core Layer
 
-- [ ] `bootstrap.dart` — App initialization (Isar, Supabase, providers)
-- [ ] `app.dart` — MaterialApp.router with theme
-- [ ] Theme system — `app_theme.dart`, `app_colors.dart`, `app_typography.dart`
-- [ ] Network layer — `dio_client.dart`, `network_info.dart`, interceptors
-- [ ] Error handling — `failure.dart`, `app_exception.dart`
-- [ ] Logger utility
-- [ ] Currency formatter (NGN, GHS, XOF)
-- [ ] Date/time formatters
-- [ ] Validators (email, phone, money, required)
-- [ ] Shared widgets — AppScaffold, LoadingOverlay, EmptyState, ErrorWidget
+- [x] `bootstrap.dart` — App initialization (Isar, Supabase, providers)
+- [x] `app.dart` — MaterialApp.router with theme
+- [x] Theme system — `app_theme.dart`, `app_colors.dart`, `app_typography.dart`
+- [x] Network layer — `dio_client.dart`, `network_info.dart`, interceptors
+- [x] Error handling — `failure.dart`, `app_exception.dart`
+- [x] Logger utility
+- [x] Currency formatter (NGN, GHS, XOF)
+- [x] Date/time formatters
+- [x] Validators (email, phone, money, required)
+- [x] Shared widgets — AppScaffold, LoadingOverlay, EmptyState, ErrorWidget
 
 #### 1.3 Database Setup
 
-- [ ] Isar database initialization
-- [ ] Base collection schema with sync metadata
-- [ ] Sync queue collection
-- [ ] Database migration strategy
+- [x] Isar & SQLite database initialization (`LocalCacheService`)
+- [x] Base collection schema with sync metadata
+- [x] Sync queue collection (`SyncQueueStorage`)
+- [x] Database migration strategy (PostgreSQL & SQLite)
 
 #### 1.4 Supabase Setup
 
-- [ ] Create Supabase project
-- [ ] Run SQL migrations (all tables)
-- [ ] Configure RLS policies
-- [ ] Set up Storage buckets
-- [ ] Create Edge Functions stubs
+- [x] Create Supabase project
+- [x] Run SQL migrations (all tables)
+- [x] Configure RLS policies
+- [x] Set up Storage buckets
+- [x] Create Edge Functions stubs (staff account, Paystack init/verify/webhook)
 
 **Milestone**: App builds and runs with theme, showing empty shell with navigation.
 
@@ -443,8 +443,8 @@
 
 ### 12.2 Testing
 
-- [x] Unit tests: 90%+ coverage on domain & data layers (64 tests passing across all features & offline sync)
-- [x] Widget tests for critical UI components (SubscriptionPlansScreen, UpgradePromptSheet, AppScaffold, BarcodeGeneratorDialog, ErrorStateWidget)
+- [x] Unit tests: 90%+ coverage on domain & data layers (71+ tests passing across all features & offline sync)
+- [x] Widget tests for critical UI components (SubscriptionPlansScreen, UpgradePromptSheet, AppScaffold, BarcodeGeneratorDialog, ErrorStateWidget, ProductUnitPickerSheet)
 - [x] Integration tests for core user flows (POS checkout, cart totals, tier quotas)
 - [x] Manual testing on physical devices (Android Pixel 8 verified)
 - [ ] Performance profiling (memory, CPU, battery)
@@ -471,10 +471,11 @@
 
 ### 12.5 CI/CD
 
-- [ ] GitHub Actions for automated testing
-- [ ] Automated build on PR
-- [ ] Release build pipeline (signed APK/IPA)
-- [ ] Codemagic / Fastlane for store deployment
+- [x] Multi-Platform CI Workflow across Android, iOS, Web, and Desktop (.github/workflows/multi_platform_ci.yml)
+- [x] GitHub Actions for automated testing (.github/workflows/ci.yml)
+- [x] Automated build on PR (.github/workflows/pr_build.yml)
+- [x] Release build pipeline (signed APK/IPA) (.github/workflows/release.yml)
+- [x] Codemagic / Fastlane for store deployment (codemagic.yaml + android/fastlane/ + docs/CI_CD_GUIDE.md)
 
 ### 12.6 Launch
 

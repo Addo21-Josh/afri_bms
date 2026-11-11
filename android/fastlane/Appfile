@@ -1,0 +1,2 @@
+json_key_file(ENV["SUPPLY_JSON_KEY_FILE"] || "play_store_key.json") # Path to Google Play Console Service Account JSON
+package_name("com.example.afri_bms") # Replace with com.afribms.afri_bms once finalized in Google Play Console
