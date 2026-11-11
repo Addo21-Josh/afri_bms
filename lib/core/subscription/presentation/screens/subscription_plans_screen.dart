@@ -11,10 +11,12 @@ class SubscriptionPlansScreen extends ConsumerStatefulWidget {
   const SubscriptionPlansScreen({super.key});
 
   @override
-  ConsumerState<SubscriptionPlansScreen> createState() => _SubscriptionPlansScreenState();
+  ConsumerState<SubscriptionPlansScreen> createState() =>
+      _SubscriptionPlansScreenState();
 }
 
-class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScreen> {
+class _SubscriptionPlansScreenState
+    extends ConsumerState<SubscriptionPlansScreen> {
   bool _isYearly = false;
 
   @override
@@ -25,10 +27,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
     final subState = ref.watch(subscriptionControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Plans & Pricing'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Plans & Pricing'), centerTitle: true),
       body: subState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -50,14 +49,24 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.2,
+                          ),
+                        ),
                       ),
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: currentTier.badgeColor.withValues(alpha: 0.15),
+                            backgroundColor: currentTier.badgeColor.withValues(
+                              alpha: 0.15,
+                            ),
                             radius: 24,
-                            child: Icon(currentTier.icon, color: currentTier.badgeColor, size: 26),
+                            child: Icon(
+                              currentTier.icon,
+                              color: currentTier.badgeColor,
+                              size: 26,
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -74,7 +83,10 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                                 Row(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: currentTier.badgeColor,
                                         borderRadius: BorderRadius.circular(6),
@@ -112,7 +124,8 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                   Center(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        color: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       padding: const EdgeInsets.all(4),
@@ -217,7 +230,7 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                     color: theme.colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
-                  )
+                  ),
                 ]
               : null,
         ),
@@ -227,7 +240,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
             Text(
               title,
               style: TextStyle(
-                color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+                color: isSelected
+                    ? Colors.white
+                    : theme.textTheme.bodyMedium?.color,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 fontSize: 13,
               ),
@@ -267,8 +282,8 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
     final cycleSuffix = tier == SubscriptionTier.free
         ? 'forever'
         : _isYearly
-            ? '/year'
-            : '/month';
+        ? '/year'
+        : '/month';
 
     final formattedPrice = tier.formattedPrice(_isYearly, currency: 'GHS');
 
@@ -280,8 +295,8 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           color: isPopular
               ? tier.badgeColor
               : isCurrent
-                  ? theme.colorScheme.primary.withValues(alpha: 0.5)
-                  : Colors.grey.shade300,
+              ? theme.colorScheme.primary.withValues(alpha: 0.5)
+              : Colors.grey.shade300,
           width: isPopular ? 2 : 1,
         ),
         boxShadow: isPopular
@@ -302,14 +317,16 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
             Container(
               padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
-                color: isCurrent
-                    ? theme.colorScheme.primary
-                    : tier.badgeColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                color: isCurrent ? theme.colorScheme.primary : tier.badgeColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(18),
+                ),
               ),
               child: Center(
                 child: Text(
-                  isCurrent ? '✓ YOUR CURRENT PLAN' : '★ MOST POPULAR FOR RETAIL',
+                  isCurrent
+                      ? '✓ YOUR CURRENT PLAN'
+                      : '★ MOST POPULAR FOR RETAIL',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 11,
@@ -406,7 +423,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                         ? null
                         : () => _handlePlanSelection(tier, formattedPrice),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isPopular ? tier.badgeColor : theme.colorScheme.primary,
+                      backgroundColor: isPopular
+                          ? tier.badgeColor
+                          : theme.colorScheme.primary,
                       foregroundColor: Colors.white,
                       disabledBackgroundColor: Colors.grey.shade200,
                       disabledForegroundColor: Colors.grey.shade600,
@@ -420,9 +439,12 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                       isCurrent
                           ? 'Current Active Plan'
                           : tier.index > currentTier.index
-                              ? 'Upgrade to ${tier.shortName}'
-                              : 'Switch to ${tier.shortName}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ? 'Upgrade to ${tier.shortName}'
+                          : 'Switch to ${tier.shortName}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -436,13 +458,19 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
 
   void _handlePlanSelection(SubscriptionTier targetTier, String priceText) {
     AppHaptics.selection();
-    final isUpgrade = targetTier.index > ref.read(currentSubscriptionTierProvider).index;
+    final isUpgrade =
+        targetTier.index > ref.read(currentSubscriptionTierProvider).index;
 
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => _buildCheckoutConfirmationSheet(ctx, targetTier, priceText, isUpgrade),
+      builder: (ctx) => _buildCheckoutConfirmationSheet(
+        ctx,
+        targetTier,
+        priceText,
+        isUpgrade,
+      ),
     );
   }
 
@@ -489,11 +517,16 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                   children: [
                     Text(
                       isUpgrade ? 'Confirm Upgrade' : 'Confirm Plan Switch',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       'For: ${activeBiz?.name ?? "Active Store"}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
@@ -506,7 +539,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.4,
+              ),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
@@ -515,23 +550,51 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Selected Plan', style: TextStyle(fontSize: 13)),
-                    Text(targetTier.displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    Text(
+                      targetTier.displayName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Billing Period', style: TextStyle(fontSize: 13)),
-                    Text(_isYearly ? 'Yearly (12 months)' : 'Monthly', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    const Text(
+                      'Billing Period',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    Text(
+                      _isYearly ? 'Yearly (12 months)' : 'Monthly',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
                 const Divider(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Due Today', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                    Text(priceText, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: targetTier.badgeColor)),
+                    const Text(
+                      'Total Due Today',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      priceText,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: targetTier.badgeColor,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -541,7 +604,12 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
 
           // Payment channel options for paid tiers
           if (targetTier.isPaid) ...[
-            Text('Payment Method', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              'Payment Method',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 8),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -553,9 +621,18 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
                 ),
                 child: const Icon(Icons.payment_rounded, color: Colors.teal),
               ),
-              title: const Text('Paystack (Ghana Cedis)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              subtitle: const Text('MTN MoMo, Telecel Cash, AT Money & Bank Cards', style: TextStyle(fontSize: 11)),
-              trailing: const Icon(Icons.radio_button_checked, color: Colors.teal),
+              title: const Text(
+                'Paystack (Ghana Cedis)',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              subtitle: const Text(
+                'MTN MoMo, Telecel Cash, AT Money & Bank Cards',
+                style: TextStyle(fontSize: 11),
+              ),
+              trailing: const Icon(
+                Icons.radio_button_checked,
+                color: Colors.teal,
+              ),
             ),
             const SizedBox(height: 12),
           ],
@@ -569,10 +646,14 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
               backgroundColor: targetTier.badgeColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Text(
-              targetTier.isPaid ? 'Proceed to Pay with Paystack' : 'Activate Free Tier',
+              targetTier.isPaid
+                  ? 'Proceed to Pay with Paystack'
+                  : 'Activate Free Tier',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ),
@@ -597,7 +678,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
     final String email = (bizEmail != null && bizEmail.isNotEmpty)
         ? bizEmail
         : 'billing@afribms.com';
-    final amountInGhs = _isYearly ? targetTier.yearlyPriceGhs : targetTier.monthlyPriceGhs;
+    final amountInGhs = _isYearly
+        ? targetTier.yearlyPriceGhs
+        : targetTier.monthlyPriceGhs;
 
     // Show loading dialog
     if (!mounted) return;
@@ -642,7 +725,10 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.red,
-            content: Text(initResult.errorMessage ?? 'Failed to initialize payment gateway.'),
+            content: Text(
+              initResult.errorMessage ??
+                  'Failed to initialize payment gateway.',
+            ),
           ),
         );
       }
@@ -664,7 +750,10 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           children: [
             Icon(Icons.payment_rounded, color: Colors.teal),
             SizedBox(width: 8),
-            Text('Paystack Payment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Paystack Payment',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
         content: Column(
@@ -700,7 +789,10 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
             child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.teal, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () async {
               Navigator.of(ctx).pop();
               await _verifyAndActivate(targetTier, initResult.reference!);
@@ -712,7 +804,10 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
     );
   }
 
-  Future<void> _verifyAndActivate(SubscriptionTier targetTier, String reference) async {
+  Future<void> _verifyAndActivate(
+    SubscriptionTier targetTier,
+    String reference,
+  ) async {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -775,7 +870,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               backgroundColor: Colors.red,
-              content: Text('Payment verification failed or payment is incomplete. Please contact support if debited.'),
+              content: Text(
+                'Payment verification failed or payment is incomplete. Please contact support if debited.',
+              ),
             ),
           );
         }
@@ -813,7 +910,9 @@ class _SubscriptionPlansScreenState extends ConsumerState<SubscriptionPlansScree
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Colors.red,
-            content: Text('Failed to update plan. Please check your connection and retry.'),
+            content: Text(
+              'Failed to update plan. Please check your connection and retry.',
+            ),
           ),
         );
       }

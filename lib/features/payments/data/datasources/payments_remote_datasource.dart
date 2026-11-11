@@ -87,7 +87,9 @@ class PaymentsRemoteDatasourceImpl implements PaymentsRemoteDatasource {
           .order('created_at', ascending: false);
 
       final list = response as List;
-      return list.map((json) => PaymentModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => PaymentModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205') {
         return [];
@@ -109,7 +111,9 @@ class PaymentsRemoteDatasourceImpl implements PaymentsRemoteDatasource {
           .order('created_at', ascending: false);
 
       final list = response as List;
-      return list.map((json) => PaymentModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => PaymentModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205') {
         return [];
@@ -137,12 +141,18 @@ class PaymentsRemoteDatasourceImpl implements PaymentsRemoteDatasource {
         query = query.eq('branch_id', branchId);
       }
 
-      final response = await query.order('created_at', ascending: false).limit(limit);
+      final response = await query
+          .order('created_at', ascending: false)
+          .limit(limit);
       final list = response as List;
-      return list.map((json) => PaymentModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => PaymentModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205') {
-        AppLogger.w('public.payments table not found in schema cache. Migration pending: ${e.message}');
+        AppLogger.w(
+          'public.payments table not found in schema cache. Migration pending: ${e.message}',
+        );
         return [];
       }
       throw AppException(e.message);

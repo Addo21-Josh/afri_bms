@@ -109,7 +109,8 @@ enum SubscriptionTier {
   }
 
   bool get isPaid => this != SubscriptionTier.free;
-  bool get isProOrHigher => this == SubscriptionTier.pro || this == SubscriptionTier.enterprise;
+  bool get isProOrHigher =>
+      this == SubscriptionTier.pro || this == SubscriptionTier.enterprise;
   bool get isEnterprise => this == SubscriptionTier.enterprise;
 
   Color get badgeColor {

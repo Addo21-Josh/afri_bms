@@ -16,9 +16,17 @@ class AlertsScreen extends ConsumerWidget {
     final allAlerts = ref.watch(businessAlertsProvider);
     final activeFilter = ref.watch(selectedAlertFilterProvider);
 
-    final lowStockCount = allAlerts.where((a) => a.type == AlertType.lowStock || a.type == AlertType.outOfStock).length;
-    final overdueCount = allAlerts.where((a) => a.type == AlertType.overdueDebt).length;
-    final salesCount = allAlerts.where((a) => a.type == AlertType.dailySalesTarget).length;
+    final lowStockCount = allAlerts
+        .where(
+          (a) => a.type == AlertType.lowStock || a.type == AlertType.outOfStock,
+        )
+        .length;
+    final overdueCount = allAlerts
+        .where((a) => a.type == AlertType.overdueDebt)
+        .length;
+    final salesCount = allAlerts
+        .where((a) => a.type == AlertType.dailySalesTarget)
+        .length;
 
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +36,9 @@ class AlertsScreen extends ConsumerWidget {
             TextButton.icon(
               onPressed: () {
                 final allIds = allAlerts.map((a) => a.id).toSet();
-                ref.read(dismissedAlertIdsProvider.notifier).update((state) => {...state, ...allIds});
+                ref
+                    .read(dismissedAlertIdsProvider.notifier)
+                    .update((state) => {...state, ...allIds});
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('All alerts dismissed')),
                 );
@@ -45,7 +55,9 @@ class AlertsScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: colorScheme.surface,
-              border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
+              border: Border(
+                bottom: BorderSide(color: colorScheme.outlineVariant),
+              ),
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -54,31 +66,36 @@ class AlertsScreen extends ConsumerWidget {
                   ChoiceChip(
                     label: Text('All (${allAlerts.length})'),
                     selected: activeFilter == null,
-                    onSelected: (_) => ref.read(selectedAlertFilterProvider.notifier).state = null,
+                    onSelected: (_) =>
+                        ref.read(selectedAlertFilterProvider.notifier).state =
+                            null,
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
                     avatar: const Icon(Icons.inventory_2_outlined, size: 16),
                     label: Text('Inventory ($lowStockCount)'),
                     selected: activeFilter == AlertType.lowStock,
-                    onSelected: (selected) => ref.read(selectedAlertFilterProvider.notifier).state =
-                        selected ? AlertType.lowStock : null,
+                    onSelected: (selected) =>
+                        ref.read(selectedAlertFilterProvider.notifier).state =
+                            selected ? AlertType.lowStock : null,
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
                     avatar: const Icon(Icons.money_off, size: 16),
                     label: Text('Debts ($overdueCount)'),
                     selected: activeFilter == AlertType.overdueDebt,
-                    onSelected: (selected) => ref.read(selectedAlertFilterProvider.notifier).state =
-                        selected ? AlertType.overdueDebt : null,
+                    onSelected: (selected) =>
+                        ref.read(selectedAlertFilterProvider.notifier).state =
+                            selected ? AlertType.overdueDebt : null,
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
                     avatar: const Icon(Icons.point_of_sale, size: 16),
                     label: Text('Sales ($salesCount)'),
                     selected: activeFilter == AlertType.dailySalesTarget,
-                    onSelected: (selected) => ref.read(selectedAlertFilterProvider.notifier).state =
-                        selected ? AlertType.dailySalesTarget : null,
+                    onSelected: (selected) =>
+                        ref.read(selectedAlertFilterProvider.notifier).state =
+                            selected ? AlertType.dailySalesTarget : null,
                   ),
                 ],
               ),
@@ -94,14 +111,25 @@ class AlertsScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.check_circle_outline, size: 64, color: Colors.green.shade400),
+                          Icon(
+                            Icons.check_circle_outline,
+                            size: 64,
+                            color: Colors.green.shade400,
+                          ),
                           const SizedBox(height: 16),
-                          Text('All Clear!', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            'All Clear!',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             'No active alerts or critical issues requiring your attention.',
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.outline,
+                            ),
                           ),
                         ],
                       ),
@@ -119,10 +147,15 @@ class AlertsScreen extends ConsumerWidget {
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20),
                           color: Colors.red.shade400,
-                          child: const Icon(Icons.delete_outline, color: Colors.white),
+                          child: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.white,
+                          ),
                         ),
                         onDismissed: (_) {
-                          ref.read(dismissedAlertIdsProvider.notifier).update((state) => {...state, alert.id});
+                          ref
+                              .read(dismissedAlertIdsProvider.notifier)
+                              .update((state) => {...state, alert.id});
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Dismissed: ${alert.title}'),
@@ -199,7 +232,11 @@ class _AlertCard extends ConsumerWidget {
                     color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(_getAlertIcon(alert.type, alert.severity), color: color, size: 22),
+                  child: Icon(
+                    _getAlertIcon(alert.type, alert.severity),
+                    color: color,
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -214,12 +251,17 @@ class _AlertCard extends ConsumerWidget {
                               alert.title,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: alert.severity == AlertSeverity.critical ? Colors.red.shade900 : null,
+                                color: alert.severity == AlertSeverity.critical
+                                    ? Colors.red.shade900
+                                    : null,
                               ),
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: color.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
@@ -238,7 +280,10 @@ class _AlertCard extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         DateFormat('d MMM, HH:mm').format(alert.timestamp),
-                        style: TextStyle(fontSize: 11, color: colorScheme.outline),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colorScheme.outline,
+                        ),
                       ),
                     ],
                   ),
@@ -248,7 +293,9 @@ class _AlertCard extends ConsumerWidget {
             const SizedBox(height: 10),
             Text(
               alert.message,
-              style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             if (alert.actionRoute != null) ...[
               const SizedBox(height: 12),
@@ -257,13 +304,20 @@ class _AlertCard extends ConsumerWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      ref.read(dismissedAlertIdsProvider.notifier).update((s) => {...s, alert.id});
+                      ref
+                          .read(dismissedAlertIdsProvider.notifier)
+                          .update((s) => {...s, alert.id});
                     },
-                    child: const Text('Dismiss', style: TextStyle(fontSize: 12)),
+                    child: const Text(
+                      'Dismiss',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   FilledButton.tonal(
-                    style: FilledButton.styleFrom(visualDensity: VisualDensity.compact),
+                    style: FilledButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
                     onPressed: () => context.push(alert.actionRoute!),
                     child: Text(alert.actionLabel ?? 'Take Action'),
                   ),

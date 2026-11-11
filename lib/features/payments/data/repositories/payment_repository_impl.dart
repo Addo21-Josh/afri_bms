@@ -47,7 +47,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
-  Future<Either<Failure, List<PaymentEntity>>> getPaymentsBySale(String saleId) async {
+  Future<Either<Failure, List<PaymentEntity>>> getPaymentsBySale(
+    String saleId,
+  ) async {
     try {
       final models = await remoteDatasource.getPaymentsBySale(saleId);
       return Right(models.map((m) => m.toEntity()).toList());
@@ -57,7 +59,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
-  Future<Either<Failure, List<PaymentEntity>>> getPaymentsByCustomer(String customerId) async {
+  Future<Either<Failure, List<PaymentEntity>>> getPaymentsByCustomer(
+    String customerId,
+  ) async {
     try {
       final models = await remoteDatasource.getPaymentsByCustomer(customerId);
       return Right(models.map((m) => m.toEntity()).toList());

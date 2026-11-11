@@ -6,8 +6,14 @@ void main() {
   group('PaymentMethod', () {
     test('fromString parses payment methods correctly', () {
       expect(PaymentMethod.fromString('cash'), equals(PaymentMethod.cash));
-      expect(PaymentMethod.fromString('mobile_money'), equals(PaymentMethod.mobileMoney));
-      expect(PaymentMethod.fromString('momo'), equals(PaymentMethod.mobileMoney));
+      expect(
+        PaymentMethod.fromString('mobile_money'),
+        equals(PaymentMethod.mobileMoney),
+      );
+      expect(
+        PaymentMethod.fromString('momo'),
+        equals(PaymentMethod.mobileMoney),
+      );
       expect(PaymentMethod.fromString('card'), equals(PaymentMethod.card));
       expect(PaymentMethod.fromString('split'), equals(PaymentMethod.split));
       expect(PaymentMethod.fromString('credit'), equals(PaymentMethod.credit));
@@ -24,9 +30,18 @@ void main() {
   group('PaymentStatus', () {
     test('fromString parses status values correctly', () {
       expect(PaymentStatus.fromString('paid'), equals(PaymentStatus.paid));
-      expect(PaymentStatus.fromString('pending'), equals(PaymentStatus.pending));
-      expect(PaymentStatus.fromString('partial'), equals(PaymentStatus.partial));
-      expect(PaymentStatus.fromString('refunded'), equals(PaymentStatus.refunded));
+      expect(
+        PaymentStatus.fromString('pending'),
+        equals(PaymentStatus.pending),
+      );
+      expect(
+        PaymentStatus.fromString('partial'),
+        equals(PaymentStatus.partial),
+      );
+      expect(
+        PaymentStatus.fromString('refunded'),
+        equals(PaymentStatus.refunded),
+      );
       expect(PaymentStatus.fromString('invalid'), equals(PaymentStatus.paid));
     });
   });

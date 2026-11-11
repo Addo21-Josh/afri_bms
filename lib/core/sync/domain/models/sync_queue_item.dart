@@ -109,7 +109,8 @@ class SyncQueueItem {
     if (map['payload'] != null) {
       if (map['payload'] is String) {
         try {
-          parsedPayload = jsonDecode(map['payload'] as String) as Map<String, dynamic>;
+          parsedPayload =
+              jsonDecode(map['payload'] as String) as Map<String, dynamic>;
         } catch (_) {
           parsedPayload = {};
         }
@@ -122,14 +123,20 @@ class SyncQueueItem {
       id: map['id'] as String,
       businessId: map['business_id'] as String? ?? '',
       table: map['table'] as String,
-      operation: SyncOperation.fromString(map['operation'] as String? ?? 'insert'),
+      operation: SyncOperation.fromString(
+        map['operation'] as String? ?? 'insert',
+      ),
       recordId: map['record_id'] as String? ?? '',
       payload: parsedPayload,
-      createdAt: DateTime.tryParse(map['created_at'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(map['created_at'] as String? ?? '') ??
+          DateTime.now(),
       attempts: (map['attempts'] as num?)?.toInt() ?? 0,
       lastError: map['last_error'] as String?,
       status: SyncItemStatus.fromString(map['status'] as String? ?? 'pending'),
-      completedAt: map['completed_at'] != null ? DateTime.tryParse(map['completed_at'] as String) : null,
+      completedAt: map['completed_at'] != null
+          ? DateTime.tryParse(map['completed_at'] as String)
+          : null,
     );
   }
 

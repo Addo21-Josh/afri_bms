@@ -33,7 +33,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     final productsAsync = ref.watch(productsListProvider);
     final userRole = ref.watch(currentUserRoleProvider).value;
     // Explicit permission: Only admin and branch manager can create new products
-    final canManageInventory = userRole == UserRoleType.admin || userRole == UserRoleType.branchManager;
+    final canManageInventory =
+        userRole == UserRoleType.admin ||
+        userRole == UserRoleType.branchManager;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -99,7 +101,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref.read(productSearchQueryProvider.notifier).state = '';
+                          ref.read(productSearchQueryProvider.notifier).state =
+                              '';
                         },
                       )
                     : null,
@@ -135,11 +138,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                 }
 
                 return RefreshIndicator(
-                  onRefresh: () async => ref.refresh(productsListProvider.future),
+                  onRefresh: () async =>
+                      ref.refresh(productsListProvider.future),
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
                     itemCount: products.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 10),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final product = products[index];
 
@@ -155,11 +160,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       } else if (product.isLowStock) {
                         stockBadgeColor = Colors.amber.shade100;
                         stockTextColor = Colors.amber.shade900;
-                        stockStatusText = 'Low Stock (${product.currentBranchStock} ${product.unit})';
+                        stockStatusText =
+                            'Low Stock (${product.currentBranchStock} ${product.unit})';
                       } else {
                         stockBadgeColor = Colors.green.shade50;
                         stockTextColor = Colors.green.shade800;
-                        stockStatusText = '${product.currentBranchStock} ${product.unit} in stock';
+                        stockStatusText =
+                            '${product.currentBranchStock} ${product.unit} in stock';
                       }
 
                       return Card(
@@ -184,35 +191,47 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                     color: colorScheme.surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: const Icon(Icons.inventory_2_outlined, size: 28),
+                                  child: const Icon(
+                                    Icons.inventory_2_outlined,
+                                    size: 28,
+                                  ),
                                 ),
                                 const SizedBox(width: 14),
 
                                 // Product info
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         product.name,
-                                        style: theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
                                         children: [
                                           if (product.category != null) ...[
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 2,
+                                                  ),
                                               decoration: BoxDecoration(
-                                                color: colorScheme.secondaryContainer,
-                                                borderRadius: BorderRadius.circular(6),
+                                                color: colorScheme
+                                                    .secondaryContainer,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
                                               ),
                                               child: Text(
                                                 product.category!.name,
                                                 style: TextStyle(
-                                                  color: colorScheme.onSecondaryContainer,
+                                                  color: colorScheme
+                                                      .onSecondaryContainer,
                                                   fontSize: 11,
                                                   fontWeight: FontWeight.w500,
                                                 ),
@@ -223,31 +242,38 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                           if (product.variants.isNotEmpty)
                                             Text(
                                               '${product.variants.length} variants',
-                                              style: theme.textTheme.bodySmall?.copyWith(
-                                                color: colorScheme.outline,
-                                              ),
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                    color: colorScheme.outline,
+                                                  ),
                                             ),
                                         ],
                                       ),
                                       const SizedBox(height: 8),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             CurrencyFormatter.format(
                                               product.sellingPrice,
                                               currencyCode: product.currency,
                                             ),
-                                            style: theme.textTheme.titleSmall?.copyWith(
-                                              color: colorScheme.primary,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: theme.textTheme.titleSmall
+                                                ?.copyWith(
+                                                  color: colorScheme.primary,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 3,
+                                            ),
                                             decoration: BoxDecoration(
                                               color: stockBadgeColor,
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               stockStatusText,

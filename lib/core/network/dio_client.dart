@@ -28,7 +28,9 @@ class DioClient {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          AppLogger.d('Response: ${response.statusCode} ${response.requestOptions.uri}');
+          AppLogger.d(
+            'Response: ${response.statusCode} ${response.requestOptions.uri}',
+          );
           return handler.next(response);
         },
         onError: (DioException e, handler) {

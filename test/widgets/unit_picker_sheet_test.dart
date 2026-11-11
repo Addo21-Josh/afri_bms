@@ -4,7 +4,9 @@ import 'package:afri_bms/features/inventory/presentation/widgets/unit_picker_she
 
 void main() {
   group('ProductUnitPickerSheet Widget Tests', () {
-    testWidgets('renders header, categories, and units list', (WidgetTester tester) async {
+    testWidgets('renders header, categories, and units list', (
+      WidgetTester tester,
+    ) async {
       String? selected;
 
       await tester.pumpWidget(
@@ -30,7 +32,9 @@ void main() {
       expect(selected, equals('tab'));
     });
 
-    testWidgets('filters units list when searching', (WidgetTester tester) async {
+    testWidgets('filters units list when searching', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -51,7 +55,9 @@ void main() {
       expect(find.text('Tablets'), findsNothing);
     });
 
-    testWidgets('filters units by category chip selection', (WidgetTester tester) async {
+    testWidgets('filters units by category chip selection', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

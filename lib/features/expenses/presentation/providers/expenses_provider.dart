@@ -10,7 +10,9 @@ import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/sync/presentation/providers/sync_provider.dart';
 import '../../../../core/sync/domain/models/sync_queue_item.dart';
 
-final expensesRemoteDataSourceProvider = Provider<ExpensesRemoteDataSource>((ref) {
+final expensesRemoteDataSourceProvider = Provider<ExpensesRemoteDataSource>((
+  ref,
+) {
   return ExpensesRemoteDataSourceImpl(supabaseClient: Supabase.instance.client);
 });
 
@@ -20,11 +22,16 @@ final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
 });
 
 // Categories list provider
-final expenseCategoriesProvider = AsyncNotifierProvider<ExpenseCategoriesNotifier, List<ExpenseCategoryEntity>>(() {
-  return ExpenseCategoriesNotifier();
-});
+final expenseCategoriesProvider =
+    AsyncNotifierProvider<
+      ExpenseCategoriesNotifier,
+      List<ExpenseCategoryEntity>
+    >(() {
+      return ExpenseCategoriesNotifier();
+    });
 
-class ExpenseCategoriesNotifier extends AsyncNotifier<List<ExpenseCategoryEntity>> {
+class ExpenseCategoriesNotifier
+    extends AsyncNotifier<List<ExpenseCategoryEntity>> {
   @override
   Future<List<ExpenseCategoryEntity>> build() async {
     final business = ref.watch(currentBusinessProvider);
@@ -41,11 +48,7 @@ class ExpenseCategoriesNotifier extends AsyncNotifier<List<ExpenseCategoryEntity
 
 // Expense Filter state
 class ExpenseFilter {
-  const ExpenseFilter({
-    this.categoryId,
-    this.startDate,
-    this.endDate,
-  });
+  const ExpenseFilter({this.categoryId, this.startDate, this.endDate});
 
   final String? categoryId;
   final DateTime? startDate;
@@ -74,9 +77,10 @@ final expenseFilterProvider = StateProvider<ExpenseFilter>((ref) {
 });
 
 // Expenses list provider
-final expensesListProvider = AsyncNotifierProvider<ExpensesListNotifier, List<ExpenseEntity>>(() {
-  return ExpensesListNotifier();
-});
+final expensesListProvider =
+    AsyncNotifierProvider<ExpensesListNotifier, List<ExpenseEntity>>(() {
+      return ExpensesListNotifier();
+    });
 
 class ExpensesListNotifier extends AsyncNotifier<List<ExpenseEntity>> {
   @override
@@ -90,7 +94,10 @@ class ExpensesListNotifier extends AsyncNotifier<List<ExpenseEntity>> {
     final localCache = ref.watch(localCacheServiceProvider);
 
     if (!isOnline) {
-      final cached = await localCache.getCachedExpenses(business.id, branchId: branch?.id);
+      final cached = await localCache.getCachedExpenses(
+        business.id,
+        branchId: branch?.id,
+      );
       return _applyFilter(cached, filter);
     }
 
@@ -109,16 +116,25 @@ class ExpensesListNotifier extends AsyncNotifier<List<ExpenseEntity>> {
       }
       return list;
     } catch (_) {
-      final cached = await localCache.getCachedExpenses(business.id, branchId: branch?.id);
+      final cached = await localCache.getCachedExpenses(
+        business.id,
+        branchId: branch?.id,
+      );
       return _applyFilter(cached, filter);
     }
   }
 
-  List<ExpenseEntity> _applyFilter(List<ExpenseEntity> list, ExpenseFilter filter) {
+  List<ExpenseEntity> _applyFilter(
+    List<ExpenseEntity> list,
+    ExpenseFilter filter,
+  ) {
     return list.where((e) {
-      if (filter.categoryId != null && e.categoryId != filter.categoryId) return false;
-      if (filter.startDate != null && e.expenseDate.isBefore(filter.startDate!)) return false;
-      if (filter.endDate != null && e.expenseDate.isAfter(filter.endDate!)) return false;
+      if (filter.categoryId != null && e.categoryId != filter.categoryId)
+        return false;
+      if (filter.startDate != null && e.expenseDate.isBefore(filter.startDate!))
+        return false;
+      if (filter.endDate != null && e.expenseDate.isAfter(filter.endDate!))
+        return false;
       return true;
     }).toList();
   }
@@ -154,9 +170,11 @@ class ExpenseControllerState {
 }
 
 final expenseControllerProvider =
-    StateNotifierProvider<ExpenseControllerNotifier, ExpenseControllerState>((ref) {
-  return ExpenseControllerNotifier(ref);
-});
+    StateNotifierProvider<ExpenseControllerNotifier, ExpenseControllerState>((
+      ref,
+    ) {
+      return ExpenseControllerNotifier(ref);
+    });
 
 class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
   ExpenseControllerNotifier(this._ref) : super(const ExpenseControllerState());
@@ -204,27 +222,29 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
       final localCache = _ref.read(localCacheServiceProvider);
       await localCache.saveOfflineExpense(business.id, offlineExpense);
 
-      await _ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'expenses',
-        operation: SyncOperation.insert,
-        recordId: offlineId,
-        payload: {
-          'id': offlineId,
-          'business_id': business.id,
-          'branch_id': branch.id,
-          'category_id': categoryId,
-          'amount': amount,
-          'description': description,
-          'payment_method': paymentMethod,
-          'payment_reference': paymentReference,
-          'expense_date': expenseDate.toIso8601String(),
-          'receipt_url': receiptUrl,
-          'recorded_by': currentUser?.id,
-          'notes': notes,
-          'created_at': now.toIso8601String(),
-          'updated_at': now.toIso8601String(),
-        },
-      );
+      await _ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'expenses',
+            operation: SyncOperation.insert,
+            recordId: offlineId,
+            payload: {
+              'id': offlineId,
+              'business_id': business.id,
+              'branch_id': branch.id,
+              'category_id': categoryId,
+              'amount': amount,
+              'description': description,
+              'payment_method': paymentMethod,
+              'payment_reference': paymentReference,
+              'expense_date': expenseDate.toIso8601String(),
+              'receipt_url': receiptUrl,
+              'recorded_by': currentUser?.id,
+              'notes': notes,
+              'created_at': now.toIso8601String(),
+              'updated_at': now.toIso8601String(),
+            },
+          );
 
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
@@ -252,12 +272,17 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
       );
 
       final created = await repo.createExpense(expense);
-      await _ref.read(localCacheServiceProvider).saveOfflineExpense(business.id, created);
+      await _ref
+          .read(localCacheServiceProvider)
+          .saveOfflineExpense(business.id, created);
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
       return true;
     } catch (e) {
-      state = ExpenseControllerState(isLoading: false, errorMessage: e.toString());
+      state = ExpenseControllerState(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
       return false;
     }
   }
@@ -271,22 +296,24 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
       final localCache = _ref.read(localCacheServiceProvider);
       await localCache.saveOfflineExpense(business.id, expense);
 
-      await _ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'expenses',
-        operation: SyncOperation.update,
-        recordId: expense.id,
-        payload: {
-          'category_id': expense.categoryId,
-          'amount': expense.amount,
-          'description': expense.description,
-          'payment_method': expense.paymentMethod,
-          'payment_reference': expense.paymentReference,
-          'expense_date': expense.expenseDate.toIso8601String(),
-          'receipt_url': expense.receiptUrl,
-          'notes': expense.notes,
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-      );
+      await _ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'expenses',
+            operation: SyncOperation.update,
+            recordId: expense.id,
+            payload: {
+              'category_id': expense.categoryId,
+              'amount': expense.amount,
+              'description': expense.description,
+              'payment_method': expense.paymentMethod,
+              'payment_reference': expense.paymentReference,
+              'expense_date': expense.expenseDate.toIso8601String(),
+              'receipt_url': expense.receiptUrl,
+              'notes': expense.notes,
+              'updated_at': DateTime.now().toIso8601String(),
+            },
+          );
 
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
@@ -297,13 +324,18 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
       final repo = _ref.read(expenseRepositoryProvider);
       final updated = await repo.updateExpense(expense);
       if (business != null) {
-        await _ref.read(localCacheServiceProvider).saveOfflineExpense(business.id, updated);
+        await _ref
+            .read(localCacheServiceProvider)
+            .saveOfflineExpense(business.id, updated);
       }
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
       return true;
     } catch (e) {
-      state = ExpenseControllerState(isLoading: false, errorMessage: e.toString());
+      state = ExpenseControllerState(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
       return false;
     }
   }
@@ -317,12 +349,14 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
       final localCache = _ref.read(localCacheServiceProvider);
       await localCache.deleteOfflineExpense(business.id, expenseId);
 
-      await _ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'expenses',
-        operation: SyncOperation.delete,
-        recordId: expenseId,
-        payload: {},
-      );
+      await _ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'expenses',
+            operation: SyncOperation.delete,
+            recordId: expenseId,
+            payload: {},
+          );
 
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
@@ -333,13 +367,18 @@ class ExpenseControllerNotifier extends StateNotifier<ExpenseControllerState> {
       final repo = _ref.read(expenseRepositoryProvider);
       await repo.deleteExpense(expenseId);
       if (business != null) {
-        await _ref.read(localCacheServiceProvider).deleteOfflineExpense(business.id, expenseId);
+        await _ref
+            .read(localCacheServiceProvider)
+            .deleteOfflineExpense(business.id, expenseId);
       }
       await _ref.read(expensesListProvider.notifier).refresh();
       state = const ExpenseControllerState(isLoading: false);
       return true;
     } catch (e) {
-      state = ExpenseControllerState(isLoading: false, errorMessage: e.toString());
+      state = ExpenseControllerState(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
       return false;
     }
   }

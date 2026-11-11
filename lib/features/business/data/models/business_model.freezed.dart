@@ -12,7 +12,8 @@ part of 'business_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 BusinessModel _$BusinessModelFromJson(Map<String, dynamic> json) {
   return _BusinessModel.fromJson(json);
@@ -54,25 +55,27 @@ mixin _$BusinessModel {
 /// @nodoc
 abstract class $BusinessModelCopyWith<$Res> {
   factory $BusinessModelCopyWith(
-          BusinessModel value, $Res Function(BusinessModel) then) =
-      _$BusinessModelCopyWithImpl<$Res, BusinessModel>;
+    BusinessModel value,
+    $Res Function(BusinessModel) then,
+  ) = _$BusinessModelCopyWithImpl<$Res, BusinessModel>;
   @useResult
-  $Res call(
-      {String id,
-      @JsonKey(name: 'owner_id') String ownerId,
-      String name,
-      String? description,
-      @JsonKey(name: 'logo_url') String? logoUrl,
-      @JsonKey(name: 'default_currency') String defaultCurrency,
-      @JsonKey(name: 'supported_currencies') List<String> supportedCurrencies,
-      @JsonKey(name: 'tax_rate') double taxRate,
-      String? address,
-      String? phone,
-      String? email,
-      @JsonKey(name: 'is_active') bool isActive,
-      @JsonKey(name: 'subscription_tier') String subscriptionTier,
-      @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt});
+  $Res call({
+    String id,
+    @JsonKey(name: 'owner_id') String ownerId,
+    String name,
+    String? description,
+    @JsonKey(name: 'logo_url') String? logoUrl,
+    @JsonKey(name: 'default_currency') String defaultCurrency,
+    @JsonKey(name: 'supported_currencies') List<String> supportedCurrencies,
+    @JsonKey(name: 'tax_rate') double taxRate,
+    String? address,
+    String? phone,
+    String? email,
+    @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'subscription_tier') String subscriptionTier,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -104,68 +107,71 @@ class _$BusinessModelCopyWithImpl<$Res, $Val extends BusinessModel>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      ownerId: null == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      logoUrl: freezed == logoUrl
-          ? _value.logoUrl
-          : logoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      defaultCurrency: null == defaultCurrency
-          ? _value.defaultCurrency
-          : defaultCurrency // ignore: cast_nullable_to_non_nullable
-              as String,
-      supportedCurrencies: null == supportedCurrencies
-          ? _value.supportedCurrencies
-          : supportedCurrencies // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      taxRate: null == taxRate
-          ? _value.taxRate
-          : taxRate // ignore: cast_nullable_to_non_nullable
-              as double,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      subscriptionTier: null == subscriptionTier
-          ? _value.subscriptionTier
-          : subscriptionTier // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            ownerId: null == ownerId
+                ? _value.ownerId
+                : ownerId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            logoUrl: freezed == logoUrl
+                ? _value.logoUrl
+                : logoUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            defaultCurrency: null == defaultCurrency
+                ? _value.defaultCurrency
+                : defaultCurrency // ignore: cast_nullable_to_non_nullable
+                      as String,
+            supportedCurrencies: null == supportedCurrencies
+                ? _value.supportedCurrencies
+                : supportedCurrencies // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            taxRate: null == taxRate
+                ? _value.taxRate
+                : taxRate // ignore: cast_nullable_to_non_nullable
+                      as double,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phone: freezed == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            subscriptionTier: null == subscriptionTier
+                ? _value.subscriptionTier
+                : subscriptionTier // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -173,26 +179,28 @@ class _$BusinessModelCopyWithImpl<$Res, $Val extends BusinessModel>
 abstract class _$$BusinessModelImplCopyWith<$Res>
     implements $BusinessModelCopyWith<$Res> {
   factory _$$BusinessModelImplCopyWith(
-          _$BusinessModelImpl value, $Res Function(_$BusinessModelImpl) then) =
-      __$$BusinessModelImplCopyWithImpl<$Res>;
+    _$BusinessModelImpl value,
+    $Res Function(_$BusinessModelImpl) then,
+  ) = __$$BusinessModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      @JsonKey(name: 'owner_id') String ownerId,
-      String name,
-      String? description,
-      @JsonKey(name: 'logo_url') String? logoUrl,
-      @JsonKey(name: 'default_currency') String defaultCurrency,
-      @JsonKey(name: 'supported_currencies') List<String> supportedCurrencies,
-      @JsonKey(name: 'tax_rate') double taxRate,
-      String? address,
-      String? phone,
-      String? email,
-      @JsonKey(name: 'is_active') bool isActive,
-      @JsonKey(name: 'subscription_tier') String subscriptionTier,
-      @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt});
+  $Res call({
+    String id,
+    @JsonKey(name: 'owner_id') String ownerId,
+    String name,
+    String? description,
+    @JsonKey(name: 'logo_url') String? logoUrl,
+    @JsonKey(name: 'default_currency') String defaultCurrency,
+    @JsonKey(name: 'supported_currencies') List<String> supportedCurrencies,
+    @JsonKey(name: 'tax_rate') double taxRate,
+    String? address,
+    String? phone,
+    String? email,
+    @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'subscription_tier') String subscriptionTier,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -200,8 +208,9 @@ class __$$BusinessModelImplCopyWithImpl<$Res>
     extends _$BusinessModelCopyWithImpl<$Res, _$BusinessModelImpl>
     implements _$$BusinessModelImplCopyWith<$Res> {
   __$$BusinessModelImplCopyWithImpl(
-      _$BusinessModelImpl _value, $Res Function(_$BusinessModelImpl) _then)
-      : super(_value, _then);
+    _$BusinessModelImpl _value,
+    $Res Function(_$BusinessModelImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -222,93 +231,95 @@ class __$$BusinessModelImplCopyWithImpl<$Res>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_$BusinessModelImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      ownerId: null == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      logoUrl: freezed == logoUrl
-          ? _value.logoUrl
-          : logoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      defaultCurrency: null == defaultCurrency
-          ? _value.defaultCurrency
-          : defaultCurrency // ignore: cast_nullable_to_non_nullable
-              as String,
-      supportedCurrencies: null == supportedCurrencies
-          ? _value._supportedCurrencies
-          : supportedCurrencies // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      taxRate: null == taxRate
-          ? _value.taxRate
-          : taxRate // ignore: cast_nullable_to_non_nullable
-              as double,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      subscriptionTier: null == subscriptionTier
-          ? _value.subscriptionTier
-          : subscriptionTier // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ));
+    return _then(
+      _$BusinessModelImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        ownerId: null == ownerId
+            ? _value.ownerId
+            : ownerId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        logoUrl: freezed == logoUrl
+            ? _value.logoUrl
+            : logoUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        defaultCurrency: null == defaultCurrency
+            ? _value.defaultCurrency
+            : defaultCurrency // ignore: cast_nullable_to_non_nullable
+                  as String,
+        supportedCurrencies: null == supportedCurrencies
+            ? _value._supportedCurrencies
+            : supportedCurrencies // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        taxRate: null == taxRate
+            ? _value.taxRate
+            : taxRate // ignore: cast_nullable_to_non_nullable
+                  as double,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phone: freezed == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        subscriptionTier: null == subscriptionTier
+            ? _value.subscriptionTier
+            : subscriptionTier // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$BusinessModelImpl extends _BusinessModel {
-  const _$BusinessModelImpl(
-      {required this.id,
-      @JsonKey(name: 'owner_id') required this.ownerId,
-      required this.name,
-      this.description,
-      @JsonKey(name: 'logo_url') this.logoUrl,
-      @JsonKey(name: 'default_currency') this.defaultCurrency = 'GHS',
-      @JsonKey(name: 'supported_currencies')
-      final List<String> supportedCurrencies = const ['GHS'],
-      @JsonKey(name: 'tax_rate') this.taxRate = 0.0,
-      this.address,
-      this.phone,
-      this.email,
-      @JsonKey(name: 'is_active') this.isActive = true,
-      @JsonKey(name: 'subscription_tier') this.subscriptionTier = 'free',
-      @JsonKey(name: 'created_at') this.createdAt,
-      @JsonKey(name: 'updated_at') this.updatedAt})
-      : _supportedCurrencies = supportedCurrencies,
-        super._();
+  const _$BusinessModelImpl({
+    required this.id,
+    @JsonKey(name: 'owner_id') required this.ownerId,
+    required this.name,
+    this.description,
+    @JsonKey(name: 'logo_url') this.logoUrl,
+    @JsonKey(name: 'default_currency') this.defaultCurrency = 'GHS',
+    @JsonKey(name: 'supported_currencies')
+    final List<String> supportedCurrencies = const ['GHS'],
+    @JsonKey(name: 'tax_rate') this.taxRate = 0.0,
+    this.address,
+    this.phone,
+    this.email,
+    @JsonKey(name: 'is_active') this.isActive = true,
+    @JsonKey(name: 'subscription_tier') this.subscriptionTier = 'free',
+    @JsonKey(name: 'created_at') this.createdAt,
+    @JsonKey(name: 'updated_at') this.updatedAt,
+  }) : _supportedCurrencies = supportedCurrencies,
+       super._();
 
   factory _$BusinessModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$BusinessModelImplFromJson(json);
@@ -378,8 +389,10 @@ class _$BusinessModelImpl extends _BusinessModel {
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
             (identical(other.defaultCurrency, defaultCurrency) ||
                 other.defaultCurrency == defaultCurrency) &&
-            const DeepCollectionEquality()
-                .equals(other._supportedCurrencies, _supportedCurrencies) &&
+            const DeepCollectionEquality().equals(
+              other._supportedCurrencies,
+              _supportedCurrencies,
+            ) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.phone, phone) || other.phone == phone) &&
@@ -397,22 +410,23 @@ class _$BusinessModelImpl extends _BusinessModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      ownerId,
-      name,
-      description,
-      logoUrl,
-      defaultCurrency,
-      const DeepCollectionEquality().hash(_supportedCurrencies),
-      taxRate,
-      address,
-      phone,
-      email,
-      isActive,
-      subscriptionTier,
-      createdAt,
-      updatedAt);
+    runtimeType,
+    id,
+    ownerId,
+    name,
+    description,
+    logoUrl,
+    defaultCurrency,
+    const DeepCollectionEquality().hash(_supportedCurrencies),
+    taxRate,
+    address,
+    phone,
+    email,
+    isActive,
+    subscriptionTier,
+    createdAt,
+    updatedAt,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -422,31 +436,29 @@ class _$BusinessModelImpl extends _BusinessModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$BusinessModelImplToJson(
-      this,
-    );
+    return _$$BusinessModelImplToJson(this);
   }
 }
 
 abstract class _BusinessModel extends BusinessModel {
-  const factory _BusinessModel(
-          {required final String id,
-          @JsonKey(name: 'owner_id') required final String ownerId,
-          required final String name,
-          final String? description,
-          @JsonKey(name: 'logo_url') final String? logoUrl,
-          @JsonKey(name: 'default_currency') final String defaultCurrency,
-          @JsonKey(name: 'supported_currencies')
-          final List<String> supportedCurrencies,
-          @JsonKey(name: 'tax_rate') final double taxRate,
-          final String? address,
-          final String? phone,
-          final String? email,
-          @JsonKey(name: 'is_active') final bool isActive,
-          @JsonKey(name: 'subscription_tier') final String subscriptionTier,
-          @JsonKey(name: 'created_at') final DateTime? createdAt,
-          @JsonKey(name: 'updated_at') final DateTime? updatedAt}) =
-      _$BusinessModelImpl;
+  const factory _BusinessModel({
+    required final String id,
+    @JsonKey(name: 'owner_id') required final String ownerId,
+    required final String name,
+    final String? description,
+    @JsonKey(name: 'logo_url') final String? logoUrl,
+    @JsonKey(name: 'default_currency') final String defaultCurrency,
+    @JsonKey(name: 'supported_currencies')
+    final List<String> supportedCurrencies,
+    @JsonKey(name: 'tax_rate') final double taxRate,
+    final String? address,
+    final String? phone,
+    final String? email,
+    @JsonKey(name: 'is_active') final bool isActive,
+    @JsonKey(name: 'subscription_tier') final String subscriptionTier,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+  }) = _$BusinessModelImpl;
   const _BusinessModel._() : super._();
 
   factory _BusinessModel.fromJson(Map<String, dynamic> json) =

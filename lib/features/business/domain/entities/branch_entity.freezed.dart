@@ -12,7 +12,8 @@ part of 'branch_entity.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$BranchEntity {
@@ -35,20 +36,22 @@ mixin _$BranchEntity {
 /// @nodoc
 abstract class $BranchEntityCopyWith<$Res> {
   factory $BranchEntityCopyWith(
-          BranchEntity value, $Res Function(BranchEntity) then) =
-      _$BranchEntityCopyWithImpl<$Res, BranchEntity>;
+    BranchEntity value,
+    $Res Function(BranchEntity) then,
+  ) = _$BranchEntityCopyWithImpl<$Res, BranchEntity>;
   @useResult
-  $Res call(
-      {String id,
-      String businessId,
-      String name,
-      String? address,
-      String? phone,
-      String currency,
-      bool isMain,
-      bool isActive,
-      DateTime? createdAt,
-      DateTime? updatedAt});
+  $Res call({
+    String id,
+    String businessId,
+    String name,
+    String? address,
+    String? phone,
+    String currency,
+    bool isMain,
+    bool isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -75,48 +78,51 @@ class _$BranchEntityCopyWithImpl<$Res, $Val extends BranchEntity>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      businessId: null == businessId
-          ? _value.businessId
-          : businessId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      currency: null == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
-              as String,
-      isMain: null == isMain
-          ? _value.isMain
-          : isMain // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            businessId: null == businessId
+                ? _value.businessId
+                : businessId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phone: freezed == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            currency: null == currency
+                ? _value.currency
+                : currency // ignore: cast_nullable_to_non_nullable
+                      as String,
+            isMain: null == isMain
+                ? _value.isMain
+                : isMain // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -124,21 +130,23 @@ class _$BranchEntityCopyWithImpl<$Res, $Val extends BranchEntity>
 abstract class _$$BranchEntityImplCopyWith<$Res>
     implements $BranchEntityCopyWith<$Res> {
   factory _$$BranchEntityImplCopyWith(
-          _$BranchEntityImpl value, $Res Function(_$BranchEntityImpl) then) =
-      __$$BranchEntityImplCopyWithImpl<$Res>;
+    _$BranchEntityImpl value,
+    $Res Function(_$BranchEntityImpl) then,
+  ) = __$$BranchEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String businessId,
-      String name,
-      String? address,
-      String? phone,
-      String currency,
-      bool isMain,
-      bool isActive,
-      DateTime? createdAt,
-      DateTime? updatedAt});
+  $Res call({
+    String id,
+    String businessId,
+    String name,
+    String? address,
+    String? phone,
+    String currency,
+    bool isMain,
+    bool isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -146,8 +154,9 @@ class __$$BranchEntityImplCopyWithImpl<$Res>
     extends _$BranchEntityCopyWithImpl<$Res, _$BranchEntityImpl>
     implements _$$BranchEntityImplCopyWith<$Res> {
   __$$BranchEntityImplCopyWithImpl(
-      _$BranchEntityImpl _value, $Res Function(_$BranchEntityImpl) _then)
-      : super(_value, _then);
+    _$BranchEntityImpl _value,
+    $Res Function(_$BranchEntityImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -163,65 +172,68 @@ class __$$BranchEntityImplCopyWithImpl<$Res>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_$BranchEntityImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      businessId: null == businessId
-          ? _value.businessId
-          : businessId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      currency: null == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
-              as String,
-      isMain: null == isMain
-          ? _value.isMain
-          : isMain // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ));
+    return _then(
+      _$BranchEntityImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        businessId: null == businessId
+            ? _value.businessId
+            : businessId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phone: freezed == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        currency: null == currency
+            ? _value.currency
+            : currency // ignore: cast_nullable_to_non_nullable
+                  as String,
+        isMain: null == isMain
+            ? _value.isMain
+            : isMain // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$BranchEntityImpl implements _BranchEntity {
-  const _$BranchEntityImpl(
-      {required this.id,
-      required this.businessId,
-      required this.name,
-      this.address,
-      this.phone,
-      this.currency = 'GHS',
-      this.isMain = false,
-      this.isActive = true,
-      this.createdAt,
-      this.updatedAt});
+  const _$BranchEntityImpl({
+    required this.id,
+    required this.businessId,
+    required this.name,
+    this.address,
+    this.phone,
+    this.currency = 'GHS',
+    this.isMain = false,
+    this.isActive = true,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   @override
   final String id;
@@ -275,8 +287,19 @@ class _$BranchEntityImpl implements _BranchEntity {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, businessId, name, address,
-      phone, currency, isMain, isActive, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    businessId,
+    name,
+    address,
+    phone,
+    currency,
+    isMain,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -286,17 +309,18 @@ class _$BranchEntityImpl implements _BranchEntity {
 }
 
 abstract class _BranchEntity implements BranchEntity {
-  const factory _BranchEntity(
-      {required final String id,
-      required final String businessId,
-      required final String name,
-      final String? address,
-      final String? phone,
-      final String currency,
-      final bool isMain,
-      final bool isActive,
-      final DateTime? createdAt,
-      final DateTime? updatedAt}) = _$BranchEntityImpl;
+  const factory _BranchEntity({
+    required final String id,
+    required final String businessId,
+    required final String name,
+    final String? address,
+    final String? phone,
+    final String currency,
+    final bool isMain,
+    final bool isActive,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
+  }) = _$BranchEntityImpl;
 
   @override
   String get id;

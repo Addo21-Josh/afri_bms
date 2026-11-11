@@ -22,7 +22,7 @@ abstract class ExpensesRemoteDataSource {
 
 class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
   ExpensesRemoteDataSourceImpl({required SupabaseClient supabaseClient})
-      : _supabaseClient = supabaseClient;
+    : _supabaseClient = supabaseClient;
 
   final SupabaseClient _supabaseClient;
 
@@ -30,11 +30,27 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
   static final List<Map<String, dynamic>> _defaultCategories = [
     {'name': 'Rent & Utilities', 'icon': 'apartment', 'color': '0xFF3F51B5'},
     {'name': 'Salaries & Wages', 'icon': 'people', 'color': '0xFF4CAF50'},
-    {'name': 'Transportation & Fuel', 'icon': 'local_shipping', 'color': '0xFFFF9800'},
-    {'name': 'Inventory & Stock Supplies', 'icon': 'inventory_2', 'color': '0xFF9C27B0'},
-    {'name': 'Marketing & Promotion', 'icon': 'campaign', 'color': '0xFFE91E63'},
+    {
+      'name': 'Transportation & Fuel',
+      'icon': 'local_shipping',
+      'color': '0xFFFF9800',
+    },
+    {
+      'name': 'Inventory & Stock Supplies',
+      'icon': 'inventory_2',
+      'color': '0xFF9C27B0',
+    },
+    {
+      'name': 'Marketing & Promotion',
+      'icon': 'campaign',
+      'color': '0xFFE91E63',
+    },
     {'name': 'Repairs & Maintenance', 'icon': 'build', 'color': '0xFF795548'},
-    {'name': 'Office & General Expenses', 'icon': 'store', 'color': '0xFF009688'},
+    {
+      'name': 'Office & General Expenses',
+      'icon': 'store',
+      'color': '0xFF009688',
+    },
     {'name': 'Miscellaneous', 'icon': 'more_horiz', 'color': '0xFF607D8B'},
   ];
 
@@ -48,7 +64,10 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
           .order('name');
 
       final list = (res as List)
-          .map((item) => ExpenseCategoryModel.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) =>
+                ExpenseCategoryModel.fromJson(item as Map<String, dynamic>),
+          )
           .toList();
 
       // If business has no categories yet, automatically seed default categories
@@ -68,18 +87,24 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
     }
   }
 
-  Future<List<ExpenseCategoryModel>> _seedDefaultCategories(String businessId) async {
+  Future<List<ExpenseCategoryModel>> _seedDefaultCategories(
+    String businessId,
+  ) async {
     try {
       final now = DateTime.now().toIso8601String();
-      final inserts = _defaultCategories.map((cat) => {
-        'business_id': businessId,
-        'name': cat['name'],
-        'icon': cat['icon'],
-        'color': cat['color'],
-        'is_system': true,
-        'created_at': now,
-        'updated_at': now,
-      }).toList();
+      final inserts = _defaultCategories
+          .map(
+            (cat) => {
+              'business_id': businessId,
+              'name': cat['name'],
+              'icon': cat['icon'],
+              'color': cat['color'],
+              'is_system': true,
+              'created_at': now,
+              'updated_at': now,
+            },
+          )
+          .toList();
 
       final res = await _supabaseClient
           .from('expense_categories')
@@ -87,7 +112,10 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
           .select();
 
       return (res as List)
-          .map((item) => ExpenseCategoryModel.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) =>
+                ExpenseCategoryModel.fromJson(item as Map<String, dynamic>),
+          )
           .toList();
     } catch (_) {
       return _fallbackCategories(businessId);
@@ -96,20 +124,26 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
 
   List<ExpenseCategoryModel> _fallbackCategories(String businessId) {
     final now = DateTime.now();
-    return _defaultCategories.map((cat) => ExpenseCategoryModel(
-      id: 'default-${cat['name']}',
-      businessId: businessId,
-      name: cat['name'] as String,
-      icon: cat['icon'] as String,
-      color: cat['color'] as String,
-      isSystem: true,
-      createdAt: now,
-      updatedAt: now,
-    )).toList();
+    return _defaultCategories
+        .map(
+          (cat) => ExpenseCategoryModel(
+            id: 'default-${cat['name']}',
+            businessId: businessId,
+            name: cat['name'] as String,
+            icon: cat['icon'] as String,
+            color: cat['color'] as String,
+            isSystem: true,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        )
+        .toList();
   }
 
   @override
-  Future<ExpenseCategoryModel> createCategory(ExpenseCategoryModel category) async {
+  Future<ExpenseCategoryModel> createCategory(
+    ExpenseCategoryModel category,
+  ) async {
     final res = await _supabaseClient
         .from('expense_categories')
         .insert(category.toInsertJson())
@@ -119,7 +153,9 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
   }
 
   @override
-  Future<ExpenseCategoryModel> updateCategory(ExpenseCategoryModel category) async {
+  Future<ExpenseCategoryModel> updateCategory(
+    ExpenseCategoryModel category,
+  ) async {
     final res = await _supabaseClient
         .from('expense_categories')
         .update({
@@ -137,7 +173,10 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
 
   @override
   Future<void> deleteCategory(String categoryId) async {
-    await _supabaseClient.from('expense_categories').delete().eq('id', categoryId);
+    await _supabaseClient
+        .from('expense_categories')
+        .delete()
+        .eq('id', categoryId);
   }
 
   @override
@@ -161,13 +200,21 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
         query = query.eq('category_id', categoryId);
       }
       if (startDate != null) {
-        query = query.gte('expense_date', startDate.toIso8601String().substring(0, 10));
+        query = query.gte(
+          'expense_date',
+          startDate.toIso8601String().substring(0, 10),
+        );
       }
       if (endDate != null) {
-        query = query.lte('expense_date', endDate.toIso8601String().substring(0, 10));
+        query = query.lte(
+          'expense_date',
+          endDate.toIso8601String().substring(0, 10),
+        );
       }
 
-      final res = await query.order('expense_date', ascending: false).order('created_at', ascending: false);
+      final res = await query
+          .order('expense_date', ascending: false)
+          .order('created_at', ascending: false);
       return (res as List)
           .map((item) => ExpenseModel.fromJson(item as Map<String, dynamic>))
           .toList();
@@ -201,7 +248,10 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
           'description': expense.description,
           'payment_method': expense.paymentMethod,
           'payment_reference': expense.paymentReference,
-          'expense_date': expense.expenseDate.toIso8601String().substring(0, 10),
+          'expense_date': expense.expenseDate.toIso8601String().substring(
+            0,
+            10,
+          ),
           'receipt_url': expense.receiptUrl,
           'notes': expense.notes,
           'updated_at': DateTime.now().toIso8601String(),

@@ -15,18 +15,23 @@ class BusinessModel with _$BusinessModel {
     String? description,
     @JsonKey(name: 'logo_url') String? logoUrl,
     @JsonKey(name: 'default_currency') @Default('GHS') String defaultCurrency,
-    @JsonKey(name: 'supported_currencies') @Default(['GHS']) List<String> supportedCurrencies,
+    @JsonKey(name: 'supported_currencies')
+    @Default(['GHS'])
+    List<String> supportedCurrencies,
     @JsonKey(name: 'tax_rate') @Default(0.0) double taxRate,
     String? address,
     String? phone,
     String? email,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
-    @JsonKey(name: 'subscription_tier') @Default('free') String subscriptionTier,
+    @JsonKey(name: 'subscription_tier')
+    @Default('free')
+    String subscriptionTier,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _BusinessModel;
 
-  factory BusinessModel.fromJson(Map<String, dynamic> json) => _$BusinessModelFromJson(json);
+  factory BusinessModel.fromJson(Map<String, dynamic> json) =>
+      _$BusinessModelFromJson(json);
 
   BusinessEntity toEntity() {
     return BusinessEntity(

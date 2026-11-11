@@ -11,10 +11,7 @@ import '../../../../core/utils/user_friendly_error.dart';
 class CustomerFormDialog extends ConsumerStatefulWidget {
   final CustomerEntity? customerToEdit;
 
-  const CustomerFormDialog({
-    super.key,
-    this.customerToEdit,
-  });
+  const CustomerFormDialog({super.key, this.customerToEdit});
 
   @override
   ConsumerState<CustomerFormDialog> createState() => _CustomerFormDialogState();
@@ -40,7 +37,9 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
     _emailController = TextEditingController(text: c?.email ?? '');
     _addressController = TextEditingController(text: c?.address ?? '');
     _creditLimitController = TextEditingController(
-      text: c != null && c.creditLimit > 0 ? (c.creditLimit / 100).toStringAsFixed(0) : '',
+      text: c != null && c.creditLimit > 0
+          ? (c.creditLimit / 100).toStringAsFixed(0)
+          : '',
     );
     _notesController = TextEditingController(text: c?.notes ?? '');
   }
@@ -78,7 +77,8 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
 
     setState(() => _isLoading = true);
 
-    final creditLimitVal = double.tryParse(_creditLimitController.text.trim()) ?? 0;
+    final creditLimitVal =
+        double.tryParse(_creditLimitController.text.trim()) ?? 0;
     final creditLimitMinor = (creditLimitVal * 100).round();
 
     CustomerEntity? result;
@@ -88,25 +88,45 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
         id: widget.customerToEdit!.id,
         businessId: widget.customerToEdit!.businessId,
         name: _nameController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-        address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        email: _emailController.text.trim().isEmpty
+            ? null
+            : _emailController.text.trim(),
+        address: _addressController.text.trim().isEmpty
+            ? null
+            : _addressController.text.trim(),
         creditLimit: creditLimitMinor,
         outstandingBalance: widget.customerToEdit!.outstandingBalance,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         isActive: widget.customerToEdit!.isActive,
         createdAt: widget.customerToEdit!.createdAt,
         updatedAt: DateTime.now(),
       );
-      result = await ref.read(customerControllerProvider.notifier).updateCustomer(updated);
+      result = await ref
+          .read(customerControllerProvider.notifier)
+          .updateCustomer(updated);
     } else {
-      result = await ref.read(customerControllerProvider.notifier).createCustomer(
+      result = await ref
+          .read(customerControllerProvider.notifier)
+          .createCustomer(
             name: _nameController.text.trim(),
-            phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-            email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-            address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
+            phone: _phoneController.text.trim().isEmpty
+                ? null
+                : _phoneController.text.trim(),
+            email: _emailController.text.trim().isEmpty
+                ? null
+                : _emailController.text.trim(),
+            address: _addressController.text.trim().isEmpty
+                ? null
+                : _addressController.text.trim(),
             creditLimit: creditLimitMinor,
-            notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+            notes: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
           );
     }
 
@@ -116,7 +136,11 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
         Navigator.of(context).pop(result);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isEditing ? 'Customer updated successfully' : 'Customer added successfully'),
+            content: Text(
+              isEditing
+                  ? 'Customer updated successfully'
+                  : 'Customer added successfully',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -168,7 +192,9 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                         ),
                         child: Icon(
                           Icons.person_outline,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -178,13 +204,13 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                           children: [
                             Text(
                               isEditing ? 'Edit Customer' : 'Add New Customer',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               'Track purchases, contacts, and credit balances',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey.shade600),
                             ),
                           ],
                         ),
@@ -202,7 +228,8 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => Validators.required(v, 'Please enter a customer name'),
+                    validator: (v) =>
+                        Validators.required(v, 'Please enter a customer name'),
                   ),
                   const SizedBox(height: 14),
 
@@ -254,8 +281,14 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                       hintText: '0 for no credit',
                       border: const OutlineInputBorder(),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    validator: (v) => Validators.nonNegativeNumber(v, required: false, fieldName: 'Credit limit'),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: (v) => Validators.nonNegativeNumber(
+                      v,
+                      required: false,
+                      fieldName: 'Credit limit',
+                    ),
                   ),
                   const SizedBox(height: 14),
 
@@ -276,7 +309,9 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.of(context).pop(),
                         child: const Text('Cancel'),
                       ),
                       const SizedBox(width: 12),
@@ -286,10 +321,15 @@ class _CustomerFormDialogState extends ConsumerState<CustomerFormDialog> {
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
                             : Icon(isEditing ? Icons.check : Icons.person_add),
-                        label: Text(isEditing ? 'Save Changes' : 'Add Customer'),
+                        label: Text(
+                          isEditing ? 'Save Changes' : 'Add Customer',
+                        ),
                       ),
                     ],
                   ),

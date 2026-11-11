@@ -12,7 +12,8 @@ class BusinessSetupScreen extends ConsumerStatefulWidget {
   const BusinessSetupScreen({super.key});
 
   @override
-  ConsumerState<BusinessSetupScreen> createState() => _BusinessSetupScreenState();
+  ConsumerState<BusinessSetupScreen> createState() =>
+      _BusinessSetupScreenState();
 }
 
 class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
@@ -33,12 +34,14 @@ class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
     if (_formKey.currentState!.validate()) {
       final user = Supabase.instance.client.auth.currentUser;
       if (user != null) {
-        ref.read(businessControllerProvider.notifier).createBusiness(
-          ownerId: user.id,
-          name: _bizNameController.text.trim(),
-          defaultCurrency: _currencyController.text.trim().toUpperCase(),
-          firstBranchName: _branchNameController.text.trim(),
-        );
+        ref
+            .read(businessControllerProvider.notifier)
+            .createBusiness(
+              ownerId: user.id,
+              name: _bizNameController.text.trim(),
+              defaultCurrency: _currencyController.text.trim().toUpperCase(),
+              firstBranchName: _branchNameController.text.trim(),
+            );
       }
     }
   }
@@ -50,7 +53,9 @@ class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     final userRole = ref.watch(currentUserRoleProvider).value;
-    final isStaff = userRole == UserRoleType.salesperson || userRole == UserRoleType.cashier;
+    final isStaff =
+        userRole == UserRoleType.salesperson ||
+        userRole == UserRoleType.cashier;
 
     ref.listen(businessControllerProvider, (previous, next) {
       if (next.hasError) {
@@ -78,7 +83,9 @@ class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Permission Denied',
-                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -111,11 +118,7 @@ class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(
-                  Icons.store,
-                  size: 80,
-                  color: colorScheme.primary,
-                ),
+                Icon(Icons.store, size: 80, color: colorScheme.primary),
                 const SizedBox(height: 24),
                 Text(
                   'Create Your First Business',
@@ -126,37 +129,40 @@ class _BusinessSetupScreenState extends ConsumerState<BusinessSetupScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                
+
                 TextFormField(
                   controller: _bizNameController,
                   decoration: const InputDecoration(
                     labelText: 'Business Name',
                     prefixIcon: Icon(Icons.business_outlined),
                   ),
-                  validator: (val) => Validators.required(val, 'Business name is required'),
+                  validator: (val) =>
+                      Validators.required(val, 'Business name is required'),
                 ),
                 const SizedBox(height: 16),
-                
+
                 TextFormField(
                   controller: _currencyController,
                   decoration: const InputDecoration(
                     labelText: 'Base Currency (e.g., NGN, GHS)',
                     prefixIcon: Icon(Icons.payments_outlined),
                   ),
-                  validator: (val) => Validators.required(val, 'Currency is required'),
+                  validator: (val) =>
+                      Validators.required(val, 'Currency is required'),
                 ),
                 const SizedBox(height: 16),
-                
+
                 TextFormField(
                   controller: _branchNameController,
                   decoration: const InputDecoration(
                     labelText: 'First Branch Name',
                     prefixIcon: Icon(Icons.location_on_outlined),
                   ),
-                  validator: (val) => Validators.required(val, 'Branch name is required'),
+                  validator: (val) =>
+                      Validators.required(val, 'Branch name is required'),
                 ),
                 const SizedBox(height: 48),
-                
+
                 FilledButton(
                   onPressed: businessState.isLoading ? null : _submit,
                   style: FilledButton.styleFrom(

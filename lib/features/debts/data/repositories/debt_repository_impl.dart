@@ -6,7 +6,7 @@ import '../models/debt_model.dart';
 
 class DebtRepositoryImpl implements DebtRepository {
   const DebtRepositoryImpl({required DebtsRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+    : _remoteDataSource = remoteDataSource;
 
   final DebtsRemoteDataSource _remoteDataSource;
 

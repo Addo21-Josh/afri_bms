@@ -115,7 +115,9 @@ class DebtDetailScreen extends ConsumerWidget {
                                   ? colorScheme.primaryContainer
                                   : colorScheme.secondaryContainer,
                               child: Icon(
-                                isReceivable ? Icons.person : Icons.local_shipping,
+                                isReceivable
+                                    ? Icons.person
+                                    : Icons.local_shipping,
                                 color: isReceivable
                                     ? colorScheme.onPrimaryContainer
                                     : colorScheme.onSecondaryContainer,
@@ -128,42 +130,65 @@ class DebtDetailScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     debt.personName,
-                                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   if (debt.personPhone != null)
                                     Text(
                                       debt.personPhone!,
-                                      style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
                                     ),
                                 ],
                               ),
                             ),
                             Builder(
                               builder: (context) {
-                                final agingColor = _getAgingColor(debt.agingBucket);
+                                final agingColor = _getAgingColor(
+                                  debt.agingBucket,
+                                );
                                 return Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: debt.status == DebtStatus.paid
                                         ? Colors.green.withValues(alpha: 0.1)
-                                        : (debt.isOverdue ? Colors.red.withValues(alpha: 0.1) : agingColor.withValues(alpha: 0.1)),
+                                        : (debt.isOverdue
+                                              ? Colors.red.withValues(
+                                                  alpha: 0.1,
+                                                )
+                                              : agingColor.withValues(
+                                                  alpha: 0.1,
+                                                )),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
                                       color: debt.status == DebtStatus.paid
                                           ? Colors.green.shade300
-                                          : (debt.isOverdue ? Colors.red.shade300 : agingColor.withValues(alpha: 0.4)),
+                                          : (debt.isOverdue
+                                                ? Colors.red.shade300
+                                                : agingColor.withValues(
+                                                    alpha: 0.4,
+                                                  )),
                                     ),
                                   ),
                                   child: Text(
                                     debt.status == DebtStatus.paid
                                         ? 'PAID'
-                                        : (debt.isOverdue ? 'OVERDUE' : debt.agingBucket.label),
+                                        : (debt.isOverdue
+                                              ? 'OVERDUE'
+                                              : debt.agingBucket.label),
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: debt.status == DebtStatus.paid
                                           ? Colors.green.shade900
-                                          : (debt.isOverdue ? Colors.red.shade900 : agingColor),
+                                          : (debt.isOverdue
+                                                ? Colors.red.shade900
+                                                : agingColor),
                                     ),
                                   ),
                                 );
@@ -172,18 +197,21 @@ class DebtDetailScreen extends ConsumerWidget {
                           ],
                         ),
 
-                        if (debt.personPhone != null && debt.personPhone!.isNotEmpty) ...[
+                        if (debt.personPhone != null &&
+                            debt.personPhone!.isNotEmpty) ...[
                           const SizedBox(height: 14),
                           Row(
                             children: [
                               OutlinedButton.icon(
-                                onPressed: () => _launchCall(context, debt.personPhone!),
+                                onPressed: () =>
+                                    _launchCall(context, debt.personPhone!),
                                 icon: const Icon(Icons.call, size: 16),
                                 label: const Text('Call'),
                               ),
                               const SizedBox(width: 8),
                               OutlinedButton.icon(
-                                onPressed: () => _launchWhatsApp(context, debt.personPhone!),
+                                onPressed: () =>
+                                    _launchWhatsApp(context, debt.personPhone!),
                                 icon: const Icon(Icons.chat, size: 16),
                                 label: const Text('WhatsApp'),
                               ),
@@ -199,7 +227,9 @@ class DebtDetailScreen extends ConsumerWidget {
                 // Financial Balance & Progress Card
                 Card(
                   elevation: 0,
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.3,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(color: colorScheme.outlineVariant),
@@ -224,11 +254,23 @@ class DebtDetailScreen extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Initial Debt', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  const Text(
+                                    'Initial Debt',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    CurrencyFormatter.format(debt.initialAmount, currencyCode: currency),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    CurrencyFormatter.format(
+                                      debt.initialAmount,
+                                      currencyCode: currency,
+                                    ),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -237,10 +279,19 @@ class DebtDetailScreen extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Paid', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  const Text(
+                                    'Paid',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    CurrencyFormatter.format(debt.paidAmount, currencyCode: currency),
+                                    CurrencyFormatter.format(
+                                      debt.paidAmount,
+                                      currencyCode: currency,
+                                    ),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -254,10 +305,19 @@ class DebtDetailScreen extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Remaining', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  const Text(
+                                    'Remaining',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    CurrencyFormatter.format(debt.remainingBalance, currencyCode: currency),
+                                    CurrencyFormatter.format(
+                                      debt.remainingBalance,
+                                      currencyCode: currency,
+                                    ),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -277,7 +337,9 @@ class DebtDetailScreen extends ConsumerWidget {
                           minHeight: 8,
                           borderRadius: BorderRadius.circular(4),
                           backgroundColor: Colors.grey.shade200,
-                          color: progress >= 1.0 ? Colors.green : colorScheme.primary,
+                          color: progress >= 1.0
+                              ? Colors.green
+                              : colorScheme.primary,
                         ),
                         const SizedBox(height: 6),
                         Row(
@@ -285,15 +347,22 @@ class DebtDetailScreen extends ConsumerWidget {
                           children: [
                             Text(
                               '${(progress * 100).toStringAsFixed(0)}% Repaid',
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             if (debt.dueDate != null)
                               Text(
                                 'Due: ${DateFormat('MMM d, yyyy').format(debt.dueDate!)}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: debt.isOverdue ? Colors.red : Colors.grey.shade700,
-                                  fontWeight: debt.isOverdue ? FontWeight.bold : FontWeight.normal,
+                                  color: debt.isOverdue
+                                      ? Colors.red
+                                      : Colors.grey.shade700,
+                                  fontWeight: debt.isOverdue
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                           ],
@@ -305,7 +374,8 @@ class DebtDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 // Action Buttons (Record Repayment, Mark Bad Debt, Cancel)
-                if (debt.status == DebtStatus.active && debt.remainingBalance > 0) ...[
+                if (debt.status == DebtStatus.active &&
+                    debt.remainingBalance > 0) ...[
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -313,7 +383,10 @@ class DebtDetailScreen extends ConsumerWidget {
                       onPressed: () async {
                         final recorded = await showDialog<bool>(
                           context: context,
-                          builder: (_) => RecordDebtPaymentDialog(debt: debt, currency: currency),
+                          builder: (_) => RecordDebtPaymentDialog(
+                            debt: debt,
+                            currency: currency,
+                          ),
                         );
                         if (recorded == true) {
                           ref.invalidate(debtDetailProvider(debtId));
@@ -321,7 +394,10 @@ class DebtDetailScreen extends ConsumerWidget {
                         }
                       },
                       icon: const Icon(Icons.payment),
-                      label: const Text('Record Repayment', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'Record Repayment',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -338,9 +414,14 @@ class DebtDetailScreen extends ConsumerWidget {
                                   'This writes off the remaining balance as an unrecoverable loss.',
                                 ),
                                 actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: const Text('Cancel'),
+                                  ),
                                   FilledButton(
-                                    style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
                                     onPressed: () => Navigator.pop(ctx, true),
                                     child: const Text('Mark Bad Debt'),
                                   ),
@@ -348,10 +429,15 @@ class DebtDetailScreen extends ConsumerWidget {
                               ),
                             );
                             if (confirm == true) {
-                              await ref.read(debtControllerProvider.notifier).updateDebtStatus(debt, DebtStatus.badDebt);
+                              await ref
+                                  .read(debtControllerProvider.notifier)
+                                  .updateDebtStatus(debt, DebtStatus.badDebt);
                             }
                           },
-                          child: const Text('Write-off Bad Debt', style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            'Write-off Bad Debt',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ),
                     ],
@@ -362,12 +448,15 @@ class DebtDetailScreen extends ConsumerWidget {
                 // Payment History Section
                 Text(
                   'Repayment History',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
 
                 paymentsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (err, _) => Text('Error loading payments: $err'),
                   data: (payments) {
                     if (payments.isEmpty) {
@@ -380,7 +469,9 @@ class DebtDetailScreen extends ConsumerWidget {
                         child: const Padding(
                           padding: EdgeInsets.all(20.0),
                           child: Center(
-                            child: Text('No repayments recorded yet for this debt.'),
+                            child: Text(
+                              'No repayments recorded yet for this debt.',
+                            ),
                           ),
                         ),
                       );
@@ -390,10 +481,13 @@ class DebtDetailScreen extends ConsumerWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: payments.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 8),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8),
                       itemBuilder: (context, idx) {
                         final p = payments[idx];
-                        final dateStr = DateFormat('MMM d, yyyy • h:mm a').format(p.createdAt);
+                        final dateStr = DateFormat(
+                          'MMM d, yyyy • h:mm a',
+                        ).format(p.createdAt);
 
                         return Card(
                           elevation: 0,
@@ -408,13 +502,25 @@ class DebtDetailScreen extends ConsumerWidget {
                                 color: Colors.green.shade50,
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(Icons.check, color: Colors.green.shade700, size: 20),
+                              child: Icon(
+                                Icons.check,
+                                color: Colors.green.shade700,
+                                size: 20,
+                              ),
                             ),
                             title: Text(
-                              CurrencyFormatter.format(p.amount, currencyCode: currency),
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              CurrencyFormatter.format(
+                                p.amount,
+                                currencyCode: currency,
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
-                            subtitle: Text('$dateStr\n${p.paymentMethod.toUpperCase()} ${p.paymentReference != null ? '• ${p.paymentReference}' : ''}'),
+                            subtitle: Text(
+                              '$dateStr\n${p.paymentMethod.toUpperCase()} ${p.paymentReference != null ? '• ${p.paymentReference}' : ''}',
+                            ),
                             isThreeLine: p.notes != null,
                           ),
                         );

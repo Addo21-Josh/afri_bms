@@ -23,13 +23,17 @@ class BusinessSwitcherSheet extends ConsumerStatefulWidget {
   const BusinessSwitcherSheet({super.key});
 
   @override
-  ConsumerState<BusinessSwitcherSheet> createState() => _BusinessSwitcherSheetState();
+  ConsumerState<BusinessSwitcherSheet> createState() =>
+      _BusinessSwitcherSheetState();
 }
 
 class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
   String? _deletingBusinessId;
 
-  Future<void> _confirmDelete(BuildContext context, BusinessEntity business) async {
+  Future<void> _confirmDelete(
+    BuildContext context,
+    BusinessEntity business,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -44,7 +48,9 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Delete Permanently'),
           ),
@@ -69,7 +75,8 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
         final rawError = ref.read(businessControllerProvider).error;
         final errorMsg = UserFriendlyError.toFriendly(
           rawError,
-          defaultMessage: 'Unable to delete business. Please check your admin privileges or network connection.',
+          defaultMessage:
+              'Unable to delete business. Please check your admin privileges or network connection.',
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -162,7 +169,8 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                     itemBuilder: (ctx, index) {
                       final biz = businesses[index];
                       final isSelected = currentBiz?.id == biz.id;
-                      final isOwner = currentUserId != null && biz.ownerId == currentUserId;
+                      final isOwner =
+                          currentUserId != null && biz.ownerId == currentUserId;
                       final isDeleting = _deletingBusinessId == biz.id;
 
                       return Card(
@@ -171,29 +179,40 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: BorderSide(
-                            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+                            color: isSelected
+                                ? colorScheme.primary
+                                : colorScheme.outlineVariant,
                             width: isSelected ? 2 : 1,
                           ),
                         ),
                         color: isSelected
-                            ? colorScheme.primaryContainer.withValues(alpha: 0.25)
+                            ? colorScheme.primaryContainer.withValues(
+                                alpha: 0.25,
+                              )
                             : colorScheme.surface,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(14),
                           onTap: isDeleting
                               ? null
                               : () {
-                                  ref.read(currentBusinessProvider.notifier).select(biz);
+                                  ref
+                                      .read(currentBusinessProvider.notifier)
+                                      .select(biz);
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Switched to "${biz.name}"'),
+                                      content: Text(
+                                        'Switched to "${biz.name}"',
+                                      ),
                                       duration: const Duration(seconds: 2),
                                     ),
                                   );
                                 },
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             child: Row(
                               children: [
                                 // Business Icon Avatar
@@ -207,7 +226,9 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                                   ),
                                   child: Icon(
                                     Icons.storefront_rounded,
-                                    color: isSelected ? colorScheme.onPrimary : colorScheme.primary,
+                                    color: isSelected
+                                        ? colorScheme.onPrimary
+                                        : colorScheme.primary,
                                     size: 24,
                                   ),
                                 ),
@@ -216,27 +237,36 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                                 // Business Info
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Flexible(
                                             child: Text(
                                               biz.name,
-                                              style: theme.textTheme.titleSmall?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: isSelected ? colorScheme.primary : null,
-                                              ),
+                                              style: theme.textTheme.titleSmall
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isSelected
+                                                        ? colorScheme.primary
+                                                        : null,
+                                                  ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           if (isSelected) ...[
                                             const SizedBox(width: 8),
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 color: colorScheme.primary,
-                                                borderRadius: BorderRadius.circular(6),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
                                               ),
                                               child: Text(
                                                 'ACTIVE',
@@ -253,10 +283,11 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                                       const SizedBox(height: 3),
                                       Text(
                                         'Currency: ${biz.defaultCurrency}${biz.taxRate > 0 ? ' • Tax: ${(biz.taxRate * 100).toStringAsFixed(1)}%' : ''}',
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: colorScheme.outline,
-                                          fontSize: 11,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: colorScheme.outline,
+                                              fontSize: 11,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -267,16 +298,29 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
                                   const SizedBox(
                                     width: 24,
                                     height: 24,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
-                                else if (isOwnerOrAdmin && isOwner && businesses.length > 1)
+                                else if (isOwnerOrAdmin &&
+                                    isOwner &&
+                                    businesses.length > 1)
                                   IconButton(
-                                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.redAccent,
+                                      size: 20,
+                                    ),
                                     tooltip: 'Delete Business',
-                                    onPressed: () => _confirmDelete(context, biz),
+                                    onPressed: () =>
+                                        _confirmDelete(context, biz),
                                   )
                                 else if (isSelected)
-                                  Icon(Icons.check_circle, color: colorScheme.primary, size: 22),
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: colorScheme.primary,
+                                    size: 22,
+                                  ),
                               ],
                             ),
                           ),
@@ -294,7 +338,10 @@ class _BusinessSwitcherSheetState extends ConsumerState<BusinessSwitcherSheet> {
               ),
               error: (err, _) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text('Error loading businesses: $err', style: TextStyle(color: colorScheme.error)),
+                child: Text(
+                  'Error loading businesses: $err',
+                  style: TextStyle(color: colorScheme.error),
+                ),
               ),
             ),
 

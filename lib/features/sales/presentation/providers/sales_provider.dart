@@ -35,7 +35,9 @@ final salesRepositoryProvider = Provider<SalesRepository>((ref) {
 final salesSearchQueryProvider = StateProvider<String>((ref) => '');
 
 // Sales history provider for active business and active branch with offline fallback
-final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((ref) async {
+final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((
+  ref,
+) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return [];
 
@@ -49,7 +51,13 @@ final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((ref) asy
     var cached = await localCache.getCachedSales(currentBiz.id);
     if (searchQuery.isNotEmpty) {
       final q = searchQuery.toLowerCase();
-      cached = cached.where((s) => s.saleNumber.toLowerCase().contains(q) || (s.customerName?.toLowerCase().contains(q) ?? false)).toList();
+      cached = cached
+          .where(
+            (s) =>
+                s.saleNumber.toLowerCase().contains(q) ||
+                (s.customerName?.toLowerCase().contains(q) ?? false),
+          )
+          .toList();
     }
     return cached;
   }
@@ -62,11 +70,19 @@ final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((ref) asy
 
   return result.fold(
     (failure) async {
-      AppLogger.w('Sales fetch failed: ${failure.message}. Falling back to offline cache.');
+      AppLogger.w(
+        'Sales fetch failed: ${failure.message}. Falling back to offline cache.',
+      );
       var cached = await localCache.getCachedSales(currentBiz.id);
       if (searchQuery.isNotEmpty) {
         final q = searchQuery.toLowerCase();
-        cached = cached.where((s) => s.saleNumber.toLowerCase().contains(q) || (s.customerName?.toLowerCase().contains(q) ?? false)).toList();
+        cached = cached
+            .where(
+              (s) =>
+                  s.saleNumber.toLowerCase().contains(q) ||
+                  (s.customerName?.toLowerCase().contains(q) ?? false),
+            )
+            .toList();
       }
       return cached;
     },
@@ -78,7 +94,10 @@ final salesListProvider = FutureProvider.autoDispose<List<SaleEntity>>((ref) asy
 });
 
 // Single sale details provider with offline fallback
-final saleDetailProvider = FutureProvider.family<SaleEntity, String>((ref, saleId) async {
+final saleDetailProvider = FutureProvider.family<SaleEntity, String>((
+  ref,
+  saleId,
+) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   final repo = ref.watch(salesRepositoryProvider);
   final localCache = ref.watch(localCacheServiceProvider);
@@ -93,16 +112,13 @@ final saleDetailProvider = FutureProvider.family<SaleEntity, String>((ref, saleI
   }
 
   final result = await repo.getSaleById(saleId);
-  return result.fold(
-    (failure) async {
-      if (currentBiz != null) {
-        final cached = await localCache.getCachedSaleById(currentBiz.id, saleId);
-        if (cached != null) return cached;
-      }
-      throw failure.message;
-    },
-    (sale) => sale,
-  );
+  return result.fold((failure) async {
+    if (currentBiz != null) {
+      final cached = await localCache.getCachedSaleById(currentBiz.id, saleId);
+      if (cached != null) return cached;
+    }
+    throw failure.message;
+  }, (sale) => sale);
 });
 
 class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
@@ -132,12 +148,18 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     final cartState = ref.read(posCartProvider);
 
     if (currentBiz == null) {
-      state = AsyncValue.error('No active business selected.', StackTrace.current);
+      state = AsyncValue.error(
+        'No active business selected.',
+        StackTrace.current,
+      );
       return null;
     }
 
     if (currentBranch == null) {
-      state = AsyncValue.error('No active branch selected.', StackTrace.current);
+      state = AsyncValue.error(
+        'No active branch selected.',
+        StackTrace.current,
+      );
       return null;
     }
 
@@ -147,10 +169,13 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     }
 
     // Determine user ID: Supabase auth → business owner → cached user ID
-    String currentUserId = Supabase.instance.client.auth.currentUser?.id ?? currentBiz.ownerId;
+    String currentUserId =
+        Supabase.instance.client.auth.currentUser?.id ?? currentBiz.ownerId;
     if (currentUserId.isEmpty) {
       // Last resort: try cached user ID for offline
-      final cachedId = await ref.read(localCacheServiceProvider).getLastUserId();
+      final cachedId = await ref
+          .read(localCacheServiceProvider)
+          .getLastUserId();
       currentUserId = cachedId ?? '';
     }
     if (currentUserId.isEmpty) {
@@ -189,7 +214,9 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     // Completes immediately in local storage within milliseconds.
     // ────────────────────────────────────────────────────────────────────────
     if (!syncState.isOnline) {
-      AppLogger.i('Offline mode active. Processing sale $saleNumber immediately in local storage...');
+      AppLogger.i(
+        'Offline mode active. Processing sale $saleNumber immediately in local storage...',
+      );
       return await _processOfflineSale(
         currentBiz: currentBiz,
         currentBranch: currentBranch,
@@ -214,32 +241,44 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     final repo = ref.read(salesRepositoryProvider);
 
     try {
-      final result = await repo.processSale(
-        businessId: currentBiz.id,
-        branchId: currentBranch.id,
-        cashierId: currentUserId,
-        saleNumber: saleNumber,
-        subtotal: cartState.subtotal,
-        discountAmount: cartState.discountAmount,
-        taxAmount: cartState.taxAmount,
-        totalAmount: cartState.totalAmount,
-        paymentMethod: paymentMethod,
-        amountTendered: amountTendered,
-        changeGiven: changeGiven,
-        customerId: effectiveCustomerId,
-        paymentReference: paymentReference,
-        customerName: customerName ?? cartState.customerName,
-        customerPhone: customerPhone ?? cartState.customerPhone,
-        notes: notes ?? cartState.notes,
-        items: saleItems,
-      ).timeout(const Duration(seconds: 6), onTimeout: () {
-        AppLogger.w('Online sale request timed out after 6 seconds. Falling back to offline mode.');
-        return const Left(NetworkFailure('Network request timed out. Processing offline sale.'));
-      });
+      final result = await repo
+          .processSale(
+            businessId: currentBiz.id,
+            branchId: currentBranch.id,
+            cashierId: currentUserId,
+            saleNumber: saleNumber,
+            subtotal: cartState.subtotal,
+            discountAmount: cartState.discountAmount,
+            taxAmount: cartState.taxAmount,
+            totalAmount: cartState.totalAmount,
+            paymentMethod: paymentMethod,
+            amountTendered: amountTendered,
+            changeGiven: changeGiven,
+            customerId: effectiveCustomerId,
+            paymentReference: paymentReference,
+            customerName: customerName ?? cartState.customerName,
+            customerPhone: customerPhone ?? cartState.customerPhone,
+            notes: notes ?? cartState.notes,
+            items: saleItems,
+          )
+          .timeout(
+            const Duration(seconds: 6),
+            onTimeout: () {
+              AppLogger.w(
+                'Online sale request timed out after 6 seconds. Falling back to offline mode.',
+              );
+              return const Left(
+                NetworkFailure(
+                  'Network request timed out. Processing offline sale.',
+                ),
+              );
+            },
+          );
 
       return await result.fold(
         (failure) async {
-          final isNetworkError = failure is NetworkFailure ||
+          final isNetworkError =
+              failure is NetworkFailure ||
               failure.message.contains('SocketException') ||
               failure.message.contains('ClientException') ||
               failure.message.contains('Failed host lookup') ||
@@ -251,7 +290,9 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
               failure.message.contains('HandshakeException');
 
           if (isNetworkError || !ref.read(syncProvider).isOnline) {
-            AppLogger.i('Network issue during checkout ($failure). Completing sale $saleNumber offline...');
+            AppLogger.i(
+              'Network issue during checkout ($failure). Completing sale $saleNumber offline...',
+            );
             return await _processOfflineSale(
               currentBiz: currentBiz,
               currentBranch: currentBranch,
@@ -274,7 +315,9 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
           return null;
         },
         (completedSale) async {
-          await ref.read(localCacheServiceProvider).saveOfflineSale(currentBiz.id, completedSale);
+          await ref
+              .read(localCacheServiceProvider)
+              .saveOfflineSale(currentBiz.id, completedSale);
           state = AsyncValue.data(completedSale);
           ref.read(posCartProvider.notifier).clearCart();
           ref.invalidate(productsListProvider);
@@ -284,7 +327,9 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
         },
       );
     } catch (e) {
-      AppLogger.w('Unexpected error during checkout: $e. Falling back to offline mode.');
+      AppLogger.w(
+        'Unexpected error during checkout: $e. Falling back to offline mode.',
+      );
       return await _processOfflineSale(
         currentBiz: currentBiz,
         currentBranch: currentBranch,
@@ -323,20 +368,24 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     final saleId = const Uuid().v4();
     final now = DateTime.now();
 
-    final localItems = saleItems.map((si) => SaleItemEntity(
-      id: si.id.isNotEmpty ? si.id : const Uuid().v4(),
-      saleId: saleId,
-      productId: si.productId,
-      variantId: si.variantId,
-      productName: si.productName,
-      variantName: si.variantName,
-      unitCostPrice: si.unitCostPrice,
-      unitPrice: si.unitPrice,
-      quantity: si.quantity,
-      discountAmount: si.discountAmount,
-      totalPrice: si.totalPrice,
-      createdAt: now,
-    )).toList();
+    final localItems = saleItems
+        .map(
+          (si) => SaleItemEntity(
+            id: si.id.isNotEmpty ? si.id : const Uuid().v4(),
+            saleId: saleId,
+            productId: si.productId,
+            variantId: si.variantId,
+            productName: si.productName,
+            variantName: si.variantName,
+            unitCostPrice: si.unitCostPrice,
+            unitPrice: si.unitPrice,
+            quantity: si.quantity,
+            discountAmount: si.discountAmount,
+            totalPrice: si.totalPrice,
+            createdAt: now,
+          ),
+        )
+        .toList();
 
     final isCreditSale = paymentMethod == PaymentMethod.credit;
     final isPartial = !isCreditSale && amountTendered < cartState.totalAmount;
@@ -375,7 +424,8 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     // 2. Batch decrement offline stock for products
     final stockDeductions = <String, int>{};
     for (final item in localItems) {
-      stockDeductions[item.productId] = (stockDeductions[item.productId] ?? 0) + item.quantity;
+      stockDeductions[item.productId] =
+          (stockDeductions[item.productId] ?? 0) + item.quantity;
     }
     await localCache.deductOfflineStockBatch(currentBiz.id, stockDeductions);
 
@@ -409,7 +459,10 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
     // 4. Auto-create offline debt receivable if credit or partial sale
     final unpaidAmount = isCreditSale
         ? cartState.totalAmount
-        : (cartState.totalAmount - amountTendered).clamp(0, cartState.totalAmount);
+        : (cartState.totalAmount - amountTendered).clamp(
+            0,
+            cartState.totalAmount,
+          );
 
     if (unpaidAmount > 0) {
       final debtId = const Uuid().v4();
@@ -417,8 +470,8 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
       final pName = (customerName != null && customerName.isNotEmpty)
           ? customerName
           : (cartState.customerName?.isNotEmpty == true
-              ? cartState.customerName!
-              : 'Customer ($saleNumber)');
+                ? cartState.customerName!
+                : 'Customer ($saleNumber)');
 
       final offlineDebt = DebtEntity(
         id: debtId,
@@ -482,6 +535,8 @@ class SalesCheckoutController extends StateNotifier<AsyncValue<SaleEntity?>> {
 }
 
 final salesCheckoutControllerProvider =
-    StateNotifierProvider<SalesCheckoutController, AsyncValue<SaleEntity?>>((ref) {
-  return SalesCheckoutController(ref);
-});
+    StateNotifierProvider<SalesCheckoutController, AsyncValue<SaleEntity?>>((
+      ref,
+    ) {
+      return SalesCheckoutController(ref);
+    });

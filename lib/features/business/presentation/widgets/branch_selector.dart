@@ -21,7 +21,9 @@ class BranchSelector extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.5,
+            ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
@@ -43,7 +45,9 @@ class BranchSelector extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        branch.isMain ? Icons.store_rounded : Icons.location_on_outlined,
+                        branch.isMain
+                            ? Icons.store_rounded
+                            : Icons.location_on_outlined,
                         size: 16,
                         color: theme.colorScheme.primary,
                       ),

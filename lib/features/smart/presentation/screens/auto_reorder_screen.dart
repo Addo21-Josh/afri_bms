@@ -18,38 +18,57 @@ class AutoReorderScreen extends ConsumerStatefulWidget {
 class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
   final Map<String, int> _customQuantities = {};
 
-  void _sharePurchaseOrder(String businessName, String currency, List<AutoReorderItem> items) {
+  void _sharePurchaseOrder(
+    String businessName,
+    String currency,
+    List<AutoReorderItem> items,
+  ) {
     final buffer = StringBuffer();
     buffer.writeln('📋 *PURCHASE ORDER - $businessName*');
-    buffer.writeln('Date: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}\n');
+    buffer.writeln(
+      'Date: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}\n',
+    );
     buffer.writeln('Please fulfill the following restock items:');
     buffer.writeln('--------------------------------');
 
     int totalEstimate = 0;
     for (int i = 0; i < items.length; i++) {
       final item = items[i];
-      final int qty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
+      final int qty =
+          _customQuantities[item.product.id] ?? item.suggestedQuantity;
       final int lineCost = qty * item.unitCostPrice;
       totalEstimate += lineCost;
-      final costFormatted = CurrencyFormatter.format(lineCost, currencyCode: currency);
+      final costFormatted = CurrencyFormatter.format(
+        lineCost,
+        currencyCode: currency,
+      );
 
       buffer.writeln('${i + 1}. *${item.product.name}*');
-      buffer.writeln('   Quantity: $qty ${item.product.unit} (Est. $costFormatted)');
+      buffer.writeln(
+        '   Quantity: $qty ${item.product.unit} (Est. $costFormatted)',
+      );
     }
 
     buffer.writeln('--------------------------------');
-    buffer.writeln('*Total Estimated Cost:* ${CurrencyFormatter.format(totalEstimate, currencyCode: currency)}\n');
+    buffer.writeln(
+      '*Total Estimated Cost:* ${CurrencyFormatter.format(totalEstimate, currencyCode: currency)}\n',
+    );
     buffer.writeln('Sent via Afri_BMS');
 
     Share.share(buffer.toString(), subject: 'Purchase Order - $businessName');
   }
 
-  void _sendViaWhatsApp(String businessName, String currency, List<AutoReorderItem> items) async {
+  void _sendViaWhatsApp(
+    String businessName,
+    String currency,
+    List<AutoReorderItem> items,
+  ) async {
     final buffer = StringBuffer();
     buffer.writeln('📋 *PURCHASE ORDER - $businessName*%0A');
     buffer.writeln('Please fulfill the following restock items:%0A');
     for (final item in items) {
-      final int qty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
+      final int qty =
+          _customQuantities[item.product.id] ?? item.suggestedQuantity;
       buffer.writeln('• ${item.product.name}: $qty ${item.product.unit}%0A');
     }
     final url = Uri.parse('https://wa.me/?text=${buffer.toString()}');
@@ -83,12 +102,14 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
             IconButton(
               tooltip: 'Send via WhatsApp',
               icon: const Icon(Icons.chat_outlined),
-              onPressed: () => _sendViaWhatsApp(businessName, currency, reorderItems),
+              onPressed: () =>
+                  _sendViaWhatsApp(businessName, currency, reorderItems),
             ),
             IconButton(
               tooltip: 'Share Purchase Order',
               icon: const Icon(Icons.share),
-              onPressed: () => _sharePurchaseOrder(businessName, currency, reorderItems),
+              onPressed: () =>
+                  _sharePurchaseOrder(businessName, currency, reorderItems),
             ),
           ],
         ],
@@ -100,14 +121,25 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle_outline, size: 64, color: Colors.green.shade400),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 64,
+                      color: Colors.green.shade400,
+                    ),
                     const SizedBox(height: 16),
-                    Text('Inventory Well Stocked!', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Inventory Well Stocked!',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       'None of your products are currently below their reorder threshold.',
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.outline,
+                      ),
                     ),
                   ],
                 ),
@@ -125,10 +157,19 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Suggested Order Total', style: TextStyle(color: colorScheme.outline, fontSize: 12)),
+                          Text(
+                            'Suggested Order Total',
+                            style: TextStyle(
+                              color: colorScheme.outline,
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(height: 4),
                           Text(
-                            CurrencyFormatter.format(grandTotal, currencyCode: currency),
+                            CurrencyFormatter.format(
+                              grandTotal,
+                              currencyCode: currency,
+                            ),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.primary,
@@ -139,7 +180,13 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('Items & Units', style: TextStyle(color: colorScheme.outline, fontSize: 12)),
+                          Text(
+                            'Items & Units',
+                            style: TextStyle(
+                              color: colorScheme.outline,
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(height: 4),
                           Text(
                             '${reorderItems.length} items ($totalUnits units)',
@@ -158,7 +205,9 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                     itemCount: reorderItems.length,
                     itemBuilder: (context, index) {
                       final item = reorderItems[index];
-                      final currentQty = _customQuantities[item.product.id] ?? item.suggestedQuantity;
+                      final currentQty =
+                          _customQuantities[item.product.id] ??
+                          item.suggestedQuantity;
                       final lineTotal = currentQty * item.unitCostPrice;
 
                       return Card(
@@ -178,17 +227,23 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           item.product.name,
-                                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                          style: theme.textTheme.titleSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           'Stock: ${item.currentStock} ${item.product.unit} • Threshold: ${item.reorderLevel}',
                                           style: TextStyle(
-                                            color: item.currentStock == 0 ? Colors.red.shade800 : Colors.orange.shade800,
+                                            color: item.currentStock == 0
+                                                ? Colors.red.shade800
+                                                : Colors.orange.shade800,
                                             fontWeight: FontWeight.w600,
                                             fontSize: 12,
                                           ),
@@ -197,35 +252,52 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.arrow_forward, size: 18),
+                                    icon: const Icon(
+                                      Icons.arrow_forward,
+                                      size: 18,
+                                    ),
                                     tooltip: 'Product Details',
-                                    onPressed: () => context.push('/inventory/${item.product.id}'),
+                                    onPressed: () => context.push(
+                                      '/inventory/${item.product.id}',
+                                    ),
                                   ),
                                 ],
                               ),
                               const Divider(height: 20),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   // Quantity Counter Controls
                                   Row(
                                     children: [
                                       IconButton.filledTonal(
                                         visualDensity: VisualDensity.compact,
-                                        icon: const Icon(Icons.remove, size: 16),
+                                        icon: const Icon(
+                                          Icons.remove,
+                                          size: 16,
+                                        ),
                                         onPressed: () {
                                           if (currentQty > 1) {
                                             setState(() {
-                                              _customQuantities[item.product.id] = currentQty - 1;
+                                              _customQuantities[item
+                                                      .product
+                                                      .id] =
+                                                  currentQty - 1;
                                             });
                                           }
                                         },
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        ),
                                         child: Text(
                                           '$currentQty ${item.product.unit}',
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
                                         ),
                                       ),
                                       IconButton.filledTonal(
@@ -233,14 +305,18 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
                                         icon: const Icon(Icons.add, size: 16),
                                         onPressed: () {
                                           setState(() {
-                                            _customQuantities[item.product.id] = currentQty + 1;
+                                            _customQuantities[item.product.id] =
+                                                currentQty + 1;
                                           });
                                         },
                                       ),
                                     ],
                                   ),
                                   Text(
-                                    CurrencyFormatter.format(lineTotal, currencyCode: currency),
+                                    CurrencyFormatter.format(
+                                      lineTotal,
+                                      currencyCode: currency,
+                                    ),
                                     style: theme.textTheme.titleSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: colorScheme.primary,
@@ -262,7 +338,8 @@ class _AutoReorderScreenState extends ConsumerState<AutoReorderScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: FilledButton.icon(
-                  onPressed: () => _sharePurchaseOrder(businessName, currency, reorderItems),
+                  onPressed: () =>
+                      _sharePurchaseOrder(businessName, currency, reorderItems),
                   icon: const Icon(Icons.send),
                   label: const Text('Export & Send Purchase Order'),
                 ),

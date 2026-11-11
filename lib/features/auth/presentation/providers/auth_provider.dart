@@ -46,14 +46,11 @@ class AuthController extends _$AuthController {
   FutureOr<UserEntity?> build() async {
     final getCurrentUser = ref.watch(getCurrentUserUseCaseProvider);
     final result = await getCurrentUser();
-    
-    return result.fold(
-      (failure) {
-        // We could log this
-        return null;
-      },
-      (user) => user,
-    );
+
+    return result.fold((failure) {
+      // We could log this
+      return null;
+    }, (user) => user);
   }
 
   Future<void> signIn(String email, String password) async {
@@ -102,7 +99,7 @@ class AuthController extends _$AuthController {
 
     await ref.read(localCacheServiceProvider).clearLastUserId();
     SessionManager.invalidateAllSessionData(ref);
-    
+
     state = result.fold(
       (failure) => AsyncValue.error(failure.message, StackTrace.current),
       (_) => const AsyncValue.data(null),

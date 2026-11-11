@@ -47,8 +47,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _loadLocalBackups() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final files = dir.listSync().where((f) => f.path.contains('afribms_backup_') && f.path.endsWith('.json')).toList();
-      files.sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+      final files = dir
+          .listSync()
+          .where(
+            (f) =>
+                f.path.contains('afribms_backup_') && f.path.endsWith('.json'),
+          )
+          .toList();
+      files.sort(
+        (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
+      );
       if (mounted) {
         setState(() {
           _localBackups = files;
@@ -66,7 +74,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       UpgradePromptSheet.show(
         context,
         featureName: 'Cloud Backup & Snapshot Export',
-        customMessage: 'Full automated and cloud backups require Afri_BMS Pro or Enterprise.',
+        customMessage:
+            'Full automated and cloud backups require Afri_BMS Pro or Enterprise.',
         currentTier: gate.tier,
         suggestedTier: SubscriptionTier.pro,
       );
@@ -87,10 +96,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Backup created successfully: ${file.path.split(Platform.pathSeparator).last}'),
+            content: Text(
+              'Backup created successfully: ${file.path.split(Platform.pathSeparator).last}',
+            ),
             action: SnackBarAction(
               label: 'Share',
-              onPressed: () => backupService.shareBackupFile(file, business.name),
+              onPressed: () =>
+                  backupService.shareBackupFile(file, business.name),
             ),
           ),
         );
@@ -102,7 +114,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             content: Text(
               UserFriendlyError.toFriendly(
                 e,
-                defaultMessage: 'Unable to generate backup file. Please try again.',
+                defaultMessage:
+                    'Unable to generate backup file. Please try again.',
               ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -114,12 +127,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     }
   }
 
-  Future<void> _restoreFromJson(Map<String, dynamic> parsed, {String? sourceName}) async {
+  Future<void> _restoreFromJson(
+    Map<String, dynamic> parsed, {
+    String? sourceName,
+  }) async {
     final business = ref.read(currentBusinessProvider);
     if (business == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No active business selected to restore data into.')),
+          const SnackBar(
+            content: Text('No active business selected to restore data into.'),
+          ),
         );
       }
       return;
@@ -148,12 +166,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         final repo = ref.read(inventoryRepositoryProvider);
         final prodsRes = await repo.getProducts(businessId: business.id);
         prodsRes.fold((_) {}, (prods) async {
-          await ref.read(localCacheServiceProvider).cacheProducts(business.id, prods);
+          await ref
+              .read(localCacheServiceProvider)
+              .cacheProducts(business.id, prods);
         });
 
         final catsRes = await repo.getCategories(business.id);
         catsRes.fold((_) {}, (cats) async {
-          await ref.read(localCacheServiceProvider).cacheCategories(business.id, cats);
+          await ref
+              .read(localCacheServiceProvider)
+              .cacheCategories(business.id, cats);
         });
       } catch (e) {
         AppLogger.w('Failed to warm local cache after restore: $e');
@@ -169,7 +191,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               'Restored records:\n${results.entries.map((e) => '• ${e.key}: ${e.value}').join('\n')}',
             ),
             actions: [
-              FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('Done')),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Done'),
+              ),
             ],
           ),
         );
@@ -181,7 +206,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             content: Text(
               UserFriendlyError.toFriendly(
                 e,
-                defaultMessage: 'Unable to restore data from backup file. Please verify file integrity and try again.',
+                defaultMessage:
+                    'Unable to restore data from backup file. Please verify file integrity and try again.',
               ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -203,8 +229,14 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           'This will import all products, customers, sales, and transactions from this snapshot into your active business.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore Data')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Restore Data'),
+          ),
         ],
       ),
     );
@@ -217,7 +249,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed reading backup file: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Failed reading backup file: $e'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       }
@@ -251,7 +286,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogCtx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () async {
               final raw = textController.text.trim();
@@ -259,12 +297,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
               Navigator.pop(dialogCtx);
               try {
-                final Map<String, dynamic> parsed = jsonDecode(raw) as Map<String, dynamic>;
+                final Map<String, dynamic> parsed =
+                    jsonDecode(raw) as Map<String, dynamic>;
                 await _restoreFromJson(parsed, sourceName: 'Pasted JSON');
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Invalid JSON formatting: $e'), backgroundColor: Colors.red),
+                    SnackBar(
+                      content: Text('Invalid JSON formatting: $e'),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
               }
@@ -284,9 +326,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final backupService = ref.read(cloudBackupServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cloud Backup & Restore'),
-      ),
+      appBar: AppBar(title: const Text('Cloud Backup & Restore')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -309,7 +349,11 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                           color: colorScheme.primaryContainer,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.cloud_upload_outlined, color: colorScheme.primary, size: 28),
+                        child: Icon(
+                          Icons.cloud_upload_outlined,
+                          color: colorScheme.primary,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -318,12 +362,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                           children: [
                             Text(
                               'Automated Store Backups',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Safely export complete store state including sales, inventory, and customer ledgers.',
-                              style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline,
+                              ),
                             ),
                           ],
                         ),
@@ -336,7 +384,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Automatic Daily Backup (Pro+)'),
-                    subtitle: const Text('Generates and archives backup at 00:00 every day'),
+                    subtitle: const Text(
+                      'Generates and archives backup at 00:00 every day',
+                    ),
                     value: _autoBackupEnabled,
                     onChanged: (val) {
                       if (val) {
@@ -345,7 +395,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                           UpgradePromptSheet.show(
                             context,
                             featureName: 'Automatic Daily Cloud Backup',
-                            customMessage: 'Daily scheduled automated cloud backups require Afri_BMS Pro or Enterprise.',
+                            customMessage:
+                                'Daily scheduled automated cloud backups require Afri_BMS Pro or Enterprise.',
                             currentTier: gate.tier,
                             suggestedTier: SubscriptionTier.pro,
                           );
@@ -354,7 +405,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                       }
                       setState(() => _autoBackupEnabled = val);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(val ? 'Daily automatic backups enabled.' : 'Daily automatic backups paused.')),
+                        SnackBar(
+                          content: Text(
+                            val
+                                ? 'Daily automatic backups enabled.'
+                                : 'Daily automatic backups paused.',
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -377,7 +434,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onPrimaryContainer),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -406,7 +466,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onSecondaryContainer),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colorScheme.onSecondaryContainer,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -430,28 +493,49 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 child: FilledButton.icon(
                   onPressed: _isLoading ? null : _handleCreateBackup,
                   icon: _isBackingUp
-                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : const Icon(Icons.backup_outlined),
-                  label: Text(_isBackingUp ? 'Backing Up...' : 'Create Backup Now'),
-                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  label: Text(
+                    _isBackingUp ? 'Backing Up...' : 'Create Backup Now',
+                  ),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               OutlinedButton.icon(
                 onPressed: _isLoading ? null : _showRestoreDialog,
                 icon: _isRestoring
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Icon(Icons.settings_backup_restore),
                 label: Text(_isRestoring ? 'Restoring...' : 'Restore Data'),
-                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 24),
 
           // Local Backups List
-          Text('Local Backup Snapshots (${_localBackups.length})',
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Local Backup Snapshots (${_localBackups.length})',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 10),
 
           if (_localBackups.isEmpty)
@@ -464,7 +548,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               child: const Padding(
                 padding: EdgeInsets.all(24),
                 child: Center(
-                  child: Text('No backup snapshots generated on this device yet.'),
+                  child: Text(
+                    'No backup snapshots generated on this device yet.',
+                  ),
                 ),
               ),
             )
@@ -474,7 +560,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               final stat = file.statSync();
               final name = entity.path.split(Platform.pathSeparator).last;
               final sizeKb = (stat.size / 1024).toStringAsFixed(1);
-              final dateStr = DateFormat('d MMM yyyy, HH:mm').format(stat.modified);
+              final dateStr = DateFormat(
+                'd MMM yyyy, HH:mm',
+              ).format(stat.modified);
 
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
@@ -484,25 +572,52 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   side: BorderSide(color: colorScheme.outlineVariant),
                 ),
                 child: ListTile(
-                  leading: const Icon(Icons.insert_drive_file_outlined, color: Colors.teal),
-                  title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  subtitle: Text('$dateStr • $sizeKb KB', style: const TextStyle(fontSize: 12)),
+                  leading: const Icon(
+                    Icons.insert_drive_file_outlined,
+                    color: Colors.teal,
+                  ),
+                  title: Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    '$dateStr • $sizeKb KB',
+                    style: const TextStyle(fontSize: 12),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         tooltip: 'Restore this snapshot',
-                        icon: const Icon(Icons.settings_backup_restore, size: 20, color: Colors.teal),
-                        onPressed: _isLoading ? null : () => _confirmRestoreFile(file, name),
+                        icon: const Icon(
+                          Icons.settings_backup_restore,
+                          size: 20,
+                          color: Colors.teal,
+                        ),
+                        onPressed: _isLoading
+                            ? null
+                            : () => _confirmRestoreFile(file, name),
                       ),
                       IconButton(
                         tooltip: 'Share / Export',
                         icon: const Icon(Icons.share, size: 20),
-                        onPressed: () => backupService.shareBackupFile(file, business?.name ?? 'Afri_BMS'),
+                        onPressed: () => backupService.shareBackupFile(
+                          file,
+                          business?.name ?? 'Afri_BMS',
+                        ),
                       ),
                       IconButton(
                         tooltip: 'Delete',
-                        icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          size: 20,
+                          color: Colors.red,
+                        ),
                         onPressed: () async {
                           await file.delete();
                           _loadLocalBackups();

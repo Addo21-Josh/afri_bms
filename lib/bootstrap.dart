@@ -9,7 +9,7 @@ class AppBootstrap {
   static Future<void> initialize() async {
     AppLogger.i('Initializing Database...');
     final dir = await getApplicationDocumentsDirectory();
-    
+
     // We will initialize collections here when we define them
     try {
       isar = await Isar.open(

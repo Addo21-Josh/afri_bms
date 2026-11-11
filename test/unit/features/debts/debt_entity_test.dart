@@ -71,27 +71,30 @@ void main() {
       expect(futureDebt.isOverdue, isFalse);
     });
 
-    test('agingBucket classifies debts across 0-29, 30-59, 60-89, and 90+ days', () {
-      DebtEntity createDebt(int daysAgo) {
-        final created = now.subtract(Duration(days: daysAgo));
-        return DebtEntity(
-          id: 'aging-$daysAgo',
-          businessId: 'biz-1',
-          branchId: 'branch-1',
-          debtType: DebtType.receivable,
-          personName: 'Customer',
-          initialAmount: 10000,
-          remainingBalance: 10000,
-          createdAt: created,
-          updatedAt: created,
-        );
-      }
+    test(
+      'agingBucket classifies debts across 0-29, 30-59, 60-89, and 90+ days',
+      () {
+        DebtEntity createDebt(int daysAgo) {
+          final created = now.subtract(Duration(days: daysAgo));
+          return DebtEntity(
+            id: 'aging-$daysAgo',
+            businessId: 'biz-1',
+            branchId: 'branch-1',
+            debtType: DebtType.receivable,
+            personName: 'Customer',
+            initialAmount: 10000,
+            remainingBalance: 10000,
+            createdAt: created,
+            updatedAt: created,
+          );
+        }
 
-      expect(createDebt(10).agingBucket, equals(AgingBucket.current));
-      expect(createDebt(45).agingBucket, equals(AgingBucket.thirtyDays));
-      expect(createDebt(75).agingBucket, equals(AgingBucket.sixtyDays));
-      expect(createDebt(120).agingBucket, equals(AgingBucket.ninetyDaysPlus));
-    });
+        expect(createDebt(10).agingBucket, equals(AgingBucket.current));
+        expect(createDebt(45).agingBucket, equals(AgingBucket.thirtyDays));
+        expect(createDebt(75).agingBucket, equals(AgingBucket.sixtyDays));
+        expect(createDebt(120).agingBucket, equals(AgingBucket.ninetyDaysPlus));
+      },
+    );
 
     test('enum parsing from strings behaves robustly', () {
       expect(DebtType.fromString('payable'), equals(DebtType.payable));

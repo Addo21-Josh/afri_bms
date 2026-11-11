@@ -31,17 +31,17 @@ class SaleItemEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        saleId,
-        productId,
-        variantId,
-        productName,
-        variantName,
-        unitCostPrice,
-        unitPrice,
-        quantity,
-        discountAmount,
-        totalPrice,
-        createdAt,
-      ];
+    id,
+    saleId,
+    productId,
+    variantId,
+    productName,
+    variantName,
+    unitCostPrice,
+    unitPrice,
+    quantity,
+    discountAmount,
+    totalPrice,
+    createdAt,
+  ];
 }

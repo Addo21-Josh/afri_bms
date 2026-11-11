@@ -9,7 +9,8 @@ class SmartInsightsScreen extends ConsumerStatefulWidget {
   const SmartInsightsScreen({super.key});
 
   @override
-  ConsumerState<SmartInsightsScreen> createState() => _SmartInsightsScreenState();
+  ConsumerState<SmartInsightsScreen> createState() =>
+      _SmartInsightsScreenState();
 }
 
 class _SmartInsightsScreenState extends ConsumerState<SmartInsightsScreen>
@@ -129,11 +130,16 @@ class _SalesVelocityTab extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         item.productName,
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
@@ -153,7 +159,10 @@ class _SalesVelocityTab extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Current Stock: ${item.currentStock} units', style: TextStyle(color: colorScheme.outline)),
+                    Text(
+                      'Current Stock: ${item.currentStock} units',
+                      style: TextStyle(color: colorScheme.outline),
+                    ),
                     Text(
                       'Velocity: ${item.velocityPerDay.toStringAsFixed(1)} units/day',
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -183,7 +192,9 @@ class _ProfitabilityTab extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
 
     if (list.isEmpty) {
-      return const Center(child: Text('No product profitability data available yet.'));
+      return const Center(
+        child: Text('No product profitability data available yet.'),
+      );
     }
 
     return ListView.builder(
@@ -224,13 +235,18 @@ class _ProfitabilityTab extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Text(
                           item.productName,
-                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                     Text(
                       '${item.profitMarginPercent.toStringAsFixed(1)}% Margin',
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
                     ),
                   ],
                 ),
@@ -240,7 +256,10 @@ class _ProfitabilityTab extends ConsumerWidget {
                   children: [
                     Text(
                       'Sold: ${item.quantitySold} units',
-                      style: TextStyle(color: colorScheme.outline, fontSize: 13),
+                      style: TextStyle(
+                        color: colorScheme.outline,
+                        fontSize: 13,
+                      ),
                     ),
                     Text(
                       'Total Profit: ${CurrencyFormatter.format(item.totalProfit, currencyCode: currency)}',
@@ -274,7 +293,9 @@ class _BranchComparisonTab extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
 
     if (branches.isEmpty) {
-      return const Center(child: Text('No branch performance data recorded yet.'));
+      return const Center(
+        child: Text('No branch performance data recorded yet.'),
+      );
     }
 
     final maxRevenue = branches.first.totalRevenue;
@@ -284,7 +305,9 @@ class _BranchComparisonTab extends ConsumerWidget {
       itemCount: branches.length,
       itemBuilder: (context, index) {
         final b = branches[index];
-        final ratio = maxRevenue > 0 ? (b.totalRevenue / maxRevenue).clamp(0.0, 1.0) : 0.0;
+        final ratio = maxRevenue > 0
+            ? (b.totalRevenue / maxRevenue).clamp(0.0, 1.0)
+            : 0.0;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
@@ -301,9 +324,17 @@ class _BranchComparisonTab extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(b.branchName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
                     Text(
-                      CurrencyFormatter.format(b.totalRevenue, currencyCode: currency),
+                      b.branchName,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      CurrencyFormatter.format(
+                        b.totalRevenue,
+                        currencyCode: currency,
+                      ),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.primary,
@@ -327,9 +358,20 @@ class _BranchComparisonTab extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Completed Orders: ${b.ordersCount}', style: TextStyle(color: colorScheme.outline, fontSize: 12)),
-                    Text('AOV: ${CurrencyFormatter.format(b.averageOrderValue, currencyCode: currency)}',
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                    Text(
+                      'Completed Orders: ${b.ordersCount}',
+                      style: TextStyle(
+                        color: colorScheme.outline,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      'AOV: ${CurrencyFormatter.format(b.averageOrderValue, currencyCode: currency)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -379,16 +421,28 @@ class _CustomerHabitsTab extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(c.customerName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      c.customerName,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.blue.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         'Prefers: ${c.preferredPaymentMethod}',
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue.shade900),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade900,
+                        ),
                       ),
                     ),
                   ],
@@ -397,7 +451,10 @@ class _CustomerHabitsTab extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Orders: ${c.ordersCount} visits', style: TextStyle(color: colorScheme.outline)),
+                    Text(
+                      'Orders: ${c.ordersCount} visits',
+                      style: TextStyle(color: colorScheme.outline),
+                    ),
                     Text(
                       'Total Spent: ${CurrencyFormatter.format(c.totalSpent, currencyCode: currency)}',
                       style: theme.textTheme.bodyMedium?.copyWith(

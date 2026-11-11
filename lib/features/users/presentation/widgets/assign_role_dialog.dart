@@ -30,10 +30,16 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.existingStaff?.fullName ?? '');
-    _emailController = TextEditingController(text: widget.existingStaff?.email ?? '');
+    _nameController = TextEditingController(
+      text: widget.existingStaff?.fullName ?? '',
+    );
+    _emailController = TextEditingController(
+      text: widget.existingStaff?.email ?? '',
+    );
     _passwordController = TextEditingController(text: 'AfriBMS@123');
-    _phoneController = TextEditingController(text: widget.existingStaff?.phone ?? '');
+    _phoneController = TextEditingController(
+      text: widget.existingStaff?.phone ?? '',
+    );
     _selectedRole = widget.existingStaff?.role ?? UserRoleType.salesperson;
     _selectedBranchId = widget.existingStaff?.branchId;
   }
@@ -68,27 +74,37 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
 
       bool success = false;
       if (widget.existingStaff == null) {
-        success = await ref.read(staffControllerProvider.notifier).assignStaff(
-          userEmail: _emailController.text.trim(),
-          role: _selectedRole,
-          fullName: _nameController.text.trim(),
-          password: _passwordController.text.trim(),
-          phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-          branchId: _selectedBranchId,
-        );
+        success = await ref
+            .read(staffControllerProvider.notifier)
+            .assignStaff(
+              userEmail: _emailController.text.trim(),
+              role: _selectedRole,
+              fullName: _nameController.text.trim(),
+              password: _passwordController.text.trim(),
+              phone: _phoneController.text.trim().isEmpty
+                  ? null
+                  : _phoneController.text.trim(),
+              branchId: _selectedBranchId,
+            );
       } else {
-        success = await ref.read(staffControllerProvider.notifier).updateStaff(
-          roleId: widget.existingStaff!.roleId,
-          newRole: _selectedRole,
-          newBranchId: _selectedBranchId,
-        );
+        success = await ref
+            .read(staffControllerProvider.notifier)
+            .updateStaff(
+              roleId: widget.existingStaff!.roleId,
+              newRole: _selectedRole,
+              newBranchId: _selectedBranchId,
+            );
       }
 
       if (mounted && success) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.existingStaff == null ? 'Staff member added successfully' : 'Role updated successfully'),
+            content: Text(
+              widget.existingStaff == null
+                  ? 'Staff member added successfully'
+                  : 'Role updated successfully',
+            ),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -103,7 +119,9 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: Text(widget.existingStaff == null ? 'Add Staff Member' : 'Edit Staff Role'),
+      title: Text(
+        widget.existingStaff == null ? 'Add Staff Member' : 'Edit Staff Role',
+      ),
       actionsOverflowButtonSpacing: 8,
       content: SizedBox(
         width: double.maxFinite,
@@ -117,15 +135,23 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                 if (staffState.hasError) ...[
                   Builder(
                     builder: (context) {
-                      final friendlyMsg = UserFriendlyError.toFriendly(staffState.error);
-                      final isLimit = UserFriendlyError.isLimitOrUpgradeError(staffState.error);
+                      final friendlyMsg = UserFriendlyError.toFriendly(
+                        staffState.error,
+                      );
+                      final isLimit = UserFriendlyError.isLimitOrUpgradeError(
+                        staffState.error,
+                      );
 
                       return Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.errorContainer,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: theme.colorScheme.error.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +159,11 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.info_outline, size: 18, color: theme.colorScheme.error),
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 18,
+                                  color: theme.colorScheme.error,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -155,7 +185,10 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                                   style: TextButton.styleFrom(
                                     visualDensity: VisualDensity.compact,
                                     foregroundColor: theme.colorScheme.error,
-                                    textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                    textStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                   icon: const Icon(Icons.upgrade, size: 16),
                                   label: const Text('Upgrade Plan'),
@@ -187,7 +220,8 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                       prefixIcon: Icon(Icons.person_outline),
                     ),
                     validator: (val) {
-                      if (val == null || val.trim().isEmpty) return 'Full name is required';
+                      if (val == null || val.trim().isEmpty)
+                        return 'Full name is required';
                       return null;
                     },
                   ),
@@ -203,8 +237,10 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.trim().isEmpty) return 'Email is required';
-                    if (!val.contains('@') || !val.contains('.')) return 'Invalid email';
+                    if (val == null || val.trim().isEmpty)
+                      return 'Email is required';
+                    if (!val.contains('@') || !val.contains('.'))
+                      return 'Invalid email';
                     return null;
                   },
                 ),
@@ -218,12 +254,19 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                       hintText: 'Set a temporary login password',
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.length < 6) return 'Password must be at least 6 characters';
+                      if (val == null || val.length < 6)
+                        return 'Password must be at least 6 characters';
                       return null;
                     },
                   ),
@@ -246,20 +289,21 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                     labelText: 'Assigned Role',
                     prefixIcon: Icon(Icons.badge_outlined),
                   ),
-                  items: [
-                    UserRoleType.branchManager,
-                    UserRoleType.salesperson,
-                    UserRoleType.cashier,
-                    UserRoleType.admin,
-                  ].map((role) {
-                    return DropdownMenuItem(
-                      value: role,
-                      child: Text(
-                        role.displayName,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      [
+                        UserRoleType.branchManager,
+                        UserRoleType.salesperson,
+                        UserRoleType.cashier,
+                        UserRoleType.admin,
+                      ].map((role) {
+                        return DropdownMenuItem(
+                          value: role,
+                          child: Text(
+                            role.displayName,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
                   onChanged: (val) {
                     if (val != null) setState(() => _selectedRole = val);
                   },
@@ -281,13 +325,12 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      ...branches.map((b) => DropdownMenuItem<String?>(
-                            value: b.id,
-                            child: Text(
-                              b.name,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )),
+                      ...branches.map(
+                        (b) => DropdownMenuItem<String?>(
+                          value: b.id,
+                          child: Text(b.name, overflow: TextOverflow.ellipsis),
+                        ),
+                      ),
                     ],
                     onChanged: (val) {
                       setState(() => _selectedBranchId = val);
@@ -309,8 +352,16 @@ class _AssignRoleDialogState extends ConsumerState<AssignRoleDialog> {
         FilledButton(
           onPressed: staffState.isLoading ? null : _submit,
           child: staffState.isLoading
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(widget.existingStaff == null ? 'Create & Assign' : 'Save Changes'),
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  widget.existingStaff == null
+                      ? 'Create & Assign'
+                      : 'Save Changes',
+                ),
         ),
       ],
     );

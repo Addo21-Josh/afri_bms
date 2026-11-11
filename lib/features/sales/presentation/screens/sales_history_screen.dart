@@ -87,7 +87,8 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref.read(salesSearchQueryProvider.notifier).state = '';
+                          ref.read(salesSearchQueryProvider.notifier).state =
+                              '';
                           setState(() {});
                         },
                       )
@@ -95,7 +96,8 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                 isDense: true,
               ),
               onSubmitted: (query) {
-                ref.read(salesSearchQueryProvider.notifier).state = query.trim();
+                ref.read(salesSearchQueryProvider.notifier).state = query
+                    .trim();
               },
             ),
           ),
@@ -116,16 +118,24 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.receipt_long_outlined, size: 64, color: colorScheme.outline),
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 64,
+                            color: colorScheme.outline,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'No Sales Recorded Yet',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Completed sales from the POS terminal will appear here.',
-                            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.outline,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -137,7 +147,8 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   itemCount: sales.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 10),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final sale = sales[index];
                     final methodColor = _getMethodColor(sale.paymentMethod);
@@ -146,7 +157,9 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
-                        side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+                        side: BorderSide(
+                          color: colorScheme.outlineVariant.withOpacity(0.5),
+                        ),
                       ),
                       child: InkWell(
                         onTap: () {
@@ -166,14 +179,21 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     sale.saleNumber,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   Text(
-                                    CurrencyFormatter.format(sale.totalAmount, currencyCode: currency),
+                                    CurrencyFormatter.format(
+                                      sale.totalAmount,
+                                      currencyCode: currency,
+                                    ),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -186,7 +206,10 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: methodColor.withOpacity(0.12),
                                       borderRadius: BorderRadius.circular(6),
@@ -203,20 +226,26 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                                   const SizedBox(width: 8),
                                   Text(
                                     '${sale.items.length} items',
-                                    style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.outline,
+                                    ),
                                   ),
                                   if (sale.cashierName != null) ...[
                                     const Spacer(),
                                     Text(
                                       'Cashier: ${sale.cashierName}',
-                                      style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.outline,
+                                          ),
                                     ),
                                   ],
                                 ],
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     dateFormat.format(sale.createdAt),
@@ -235,7 +264,11 @@ class _SalesHistoryScreenState extends ConsumerState<SalesHistoryScreen> {
                                           color: colorScheme.primary,
                                         ),
                                       ),
-                                      Icon(Icons.chevron_right, size: 16, color: colorScheme.primary),
+                                      Icon(
+                                        Icons.chevron_right,
+                                        size: 16,
+                                        color: colorScheme.primary,
+                                      ),
                                     ],
                                   ),
                                 ],

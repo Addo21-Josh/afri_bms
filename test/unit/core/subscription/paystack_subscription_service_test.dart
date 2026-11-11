@@ -16,49 +16,55 @@ void main() {
   });
 
   group('PaystackSubscriptionService - initializePayment', () {
-    test('sends payload in GHS minor units (pesewas) and parses response', () async {
-      when(
-        () => mockDio.post(
-          '/transaction/initialize',
-          options: any(named: 'options'),
-          data: any(named: 'data'),
-        ),
-      ).thenAnswer(
-        (_) async => Response(
-          requestOptions: RequestOptions(path: '/transaction/initialize'),
-          statusCode: 200,
-          data: {
-            'status': true,
-            'message': 'Authorization URL created',
-            'data': {
-              'authorization_url': 'https://checkout.paystack.com/access123',
-              'access_code': 'access123',
-              'reference': 'ref_test_001',
+    test(
+      'sends payload in GHS minor units (pesewas) and parses response',
+      () async {
+        when(
+          () => mockDio.post(
+            '/transaction/initialize',
+            options: any(named: 'options'),
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/transaction/initialize'),
+            statusCode: 200,
+            data: {
+              'status': true,
+              'message': 'Authorization URL created',
+              'data': {
+                'authorization_url': 'https://checkout.paystack.com/access123',
+                'access_code': 'access123',
+                'reference': 'ref_test_001',
+              },
             },
-          },
-        ),
-      );
+          ),
+        );
 
-      final result = await service.initializePayment(
-        email: 'merchant@store.com',
-        amountInGhs: 50,
-        tier: SubscriptionTier.pro,
-        isYearly: false,
-        metadata: {'business_id': 'biz-123'},
-      );
+        final result = await service.initializePayment(
+          email: 'merchant@store.com',
+          amountInGhs: 50,
+          tier: SubscriptionTier.pro,
+          isYearly: false,
+          metadata: {'business_id': 'biz-123'},
+        );
 
-      expect(result.success, isTrue);
-      expect(result.authorizationUrl, equals('https://checkout.paystack.com/access123'));
-      expect(result.reference, equals('ref_test_001'));
+        expect(result.success, isTrue);
+        expect(
+          result.authorizationUrl,
+          equals('https://checkout.paystack.com/access123'),
+        );
+        expect(result.reference, equals('ref_test_001'));
 
-      verify(
-        () => mockDio.post(
-          '/transaction/initialize',
-          options: any(named: 'options'),
-          data: captureAny(named: 'data'),
-        ),
-      ).called(1);
-    });
+        verify(
+          () => mockDio.post(
+            '/transaction/initialize',
+            options: any(named: 'options'),
+            data: captureAny(named: 'data'),
+          ),
+        ).called(1);
+      },
+    );
 
     test('handles failed API response gracefully', () async {
       when(
@@ -71,10 +77,7 @@ void main() {
         (_) async => Response(
           requestOptions: RequestOptions(path: '/transaction/initialize'),
           statusCode: 400,
-          data: {
-            'status': false,
-            'message': 'Invalid amount',
-          },
+          data: {'status': false, 'message': 'Invalid amount'},
         ),
       );
 
@@ -99,7 +102,9 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Response(
-          requestOptions: RequestOptions(path: '/transaction/verify/ref_test_001'),
+          requestOptions: RequestOptions(
+            path: '/transaction/verify/ref_test_001',
+          ),
           statusCode: 200,
           data: {
             'status': true,
@@ -124,13 +129,13 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Response(
-          requestOptions: RequestOptions(path: '/transaction/verify/ref_test_002'),
+          requestOptions: RequestOptions(
+            path: '/transaction/verify/ref_test_002',
+          ),
           statusCode: 200,
           data: {
             'status': true,
-            'data': {
-              'status': 'failed',
-            },
+            'data': {'status': 'failed'},
           },
         ),
       );

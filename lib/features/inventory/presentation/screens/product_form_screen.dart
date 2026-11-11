@@ -99,13 +99,17 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
           children: [
             TextField(
               controller: vNameCtrl,
-              decoration: const InputDecoration(labelText: 'Variant Name (e.g. Large / Red)'),
+              decoration: const InputDecoration(
+                labelText: 'Variant Name (e.g. Large / Red)',
+              ),
               autofocus: true,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: vSkuCtrl,
-              decoration: const InputDecoration(labelText: 'Variant SKU (Optional)'),
+              decoration: const InputDecoration(
+                labelText: 'Variant SKU (Optional)',
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -114,15 +118,21 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   child: TextField(
                     controller: vCostCtrl,
                     decoration: const InputDecoration(labelText: 'Cost Price'),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextField(
                     controller: vSellCtrl,
-                    decoration: const InputDecoration(labelText: 'Selling Price'),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Selling Price',
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                   ),
                 ),
               ],
@@ -130,22 +140,33 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () {
               if (vNameCtrl.text.trim().isNotEmpty) {
-                final cost = ((double.tryParse(vCostCtrl.text.trim()) ?? 0) * 100).round();
-                final sell = ((double.tryParse(vSellCtrl.text.trim()) ?? 0) * 100).round();
+                final cost =
+                    ((double.tryParse(vCostCtrl.text.trim()) ?? 0) * 100)
+                        .round();
+                final sell =
+                    ((double.tryParse(vSellCtrl.text.trim()) ?? 0) * 100)
+                        .round();
                 setState(() {
-                  _variants.add(ProductVariantEntity(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    productId: widget.existingProduct?.id ?? '',
-                    name: vNameCtrl.text.trim(),
-                    sku: vSkuCtrl.text.trim().isNotEmpty ? vSkuCtrl.text.trim() : null,
-                    costPrice: cost,
-                    sellingPrice: sell,
-                    createdAt: DateTime.now(),
-                  ));
+                  _variants.add(
+                    ProductVariantEntity(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      productId: widget.existingProduct?.id ?? '',
+                      name: vNameCtrl.text.trim(),
+                      sku: vSkuCtrl.text.trim().isNotEmpty
+                          ? vSkuCtrl.text.trim()
+                          : null,
+                      costPrice: cost,
+                      sellingPrice: sell,
+                      createdAt: DateTime.now(),
+                    ),
+                  );
                 });
                 Navigator.pop(ctx);
               }
@@ -207,7 +228,11 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   });
                   ref.invalidate(productCategoriesProvider);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Category "$catName" created and selected!')),
+                    SnackBar(
+                      content: Text(
+                        'Category "$catName" created and selected!',
+                      ),
+                    ),
                   );
                 }
               }
@@ -241,10 +266,15 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
       final currentBiz = ref.read(currentBusinessProvider);
       final currency = currentBiz?.defaultCurrency ?? 'GHS';
 
-      final cost = ((double.tryParse(_costPriceController.text.trim()) ?? 0) * 100).round();
-      final sell = ((double.tryParse(_sellingPriceController.text.trim()) ?? 0) * 100).round();
+      final cost =
+          ((double.tryParse(_costPriceController.text.trim()) ?? 0) * 100)
+              .round();
+      final sell =
+          ((double.tryParse(_sellingPriceController.text.trim()) ?? 0) * 100)
+              .round();
       final reorder = int.tryParse(_reorderLevelController.text.trim()) ?? 10;
-      final initialStock = int.tryParse(_initialStockController.text.trim()) ?? 0;
+      final initialStock =
+          int.tryParse(_initialStockController.text.trim()) ?? 0;
 
       if (widget.existingProduct == null) {
         final currentCount = ref.read(productsListProvider).value?.length ?? 0;
@@ -261,20 +291,28 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
           return;
         }
 
-        final newProduct = await ref.read(inventoryControllerProvider.notifier).createProduct(
-          categoryId: _selectedCategoryId,
-          name: _nameController.text.trim(),
-          description: _descController.text.trim().isNotEmpty ? _descController.text.trim() : null,
-          sku: _skuController.text.trim().isNotEmpty ? _skuController.text.trim() : null,
-          barcode: _barcodeController.text.trim().isNotEmpty ? _barcodeController.text.trim() : null,
-          costPrice: cost,
-          sellingPrice: sell,
-          currency: currency,
-          unit: _unit,
-          reorderLevel: reorder,
-          initialStock: initialStock,
-          variants: _variants,
-        );
+        final newProduct = await ref
+            .read(inventoryControllerProvider.notifier)
+            .createProduct(
+              categoryId: _selectedCategoryId,
+              name: _nameController.text.trim(),
+              description: _descController.text.trim().isNotEmpty
+                  ? _descController.text.trim()
+                  : null,
+              sku: _skuController.text.trim().isNotEmpty
+                  ? _skuController.text.trim()
+                  : null,
+              barcode: _barcodeController.text.trim().isNotEmpty
+                  ? _barcodeController.text.trim()
+                  : null,
+              costPrice: cost,
+              sellingPrice: sell,
+              currency: currency,
+              unit: _unit,
+              reorderLevel: reorder,
+              initialStock: initialStock,
+              variants: _variants,
+            );
 
         if (mounted) {
           if (newProduct != null) {
@@ -301,9 +339,15 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
           businessId: widget.existingProduct!.businessId,
           categoryId: _selectedCategoryId,
           name: _nameController.text.trim(),
-          description: _descController.text.trim().isNotEmpty ? _descController.text.trim() : null,
-          sku: _skuController.text.trim().isNotEmpty ? _skuController.text.trim() : null,
-          barcode: _barcodeController.text.trim().isNotEmpty ? _barcodeController.text.trim() : null,
+          description: _descController.text.trim().isNotEmpty
+              ? _descController.text.trim()
+              : null,
+          sku: _skuController.text.trim().isNotEmpty
+              ? _skuController.text.trim()
+              : null,
+          barcode: _barcodeController.text.trim().isNotEmpty
+              ? _barcodeController.text.trim()
+              : null,
           costPrice: cost,
           sellingPrice: sell,
           currency: currency,
@@ -314,7 +358,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
           updatedAt: DateTime.now(),
         );
 
-        final success = await ref.read(inventoryControllerProvider.notifier).updateProduct(updated);
+        final success = await ref
+            .read(inventoryControllerProvider.notifier)
+            .updateProduct(updated);
         if (mounted) {
           if (success) {
             context.pop();
@@ -343,7 +389,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     final categoriesAsync = ref.watch(productCategoriesProvider);
     final invState = ref.watch(inventoryControllerProvider);
     final userRole = ref.watch(currentUserRoleProvider).value;
-    final canManageProducts = userRole == UserRoleType.admin || userRole == UserRoleType.branchManager;
+    final canManageProducts =
+        userRole == UserRoleType.admin ||
+        userRole == UserRoleType.branchManager;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -360,7 +408,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Permission Denied',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -397,7 +447,11 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: colorScheme.onErrorContainer, size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: colorScheme.onErrorContainer,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -405,13 +459,17 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           style: TextStyle(color: colorScheme.onErrorContainer),
                         ),
                       ),
-                      if (UserFriendlyError.isLimitOrUpgradeError(invState.error)) ...[
+                      if (UserFriendlyError.isLimitOrUpgradeError(
+                        invState.error,
+                      )) ...[
                         const SizedBox(width: 8),
                         FilledButton.tonal(
                           onPressed: () => UpgradePromptSheet.show(
                             context,
                             featureName: 'Product Limit',
-                            customMessage: UserFriendlyError.toFriendly(invState.error),
+                            customMessage: UserFriendlyError.toFriendly(
+                              invState.error,
+                            ),
                           ),
                           child: const Text('Upgrade'),
                         ),
@@ -423,7 +481,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               ],
 
               // Product Basic Information
-              Text('General Information', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'General Information',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _nameController,
@@ -432,7 +495,8 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   hintText: 'e.g. Golden Penny Spaghetti 500g',
                   prefixIcon: Icon(Icons.shopping_bag_outlined),
                 ),
-                validator: (val) => Validators.required(val, 'Product name is required'),
+                validator: (val) =>
+                    Validators.required(val, 'Product name is required'),
               ),
               const SizedBox(height: 16),
 
@@ -444,7 +508,8 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                     child: Builder(
                       builder: (context) {
                         final cats = categoriesAsync.value ?? [];
-                        final hasSelected = _selectedCategoryId == null ||
+                        final hasSelected =
+                            _selectedCategoryId == null ||
                             cats.any((c) => c.id == _selectedCategoryId);
 
                         return DropdownButtonFormField<String?>(
@@ -463,21 +528,27 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                               value: null,
                               child: Text('Uncategorized'),
                             ),
-                            ...cats.map((c) => DropdownMenuItem<String?>(
-                                  value: c.id,
-                                  child: Text(c.name),
-                                )),
+                            ...cats.map(
+                              (c) => DropdownMenuItem<String?>(
+                                value: c.id,
+                                child: Text(c.name),
+                              ),
+                            ),
                             if (!hasSelected && _selectedCategoryId != null)
                               DropdownMenuItem<String?>(
                                 value: _selectedCategoryId,
-                                child: Text(_selectedCategoryName ?? 'Selected Category'),
+                                child: Text(
+                                  _selectedCategoryName ?? 'Selected Category',
+                                ),
                               ),
                           ],
                           onChanged: (val) {
                             setState(() {
                               _selectedCategoryId = val;
-                              _selectedCategoryName =
-                                  cats.where((c) => c.id == val).firstOrNull?.name;
+                              _selectedCategoryName = cats
+                                  .where((c) => c.id == val)
+                                  .firstOrNull
+                                  ?.name;
                             });
                           },
                         );
@@ -527,7 +598,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               const SizedBox(height: 24),
 
               // Pricing Section
-              Text('Pricing', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'Pricing',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -539,8 +615,13 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         hintText: '0.00',
                         prefixIcon: Icon(Icons.price_check_outlined),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (val) => Validators.nonNegativeNumber(val, fieldName: 'Cost price'),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (val) => Validators.nonNegativeNumber(
+                        val,
+                        fieldName: 'Cost price',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -552,8 +633,13 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         hintText: '0.00',
                         prefixIcon: Icon(Icons.payments_outlined),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (val) => Validators.nonNegativeNumber(val, fieldName: 'Selling price'),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (val) => Validators.nonNegativeNumber(
+                        val,
+                        fieldName: 'Selling price',
+                      ),
                     ),
                   ),
                 ],
@@ -561,7 +647,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               const SizedBox(height: 24),
 
               // Stock & Inventory Tracking
-              Text('Stock & Codes', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'Stock & Codes',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -575,7 +666,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           suffixText: _unit,
                         ),
                         keyboardType: TextInputType.number,
-                        validator: (val) => Validators.nonNegativeInteger(val, fieldName: 'Initial stock'),
+                        validator: (val) => Validators.nonNegativeInteger(
+                          val,
+                          fieldName: 'Initial stock',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -585,11 +679,16 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                       controller: _reorderLevelController,
                       decoration: InputDecoration(
                         labelText: 'Low Stock Alert Level',
-                        prefixIcon: const Icon(Icons.notification_important_outlined),
+                        prefixIcon: const Icon(
+                          Icons.notification_important_outlined,
+                        ),
                         suffixText: _unit,
                       ),
                       keyboardType: TextInputType.number,
-                      validator: (val) => Validators.nonNegativeInteger(val, fieldName: 'Reorder level'),
+                      validator: (val) => Validators.nonNegativeInteger(
+                        val,
+                        fieldName: 'Reorder level',
+                      ),
                     ),
                   ),
                 ],
@@ -632,7 +731,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Variants (${_variants.length})', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Variants (${_variants.length})',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   TextButton.icon(
                     onPressed: _addVariantDialog,
                     icon: const Icon(Icons.add, size: 18),
@@ -645,13 +749,19 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    color: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
                     borderRadius: BorderRadius.circular(12),
-                    border: BorderStyle.none == BorderStyle.solid ? null : Border.all(color: colorScheme.outlineVariant),
+                    border: BorderStyle.none == BorderStyle.solid
+                        ? null
+                        : Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: Text(
                     'No variants added yet (e.g., Size, Color, Flavors). Tap "Add Variant" to configure variants.',
-                    style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 )
               else
@@ -667,11 +777,17 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                     ),
                     child: ListTile(
                       dense: true,
-                      title: Text(v.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('Sell: ${(v.sellingPrice / 100).toStringAsFixed(2)} | Cost: ${(v.costPrice / 100).toStringAsFixed(2)}'),
+                      title: Text(
+                        v.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Sell: ${(v.sellingPrice / 100).toStringAsFixed(2)} | Cost: ${(v.costPrice / 100).toStringAsFixed(2)}',
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.close, size: 18),
-                        onPressed: () => setState(() => _variants.removeAt(idx)),
+                        onPressed: () =>
+                            setState(() => _variants.removeAt(idx)),
                       ),
                     ),
                   );
@@ -687,7 +803,11 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   onPressed: invState.isLoading ? null : _submit,
                   child: invState.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(widget.existingProduct == null ? 'Save Product' : 'Update Product'),
+                      : Text(
+                          widget.existingProduct == null
+                              ? 'Save Product'
+                              : 'Update Product',
+                        ),
                 ),
               ),
             ],

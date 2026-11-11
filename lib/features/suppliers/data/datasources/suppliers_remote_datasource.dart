@@ -4,7 +4,10 @@ import '../../../../core/utils/logger.dart';
 import '../models/supplier_model.dart';
 
 abstract class SuppliersRemoteDatasource {
-  Future<List<SupplierModel>> getSuppliers(String businessId, {String? searchQuery});
+  Future<List<SupplierModel>> getSuppliers(
+    String businessId, {
+    String? searchQuery,
+  });
   Future<SupplierModel> getSupplierById(String supplierId);
   Future<SupplierModel> createSupplier({
     required String businessId,
@@ -29,7 +32,10 @@ class SuppliersRemoteDatasourceImpl implements SuppliersRemoteDatasource {
   SuppliersRemoteDatasourceImpl(this._supabaseClient);
 
   @override
-  Future<List<SupplierModel>> getSuppliers(String businessId, {String? searchQuery}) async {
+  Future<List<SupplierModel>> getSuppliers(
+    String businessId, {
+    String? searchQuery,
+  }) async {
     try {
       var query = _supabaseClient
           .from('suppliers')
@@ -39,15 +45,21 @@ class SuppliersRemoteDatasourceImpl implements SuppliersRemoteDatasource {
 
       if (searchQuery != null && searchQuery.trim().isNotEmpty) {
         final sanitized = searchQuery.trim();
-        query = query.or('name.ilike.%$sanitized%,contact_person.ilike.%$sanitized%,phone.ilike.%$sanitized%');
+        query = query.or(
+          'name.ilike.%$sanitized%,contact_person.ilike.%$sanitized%,phone.ilike.%$sanitized%',
+        );
       }
 
       final response = await query.order('name', ascending: true);
       final list = response as List;
-      return list.map((json) => SupplierModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => SupplierModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205') {
-        AppLogger.w('public.suppliers table not found in schema cache. Migration pending: ${e.message}');
+        AppLogger.w(
+          'public.suppliers table not found in schema cache. Migration pending: ${e.message}',
+        );
         return [];
       }
       AppLogger.e('Get Suppliers PostgrestException: $e');
@@ -138,7 +150,10 @@ class SuppliersRemoteDatasourceImpl implements SuppliersRemoteDatasource {
     try {
       await _supabaseClient
           .from('suppliers')
-          .update({'is_active': false, 'updated_at': DateTime.now().toIso8601String()})
+          .update({
+            'is_active': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
           .eq('id', supplierId);
     } catch (e) {
       AppLogger.e('Delete Supplier Error: $e');
@@ -158,8 +173,12 @@ class SuppliersRemoteDatasourceImpl implements SuppliersRemoteDatasource {
           .eq('id', supplierId)
           .single();
 
-      final currentBalance = (current['outstanding_balance'] as num?)?.toInt() ?? 0;
-      final newBalance = (currentBalance + balanceAdjustment).clamp(0, double.maxFinite.toInt());
+      final currentBalance =
+          (current['outstanding_balance'] as num?)?.toInt() ?? 0;
+      final newBalance = (currentBalance + balanceAdjustment).clamp(
+        0,
+        double.maxFinite.toInt(),
+      );
 
       final updated = await _supabaseClient
           .from('suppliers')

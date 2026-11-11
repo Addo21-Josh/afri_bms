@@ -22,7 +22,8 @@ class ExpenseModel extends ExpenseEntity {
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
     String? catName;
-    if (json['expense_categories'] != null && json['expense_categories'] is Map) {
+    if (json['expense_categories'] != null &&
+        json['expense_categories'] is Map) {
       catName = json['expense_categories']['name'] as String?;
     } else if (json['category_name'] != null) {
       catName = json['category_name'] as String?;

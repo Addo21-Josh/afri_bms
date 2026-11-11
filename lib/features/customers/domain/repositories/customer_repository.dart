@@ -21,13 +21,16 @@ abstract class CustomerRepository {
     String? notes,
   });
 
-  Future<Either<Failure, CustomerEntity>> updateCustomer(CustomerEntity customer);
+  Future<Either<Failure, CustomerEntity>> updateCustomer(
+    CustomerEntity customer,
+  );
 
   Future<Either<Failure, void>> deleteCustomer(String customerId);
 
   Future<Either<Failure, CustomerEntity>> updateBalance({
     required String customerId,
-    required int balanceAdjustment, // Positive increases debt, negative decreases debt
+    required int
+    balanceAdjustment, // Positive increases debt, negative decreases debt
   });
 
   Future<Either<Failure, List<SaleEntity>>> getCustomerSales(String customerId);

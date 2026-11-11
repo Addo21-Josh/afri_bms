@@ -34,7 +34,9 @@ class BusinessRepositoryImpl implements BusinessRepository {
   }
 
   @override
-  Future<Either<Failure, List<BusinessEntity>>> getUserBusinesses(String userId) async {
+  Future<Either<Failure, List<BusinessEntity>>> getUserBusinesses(
+    String userId,
+  ) async {
     try {
       final list = await remoteDatasource.getUserBusinesses(userId);
       return Right(list);
@@ -46,7 +48,9 @@ class BusinessRepositoryImpl implements BusinessRepository {
   }
 
   @override
-  Future<Either<Failure, BusinessEntity>> updateBusiness(BusinessEntity business) async {
+  Future<Either<Failure, BusinessEntity>> updateBusiness(
+    BusinessEntity business,
+  ) async {
     try {
       final updated = await remoteDatasource.updateBusiness(business);
       return Right(updated);
@@ -58,7 +62,9 @@ class BusinessRepositoryImpl implements BusinessRepository {
   }
 
   @override
-  Future<Either<Failure, List<BranchEntity>>> getBusinessBranches(String businessId) async {
+  Future<Either<Failure, List<BranchEntity>>> getBusinessBranches(
+    String businessId,
+  ) async {
     try {
       final list = await remoteDatasource.getBusinessBranches(businessId);
       return Right(list);

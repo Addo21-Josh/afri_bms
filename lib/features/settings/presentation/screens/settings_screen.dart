@@ -32,10 +32,7 @@ class SettingsScreen extends ConsumerWidget {
     final user = Supabase.instance.client.auth.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.settingsTitle),
-        centerTitle: false,
-      ),
+      appBar: AppBar(title: Text(l10n.settingsTitle), centerTitle: false),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         children: [
@@ -93,13 +90,17 @@ class SettingsScreen extends ConsumerWidget {
                           runSpacing: 4,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: colorScheme.secondaryContainer,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                (userRole?.displayName ?? 'Administrator').toUpperCase(),
+                                (userRole?.displayName ?? 'Administrator')
+                                    .toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -109,7 +110,10 @@ class SettingsScreen extends ConsumerWidget {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: currentTier.badgeColor,
                                 borderRadius: BorderRadius.circular(6),
@@ -141,7 +145,9 @@ class SettingsScreen extends ConsumerWidget {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: currentTier.badgeColor.withValues(alpha: 0.35)),
+              side: BorderSide(
+                color: currentTier.badgeColor.withValues(alpha: 0.35),
+              ),
             ),
             child: ListTile(
               leading: Container(
@@ -150,7 +156,11 @@ class SettingsScreen extends ConsumerWidget {
                   color: currentTier.badgeColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(currentTier.icon, color: currentTier.badgeColor, size: 22),
+                child: Icon(
+                  currentTier.icon,
+                  color: currentTier.badgeColor,
+                  size: 22,
+                ),
               ),
               title: Row(
                 children: [
@@ -163,7 +173,10 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: currentTier.badgeColor,
                       borderRadius: BorderRadius.circular(4),
@@ -188,7 +201,9 @@ class SettingsScreen extends ConsumerWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SubscriptionPlansScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const SubscriptionPlansScreen(),
+                  ),
                 );
               },
             ),
@@ -213,7 +228,10 @@ class SettingsScreen extends ConsumerWidget {
                       color: colorScheme.primaryContainer.withAlpha(128),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(AppLanguages.getFlag(currentLocale), style: const TextStyle(fontSize: 18)),
+                    child: Text(
+                      AppLanguages.getFlag(currentLocale),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                   title: Text(l10n.settingsLanguage),
                   subtitle: Text(AppLanguages.getLabel(currentLocale)),
@@ -233,8 +251,8 @@ class SettingsScreen extends ConsumerWidget {
                       currentThemeMode == ThemeMode.dark
                           ? Icons.dark_mode
                           : currentThemeMode == ThemeMode.light
-                              ? Icons.light_mode
-                              : Icons.brightness_auto,
+                          ? Icons.light_mode
+                          : Icons.brightness_auto,
                       color: colorScheme.primary,
                       size: 20,
                     ),
@@ -244,11 +262,12 @@ class SettingsScreen extends ConsumerWidget {
                     currentThemeMode == ThemeMode.dark
                         ? l10n.settingsThemeDark
                         : currentThemeMode == ThemeMode.light
-                            ? l10n.settingsThemeLight
-                            : l10n.settingsThemeSystem,
+                        ? l10n.settingsThemeLight
+                        : l10n.settingsThemeSystem,
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showThemeDialog(context, ref, currentThemeMode, l10n),
+                  onTap: () =>
+                      _showThemeDialog(context, ref, currentThemeMode, l10n),
                 ),
               ],
             ),
@@ -268,7 +287,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: _iconBox(context, Icons.storefront_outlined),
                   title: Text(l10n.businessSettingsTitle),
-                  subtitle: Text('Profile, currency (${currentBiz?.defaultCurrency ?? 'GHS'}), tax (${currentBiz?.taxRate ?? 0}%)'),
+                  subtitle: Text(
+                    'Profile, currency (${currentBiz?.defaultCurrency ?? 'GHS'}), tax (${currentBiz?.taxRate ?? 0}%)',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/business-settings'),
                 ),
@@ -276,7 +297,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: _iconBox(context, Icons.account_tree_outlined),
                   title: Text(l10n.businessBranches),
-                  subtitle: const Text('Manage store branches and staff allocation'),
+                  subtitle: const Text(
+                    'Manage store branches and staff allocation',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/branches'),
                 ),
@@ -284,7 +307,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: _iconBox(context, Icons.badge_outlined),
                   title: Text(l10n.navStaff),
-                  subtitle: const Text('Staff accounts, PINs, and cashier permissions'),
+                  subtitle: const Text(
+                    'Staff accounts, PINs, and cashier permissions',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/staff'),
                 ),
@@ -312,15 +337,20 @@ class SettingsScreen extends ConsumerWidget {
                         : l10n.settingsPrinterNone,
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showPrinterDialog(context, ref, printerConfig, l10n),
+                  onTap: () =>
+                      _showPrinterDialog(context, ref, printerConfig, l10n),
                 ),
                 SwitchListTile(
                   secondary: _iconBox(context, Icons.receipt_long_outlined),
                   title: const Text('Auto-print Receipt on Sale'),
-                  subtitle: const Text('Automatically trigger print when checkout completes'),
+                  subtitle: const Text(
+                    'Automatically trigger print when checkout completes',
+                  ),
                   value: printerConfig.autoPrintReceipt,
                   onChanged: (val) {
-                    ref.read(printerConfigProvider.notifier).updatePrinter(autoPrint: val);
+                    ref
+                        .read(printerConfigProvider.notifier)
+                        .updatePrinter(autoPrint: val);
                   },
                 ),
               ],
@@ -344,8 +374,8 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: Text(
                     syncState.isOnline
                         ? (syncState.pendingCount > 0
-                            ? '${syncState.pendingCount} changes pending sync'
-                            : 'All data synchronized')
+                              ? '${syncState.pendingCount} changes pending sync'
+                              : 'All data synchronized')
                         : 'Offline mode active',
                   ),
                   trailing: Row(
@@ -355,7 +385,9 @@ class SettingsScreen extends ConsumerWidget {
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
-                          color: syncState.isOnline ? Colors.green : Colors.amber,
+                          color: syncState.isOnline
+                              ? Colors.green
+                              : Colors.amber,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -369,7 +401,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: _iconBox(context, Icons.cloud_done_outlined),
                   title: Text(l10n.backupTitle),
-                  subtitle: const Text('Create full JSON snapshots, restore store data'),
+                  subtitle: const Text(
+                    'Create full JSON snapshots, restore store data',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/backup'),
                 ),
@@ -412,11 +446,19 @@ class SettingsScreen extends ConsumerWidget {
           OutlinedButton.icon(
             onPressed: () => _confirmSignOut(context, ref, l10n),
             icon: const Icon(Icons.logout, color: Colors.red),
-            label: Text(l10n.navLogout, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            label: Text(
+              l10n.navLogout,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Colors.red),
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 40),
@@ -431,10 +473,10 @@ class SettingsScreen extends ConsumerWidget {
       child: Text(
         title.toUpperCase(),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.1,
-              color: Theme.of(context).colorScheme.outline,
-            ),
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.1,
+          color: Theme.of(context).colorScheme.outline,
+        ),
       ),
     );
   }
@@ -451,7 +493,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showLanguageDialog(BuildContext context, WidgetRef ref, Locale currentLocale) {
+  void _showLanguageDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Locale currentLocale,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -461,16 +507,24 @@ class SettingsScreen extends ConsumerWidget {
           children: AppLanguages.supported.map((loc) {
             final isSelected = loc.languageCode == currentLocale.languageCode;
             return ListTile(
-              leading: Text(AppLanguages.getFlag(loc), style: const TextStyle(fontSize: 22)),
+              leading: Text(
+                AppLanguages.getFlag(loc),
+                style: const TextStyle(fontSize: 22),
+              ),
               title: Text(
                 AppLanguages.getLabel(loc),
                 style: TextStyle(
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
               ),
               trailing: isSelected
-                  ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+                  ? Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
                   : const Icon(Icons.circle_outlined, color: Colors.grey),
               onTap: () {
                 ref.read(localeProvider.notifier).setLocale(loc);
@@ -483,7 +537,12 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showThemeDialog(BuildContext context, WidgetRef ref, ThemeMode currentMode, AppLocalizations l10n) {
+  void _showThemeDialog(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeMode currentMode,
+    AppLocalizations l10n,
+  ) {
     final themeOptions = [
       (ThemeMode.system, l10n.settingsThemeSystem, Icons.brightness_auto),
       (ThemeMode.light, l10n.settingsThemeLight, Icons.light_mode),
@@ -499,16 +558,26 @@ class SettingsScreen extends ConsumerWidget {
           children: themeOptions.map((opt) {
             final isSelected = opt.$1 == currentMode;
             return ListTile(
-              leading: Icon(opt.$3, color: isSelected ? Theme.of(context).colorScheme.primary : null),
+              leading: Icon(
+                opt.$3,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
               title: Text(
                 opt.$2,
                 style: TextStyle(
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
               ),
               trailing: isSelected
-                  ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+                  ? Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
                   : const Icon(Icons.circle_outlined, color: Colors.grey),
               onTap: () {
                 ref.read(themeModeProvider.notifier).setThemeMode(opt.$1);
@@ -527,7 +596,9 @@ class SettingsScreen extends ConsumerWidget {
     PrinterConfig config,
     AppLocalizations l10n,
   ) {
-    final nameController = TextEditingController(text: config.printerName ?? 'POS-58 Bluetooth');
+    final nameController = TextEditingController(
+      text: config.printerName ?? 'POS-58 Bluetooth',
+    );
     int selectedWidth = config.paperWidthMm;
 
     showDialog(
@@ -552,7 +623,10 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('Paper Roll Width', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  const Text(
+                    'Paper Roll Width',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -581,10 +655,15 @@ class SettingsScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () {
-                ref.read(printerConfigProvider.notifier).updatePrinter(name: null);
+                ref
+                    .read(printerConfigProvider.notifier)
+                    .updatePrinter(name: null);
                 Navigator.pop(ctx);
               },
-              child: const Text('Disconnect', style: TextStyle(color: Colors.red)),
+              child: const Text(
+                'Disconnect',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
             FilledButton(
               onPressed: () {
@@ -594,20 +673,27 @@ class SettingsScreen extends ConsumerWidget {
                   UpgradePromptSheet.show(
                     context,
                     featureName: 'Thermal Receipt Printing',
-                    customMessage: 'Pairing and printing to physical ESC/POS thermal printers requires Afri_BMS Pro or Enterprise.',
+                    customMessage:
+                        'Pairing and printing to physical ESC/POS thermal printers requires Afri_BMS Pro or Enterprise.',
                     currentTier: gate.tier,
                     suggestedTier: SubscriptionTier.pro,
                   );
                   return;
                 }
                 final name = nameController.text.trim();
-                ref.read(printerConfigProvider.notifier).updatePrinter(
+                ref
+                    .read(printerConfigProvider.notifier)
+                    .updatePrinter(
                       name: name.isNotEmpty ? name : 'POS-58 Bluetooth',
                       widthMm: selectedWidth,
                     );
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Printer configured: $name ($selectedWidth mm)')),
+                  SnackBar(
+                    content: Text(
+                      'Printer configured: $name ($selectedWidth mm)',
+                    ),
+                  ),
                 );
               },
               child: const Text('Save & Pair'),
@@ -623,7 +709,8 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       applicationName: 'Afri_BMS',
       applicationVersion: '1.0.0+1 (Build 101)',
-      applicationLegalese: '© 2026 Afri_BMS. Built for retail and inventory in African markets.',
+      applicationLegalese:
+          '© 2026 Afri_BMS. Built for retail and inventory in African markets.',
       applicationIcon: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.asset(
@@ -651,7 +738,9 @@ class SettingsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Need assistance or have feedback? Reach out to our 24/7 support desk:'),
+            Text(
+              'Need assistance or have feedback? Reach out to our 24/7 support desk:',
+            ),
             SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -668,20 +757,30 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         actions: [
-          FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
+          ),
         ],
       ),
     );
   }
 
-  void _confirmSignOut(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+  void _confirmSignOut(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.navLogout),
         content: Text(l10n.authLogoutConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.commonCancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.commonCancel),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {

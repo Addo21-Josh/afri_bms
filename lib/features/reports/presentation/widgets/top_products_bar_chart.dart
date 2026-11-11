@@ -26,7 +26,9 @@ class TopProductsBarChart extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           'No product sales recorded in this period',
-          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.outline,
+          ),
         ),
       );
     }
@@ -37,7 +39,9 @@ class TopProductsBarChart extends StatelessWidget {
       children: displayList.asMap().entries.map((entry) {
         final index = entry.key;
         final p = entry.value;
-        final ratio = maxRevenue > 0 ? (p.totalRevenue / maxRevenue).clamp(0.0, 1.0) : 0.0;
+        final ratio = maxRevenue > 0
+            ? (p.totalRevenue / maxRevenue).clamp(0.0, 1.0)
+            : 0.0;
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -68,7 +72,9 @@ class TopProductsBarChart extends StatelessWidget {
                             p.productName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -76,7 +82,10 @@ class TopProductsBarChart extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    CurrencyFormatter.format(p.totalRevenue, currencyCode: currency),
+                    CurrencyFormatter.format(
+                      p.totalRevenue,
+                      currencyCode: currency,
+                    ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.primary,
@@ -105,7 +114,9 @@ class TopProductsBarChart extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     '${p.quantitySold} units',
-                    style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.outline,
+                    ),
                   ),
                 ],
               ),

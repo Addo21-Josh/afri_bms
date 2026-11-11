@@ -23,7 +23,9 @@ class PdfReceiptService {
 
     pw.MemoryImage? logoImage;
     try {
-      final logoBytes = await rootBundle.load('assets/logo/monochrome_logo.jpg');
+      final logoBytes = await rootBundle.load(
+        'assets/logo/monochrome_logo.jpg',
+      );
       logoImage = pw.MemoryImage(logoBytes.buffer.asUint8List());
     } catch (_) {
       // Fallback gracefully if asset is unavailable or in a test environment
@@ -67,12 +69,10 @@ class PdfReceiptService {
               ),
               if (branch?.name != null) ...[
                 pw.SizedBox(height: 2),
-                pw.Text(
-                  branch!.name,
-                  style: const pw.TextStyle(fontSize: 10),
-                ),
+                pw.Text(branch!.name, style: const pw.TextStyle(fontSize: 10)),
               ],
-              if (business?.address != null && business!.address!.isNotEmpty) ...[
+              if (business?.address != null &&
+                  business!.address!.isNotEmpty) ...[
                 pw.SizedBox(height: 2),
                 pw.Text(
                   business.address!,
@@ -96,8 +96,14 @@ class PdfReceiptService {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
-                  pw.Text('Receipt #: ${sale.saleNumber}', style: const pw.TextStyle(fontSize: 9)),
-                  pw.Text(formattedDate, style: const pw.TextStyle(fontSize: 9)),
+                  pw.Text(
+                    'Receipt #: ${sale.saleNumber}',
+                    style: const pw.TextStyle(fontSize: 9),
+                  ),
+                  pw.Text(
+                    formattedDate,
+                    style: const pw.TextStyle(fontSize: 9),
+                  ),
                 ],
               ),
               if (sale.cashierName != null) ...[
@@ -110,13 +116,17 @@ class PdfReceiptService {
                   ),
                 ),
               ],
-              if (sale.customerName != null && sale.customerName!.isNotEmpty) ...[
+              if (sale.customerName != null &&
+                  sale.customerName!.isNotEmpty) ...[
                 pw.SizedBox(height: 2),
                 pw.Align(
                   alignment: pw.Alignment.centerLeft,
                   child: pw.Text(
                     'Customer: ${sale.customerName!}',
-                    style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
+                    style: pw.TextStyle(
+                      fontSize: 9,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -130,19 +140,46 @@ class PdfReceiptService {
                 children: [
                   pw.Expanded(
                     flex: 4,
-                    child: pw.Text('ITEM', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text(
+                      'ITEM',
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ),
                   pw.Expanded(
                     flex: 1,
-                    child: pw.Text('QTY', textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text(
+                      'QTY',
+                      textAlign: pw.TextAlign.center,
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ),
                   pw.Expanded(
                     flex: 2,
-                    child: pw.Text('PRICE', textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text(
+                      'PRICE',
+                      textAlign: pw.TextAlign.right,
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ),
                   pw.Expanded(
                     flex: 2,
-                    child: pw.Text('TOTAL', textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text(
+                      'TOTAL',
+                      textAlign: pw.TextAlign.right,
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -163,19 +200,34 @@ class PdfReceiptService {
                     children: [
                       pw.Expanded(
                         flex: 4,
-                        child: pw.Text(displayName, style: const pw.TextStyle(fontSize: 9)),
+                        child: pw.Text(
+                          displayName,
+                          style: const pw.TextStyle(fontSize: 9),
+                        ),
                       ),
                       pw.Expanded(
                         flex: 1,
-                        child: pw.Text('${item.quantity}', textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 9)),
+                        child: pw.Text(
+                          '${item.quantity}',
+                          textAlign: pw.TextAlign.center,
+                          style: const pw.TextStyle(fontSize: 9),
+                        ),
                       ),
                       pw.Expanded(
                         flex: 2,
-                        child: pw.Text(itemUnit, textAlign: pw.TextAlign.right, style: const pw.TextStyle(fontSize: 9)),
+                        child: pw.Text(
+                          itemUnit,
+                          textAlign: pw.TextAlign.right,
+                          style: const pw.TextStyle(fontSize: 9),
+                        ),
                       ),
                       pw.Expanded(
                         flex: 2,
-                        child: pw.Text(itemTotal, textAlign: pw.TextAlign.right, style: const pw.TextStyle(fontSize: 9)),
+                        child: pw.Text(
+                          itemTotal,
+                          textAlign: pw.TextAlign.right,
+                          style: const pw.TextStyle(fontSize: 9),
+                        ),
                       ),
                     ],
                   ),
@@ -196,8 +248,20 @@ class PdfReceiptService {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
-                  pw.Text('TOTAL DUE', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  pw.Text('$currency $totalFormatted', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(
+                    'TOTAL DUE',
+                    style: pw.TextStyle(
+                      fontSize: 12,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.Text(
+                    '$currency $totalFormatted',
+                    style: pw.TextStyle(
+                      fontSize: 12,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
 
@@ -207,14 +271,24 @@ class PdfReceiptService {
 
               // Payment Details
               _buildSummaryRow('Payment Method', sale.paymentMethod.label),
-              if (sale.paymentReference != null && sale.paymentReference!.isNotEmpty)
+              if (sale.paymentReference != null &&
+                  sale.paymentReference!.isNotEmpty)
                 _buildSummaryRow('Reference / Code', sale.paymentReference!),
               if (sale.paymentMethod == PaymentMethod.cash) ...[
-                _buildSummaryRow('Amount Tendered', '$currency $tenderedFormatted'),
-                _buildSummaryRow('Change Returned', '$currency $changeFormatted'),
+                _buildSummaryRow(
+                  'Amount Tendered',
+                  '$currency $tenderedFormatted',
+                ),
+                _buildSummaryRow(
+                  'Change Returned',
+                  '$currency $changeFormatted',
+                ),
               ],
               if (sale.paymentMethod == PaymentMethod.credit) ...[
-                _buildSummaryRow('Initial Paid', '$currency $tenderedFormatted'),
+                _buildSummaryRow(
+                  'Initial Paid',
+                  '$currency $tenderedFormatted',
+                ),
                 _buildSummaryRow(
                   'Balance Due (Credit)',
                   '$currency ${((sale.totalAmount - sale.amountTendered) / 100).toStringAsFixed(2)}',
@@ -234,13 +308,19 @@ class PdfReceiptService {
               pw.SizedBox(height: 8),
               pw.Text(
                 'Thank you for your business!',
-                style: pw.TextStyle(fontSize: 9, fontStyle: pw.FontStyle.italic),
+                style: pw.TextStyle(
+                  fontSize: 9,
+                  fontStyle: pw.FontStyle.italic,
+                ),
                 textAlign: pw.TextAlign.center,
               ),
               pw.SizedBox(height: 2),
               pw.Text(
                 'Afri_BMS • Retail Operating System',
-                style: const pw.TextStyle(fontSize: 7, color: PdfColors.grey700),
+                style: const pw.TextStyle(
+                  fontSize: 7,
+                  color: PdfColors.grey700,
+                ),
                 textAlign: pw.TextAlign.center,
               ),
             ],

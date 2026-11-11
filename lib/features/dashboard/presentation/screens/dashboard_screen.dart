@@ -58,12 +58,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final currentBiz = ref.read(currentBusinessProvider);
     if (currentBiz == null) return;
     // Proactively load and cache categories, products, customers & sales in the background
-    ref.read(businessBranchesProvider.future).catchError((_) => <BranchEntity>[]);
-    ref.read(productCategoriesProvider.future).catchError((_) => <ProductCategoryEntity>[]);
-    ref.read(customersListProvider.future).catchError((_) => <CustomerEntity>[]);
+    ref
+        .read(businessBranchesProvider.future)
+        .catchError((_) => <BranchEntity>[]);
+    ref
+        .read(productCategoriesProvider.future)
+        .catchError((_) => <ProductCategoryEntity>[]);
+    ref
+        .read(customersListProvider.future)
+        .catchError((_) => <CustomerEntity>[]);
     ref.read(productsListProvider.future).catchError((_) => <ProductEntity>[]);
     ref.read(salesListProvider.future).catchError((_) => <SaleEntity>[]);
-    ref.read(suppliersListProvider.future).catchError((_) => <SupplierEntity>[]);
+    ref
+        .read(suppliersListProvider.future)
+        .catchError((_) => <SupplierEntity>[]);
     ref.read(expensesListProvider.future).catchError((_) => <ExpenseEntity>[]);
     ref.read(debtsListProvider.future).catchError((_) => <DebtEntity>[]);
     ref.read(currentUserRoleProvider.future).catchError((_) => null);
@@ -76,7 +84,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final branchesAsync = ref.watch(businessBranchesProvider);
     final staffAsync = ref.watch(businessStaffListProvider);
     final userRole = ref.watch(currentUserRoleProvider).value;
-    final isStaffOrSales = userRole == UserRoleType.salesperson || userRole == UserRoleType.cashier;
+    final isStaffOrSales =
+        userRole == UserRoleType.salesperson ||
+        userRole == UserRoleType.cashier;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -115,10 +125,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     final salesList = salesAsync.value ?? [];
     for (final s in salesList) {
-      if (s.createdAt.isAfter(startOfToday) && s.createdAt.isBefore(endOfToday)) {
+      if (s.createdAt.isAfter(startOfToday) &&
+          s.createdAt.isBefore(endOfToday)) {
         todayRevenue += s.totalAmount;
         todaySalesCount++;
-      } else if (s.createdAt.isAfter(startOfYesterday) && s.createdAt.isBefore(endOfYesterday)) {
+      } else if (s.createdAt.isAfter(startOfYesterday) &&
+          s.createdAt.isBefore(endOfYesterday)) {
         yesterdayRevenue += s.totalAmount;
       }
     }
@@ -126,11 +138,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final Map<String, int> past7DaysMap = {};
     for (int i = 6; i >= 0; i--) {
       final d = startOfToday.subtract(Duration(days: i));
-      final k = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      final k =
+          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
       past7DaysMap[k] = 0;
     }
     for (final s in salesList) {
-      final k = '${s.createdAt.year}-${s.createdAt.month.toString().padLeft(2, '0')}-${s.createdAt.day.toString().padLeft(2, '0')}';
+      final k =
+          '${s.createdAt.year}-${s.createdAt.month.toString().padLeft(2, '0')}-${s.createdAt.day.toString().padLeft(2, '0')}';
       if (past7DaysMap.containsKey(k)) {
         past7DaysMap[k] = past7DaysMap[k]! + s.totalAmount;
       }
@@ -138,7 +152,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final past7DaysPoints = past7DaysMap.entries.map((e) {
       final parts = e.key.split('-');
       return DailySalesPoint(
-        date: DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2])),
+        date: DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        ),
         totalAmount: e.value,
         salesCount: 0,
       );
@@ -147,7 +165,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final Map<String, _TopProductMini> productTotals = {};
     for (final s in salesList) {
       for (final item in s.items) {
-        final cur = productTotals[item.productId] ?? _TopProductMini(item.productName, item.variantName, 0, 0);
+        final cur =
+            productTotals[item.productId] ??
+            _TopProductMini(item.productName, item.variantName, 0, 0);
         productTotals[item.productId] = _TopProductMini(
           item.productName,
           item.variantName,
@@ -156,14 +176,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         );
       }
     }
-    final topSelling = productTotals.entries.map((e) => ProductSalesStat(
-      productId: e.key,
-      productName: e.value.name,
-      sku: e.value.sku,
-      quantitySold: e.value.qty,
-      totalRevenue: e.value.revenue,
-      totalProfit: 0,
-    )).toList()..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
+    final topSelling =
+        productTotals.entries
+            .map(
+              (e) => ProductSalesStat(
+                productId: e.key,
+                productName: e.value.name,
+                sku: e.value.sku,
+                quantitySold: e.value.qty,
+                totalRevenue: e.value.revenue,
+                totalProfit: 0,
+              ),
+            )
+            .toList()
+          ..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
 
     final recentSales = salesList.take(4).toList();
 
@@ -185,18 +211,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       );
     }
 
-    if (businessesAsync.hasValue && businessesAsync.value!.isEmpty && currentBiz == null) {
+    if (businessesAsync.hasValue &&
+        businessesAsync.value!.isEmpty &&
+        currentBiz == null) {
       return Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.storefront_outlined, size: 64, color: Colors.grey),
+              const Icon(
+                Icons.storefront_outlined,
+                size: 64,
+                color: Colors.grey,
+              ),
               const SizedBox(height: 16),
-              Text('No Business Assigned', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'No Business Assigned',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
-              const Text('You have not set up a business or been assigned to any business by an administrator yet.', textAlign: TextAlign.center),
+              const Text(
+                'You have not set up a business or been assigned to any business by an administrator yet.',
+                textAlign: TextAlign.center,
+              ),
               if (!isStaffOrSales) ...[
                 const SizedBox(height: 16),
                 FilledButton.icon(
@@ -236,7 +276,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           color: colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Icon(Icons.store, color: colorScheme.onPrimaryContainer, size: 28),
+                        child: Icon(
+                          Icons.store,
+                          color: colorScheme.onPrimaryContainer,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -250,15 +294,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                     currentBiz?.name ?? 'Afri_BMS Business',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 if (userRole != null) ...[
                                   const SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: colorScheme.primary.withValues(alpha: 0.12),
+                                      color: colorScheme.primary.withValues(
+                                        alpha: 0.12,
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -275,7 +325,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             Text(
                               'Currency: ${currentBiz?.defaultCurrency ?? 'GHS'} • Branch: ${currentBranch?.name ?? 'All Branches'}',
-                              style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline,
+                              ),
                             ),
                           ],
                         ),
@@ -284,13 +336,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         const SizedBox(width: 8),
                         OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             visualDensity: VisualDensity.compact,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           onPressed: () => showBusinessSwitcherModal(context),
                           icon: const Icon(Icons.swap_horiz, size: 16),
-                          label: const Text('Switch', style: TextStyle(fontSize: 12)),
+                          label: const Text(
+                            'Switch',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ],
@@ -316,12 +376,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.amber.shade900),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.amber.shade900,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       '$lowStockCount product(s) are at or below reorder level in ${currentBranch?.name ?? 'current branch'}!',
-                      style: TextStyle(color: Colors.amber.shade900, fontWeight: FontWeight.w600, fontSize: 13),
+                      style: TextStyle(
+                        color: Colors.amber.shade900,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                   TextButton(
@@ -335,7 +402,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ],
 
           // Metrics Overview Cards
-          Text(isStaffOrSales ? 'Store Metrics' : 'Business Metrics', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            isStaffOrSales ? 'Store Metrics' : 'Business Metrics',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 10),
           if (isStaffOrSales)
             Row(
@@ -403,7 +475,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           const SizedBox(height: 24),
 
           // Quick Actions Grid
-          Text('Quick Actions', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Quick Actions',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 10),
           if (isStaffOrSales)
             GridView.count(
@@ -558,14 +635,25 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.today, color: colorScheme.primary, size: 20),
+                          Icon(
+                            Icons.today,
+                            color: colorScheme.primary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
-                          Text("Today's Sales Summary",
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            "Today's Sales Summary",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: todayRevenue >= yesterdayRevenue
                               ? Colors.green.withValues(alpha: 0.12)
@@ -573,9 +661,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          todayRevenue >= yesterdayRevenue ? '▲ Up vs Yesterday' : '▼ Lower vs Yesterday',
+                          todayRevenue >= yesterdayRevenue
+                              ? '▲ Up vs Yesterday'
+                              : '▼ Lower vs Yesterday',
                           style: TextStyle(
-                            color: todayRevenue >= yesterdayRevenue ? Colors.green.shade800 : Colors.orange.shade800,
+                            color: todayRevenue >= yesterdayRevenue
+                                ? Colors.green.shade800
+                                : Colors.orange.shade800,
                             fontWeight: FontWeight.bold,
                             fontSize: 10,
                           ),
@@ -590,10 +682,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Revenue Today', style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12)),
+                            Text(
+                              'Revenue Today',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Text(
-                              CurrencyFormatter.format(todayRevenue, currencyCode: currency),
+                              CurrencyFormatter.format(
+                                todayRevenue,
+                                currencyCode: currency,
+                              ),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.primary,
@@ -606,11 +707,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Completed Orders', style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12)),
+                            Text(
+                              'Completed Orders',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               '$todaySalesCount orders',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -640,17 +749,25 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     children: [
                       Text(
                         '7-Day Revenue Trend',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       TextButton.icon(
                         onPressed: () => context.push('/reports'),
                         icon: const Icon(Icons.arrow_forward, size: 14),
-                        label: const Text('View All', style: TextStyle(fontSize: 12)),
+                        label: const Text(
+                          'View All',
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ],
                   ),
                   const Divider(height: 16),
-                  RevenueLineChart(dailyPoints: past7DaysPoints, currency: currency),
+                  RevenueLineChart(
+                    dailyPoints: past7DaysPoints,
+                    currency: currency,
+                  ),
                 ],
               ),
             ),
@@ -675,13 +792,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       children: [
                         Text(
                           'Top Products by Sales',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Icon(Icons.star_outline, color: Colors.amber.shade700, size: 20),
+                        Icon(
+                          Icons.star_outline,
+                          color: Colors.amber.shade700,
+                          size: 20,
+                        ),
                       ],
                     ),
                     const Divider(height: 16),
-                    TopProductsBarChart(products: topSelling, currency: currency, maxItems: 3),
+                    TopProductsBarChart(
+                      products: topSelling,
+                      currency: currency,
+                      maxItems: 3,
+                    ),
                   ],
                 ),
               ),
@@ -707,43 +834,66 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       children: [
                         Text(
                           'Recent Transactions',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         TextButton(
                           onPressed: () => context.push('/sales'),
-                          child: const Text('View All', style: TextStyle(fontSize: 12)),
+                          child: const Text(
+                            'View All',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),
                     const Divider(height: 16),
-                    ...recentSales.map((sale) => ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(Icons.receipt, color: colorScheme.primary, size: 20),
+                    ...recentSales.map(
+                      (sale) => ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          title: Text(sale.saleNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                            '${DateFormat('d MMM, HH:mm').format(sale.createdAt)} • ${sale.paymentMethod.name.toUpperCase()}',
-                            style: const TextStyle(fontSize: 12),
+                          child: Icon(
+                            Icons.receipt,
+                            color: colorScheme.primary,
+                            size: 20,
                           ),
-                          trailing: Text(
-                            CurrencyFormatter.format(sale.totalAmount, currencyCode: currency),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                        title: Text(
+                          sale.saleNumber,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          '${DateFormat('d MMM, HH:mm').format(sale.createdAt)} • ${sale.paymentMethod.name.toUpperCase()}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        trailing: Text(
+                          CurrencyFormatter.format(
+                            sale.totalAmount,
+                            currencyCode: currency,
                           ),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => SaleReceiptScreen(sale: sale, currency: currency),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SaleReceiptScreen(
+                                sale: sale,
+                                currency: currency,
                               ),
-                            );
-                          },
-                        )),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -781,7 +931,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               const SizedBox(height: 6),
               Text(
                 value,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
@@ -832,7 +984,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               Expanded(
                 child: Text(
                   title,
-                  style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -844,10 +998,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   Widget _buildMoreTab(BuildContext context) {
     final userRole = ref.watch(currentUserRoleProvider).value;
-    final isStaffOrSales = userRole == UserRoleType.salesperson || userRole == UserRoleType.cashier;
+    final isStaffOrSales =
+        userRole == UserRoleType.salesperson ||
+        userRole == UserRoleType.cashier;
     final authUser = ref.watch(authControllerProvider).value;
     final supaUser = Supabase.instance.client.auth.currentUser;
-    final displayName = authUser?.fullName ?? (supaUser?.userMetadata?['full_name'] as String? ?? 'Staff Member');
+    final displayName =
+        authUser?.fullName ??
+        (supaUser?.userMetadata?['full_name'] as String? ?? 'Staff Member');
     final displayEmail = authUser?.email ?? (supaUser?.email ?? '');
     final currentBiz = ref.watch(currentBusinessProvider);
     final currentBranch = ref.watch(currentBranchProvider);
@@ -860,7 +1018,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -868,9 +1028,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
                     child: Text(
-                      displayName.isNotEmpty ? displayName[0].toUpperCase() : 'S',
+                      displayName.isNotEmpty
+                          ? displayName[0].toUpperCase()
+                          : 'S',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                         fontWeight: FontWeight.bold,
@@ -885,16 +1049,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       children: [
                         Text(
                           displayName,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         Text(
                           displayEmail,
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 13,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           '${userRole?.displayName ?? 'Staff'} • ${currentBranch?.name ?? currentBiz?.name ?? 'Assigned Branch'}',
-                          style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -923,9 +1097,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.assignment_late_outlined, color: Colors.deepOrange),
+            leading: const Icon(
+              Icons.assignment_late_outlined,
+              color: Colors.deepOrange,
+            ),
             title: const Text('Debt & Credit Ledger'),
-            subtitle: const Text('Customer store credits, debt aging & partial repayments'),
+            subtitle: const Text(
+              'Customer store credits, debt aging & partial repayments',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/debts'),
           ),
@@ -933,7 +1112,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.payments_outlined, color: Colors.purple),
             title: const Text('Expenses & Outflows'),
-            subtitle: const Text('Record operational expenditures and receipts'),
+            subtitle: const Text(
+              'Record operational expenditures and receipts',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/expenses'),
           ),
@@ -941,7 +1122,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.analytics_outlined, color: Colors.indigo),
             title: const Text('Reports & Analytics'),
-            subtitle: const Text('Sales trends, performance and store insights'),
+            subtitle: const Text(
+              'Sales trends, performance and store insights',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/reports'),
           ),
@@ -966,15 +1149,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.people_outline, color: Colors.teal),
             title: const Text('Customers & Clients'),
-            subtitle: const Text('Manage customer directory, balances and history'),
+            subtitle: const Text(
+              'Manage customer directory, balances and history',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/customers'),
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.assignment_late_outlined, color: Colors.deepOrange),
+            leading: const Icon(
+              Icons.assignment_late_outlined,
+              color: Colors.deepOrange,
+            ),
             title: const Text('Debt & Credit Ledger'),
-            subtitle: const Text('Customer receivables, supplier payables & repayments'),
+            subtitle: const Text(
+              'Customer receivables, supplier payables & repayments',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/debts'),
           ),
@@ -982,15 +1172,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.payments_outlined, color: Colors.purple),
             title: const Text('Expenses & Outflows'),
-            subtitle: const Text('Track operational costs, categories and receipts'),
+            subtitle: const Text(
+              'Track operational costs, categories and receipts',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/expenses'),
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.local_shipping_outlined, color: Colors.deepOrange),
+            leading: const Icon(
+              Icons.local_shipping_outlined,
+              color: Colors.deepOrange,
+            ),
             title: const Text('Suppliers & Vendors'),
-            subtitle: const Text('Manage supplier contacts and outstanding payables'),
+            subtitle: const Text(
+              'Manage supplier contacts and outstanding payables',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/suppliers'),
           ),
@@ -998,21 +1195,31 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.analytics_outlined, color: Colors.indigo),
             title: const Text('Reports & Analytics'),
-            subtitle: const Text('Sales, P&L, inventory valuation & debt aging'),
+            subtitle: const Text(
+              'Sales, P&L, inventory valuation & debt aging',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/reports'),
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.psychology_outlined, color: Colors.deepPurple),
+            leading: const Icon(
+              Icons.psychology_outlined,
+              color: Colors.deepPurple,
+            ),
             title: const Text('Smart Intelligence & Velocity'),
-            subtitle: const Text('Stockout run-out forecast, profitability & habits'),
+            subtitle: const Text(
+              'Stockout run-out forecast, profitability & habits',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/smart-insights'),
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.add_shopping_cart, color: Colors.blueAccent),
+            leading: const Icon(
+              Icons.add_shopping_cart,
+              color: Colors.blueAccent,
+            ),
             title: const Text('Auto-Reorder Generator'),
             subtitle: const Text('Instant purchase order for low-stock items'),
             trailing: const Icon(Icons.chevron_right),
@@ -1020,9 +1227,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.notifications_active_outlined, color: Colors.amber),
+            leading: const Icon(
+              Icons.notifications_active_outlined,
+              color: Colors.amber,
+            ),
             title: const Text('Alerts & Notifications'),
-            subtitle: const Text('Low stock warnings, overdue credit & targets'),
+            subtitle: const Text(
+              'Low stock warnings, overdue credit & targets',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/alerts'),
           ),
@@ -1030,7 +1242,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.track_changes, color: Colors.orange),
             title: const Text('Stock Movement Audit'),
-            subtitle: const Text('Inventory additions, deductions and adjustments'),
+            subtitle: const Text(
+              'Inventory additions, deductions and adjustments',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/stock-movements'),
           ),
@@ -1038,7 +1252,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.sync, color: Colors.blueAccent),
             title: const Text('Sync & Offline Center'),
-            subtitle: const Text('Manage offline queue, delta sync & connection'),
+            subtitle: const Text(
+              'Manage offline queue, delta sync & connection',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/sync-center'),
           ),
@@ -1046,7 +1262,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.backup_outlined, color: Colors.teal),
             title: const Text('Cloud Backup & Restore'),
-            subtitle: const Text('Export JSON database snapshot & automated backups'),
+            subtitle: const Text(
+              'Export JSON database snapshot & automated backups',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/backup'),
           ),
@@ -1054,7 +1272,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.swap_horiz_rounded, color: Colors.indigo),
             title: const Text('Switch / Manage Business'),
-            subtitle: const Text('Change active company or delete unused workspaces'),
+            subtitle: const Text(
+              'Change active company or delete unused workspaces',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => showBusinessSwitcherModal(context),
           ),
@@ -1070,7 +1290,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ListTile(
             leading: const Icon(Icons.settings_outlined),
             title: const Text('Settings'),
-            subtitle: const Text('Preferences, printing, branches & business profile'),
+            subtitle: const Text(
+              'Preferences, printing, branches & business profile',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings'),
           ),
@@ -1125,7 +1347,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final userRole = roleAsync.value;
-    final isStaffOrSales = userRole == UserRoleType.salesperson || userRole == UserRoleType.cashier;
+    final isStaffOrSales =
+        userRole == UserRoleType.salesperson ||
+        userRole == UserRoleType.cashier;
 
     final pages = isStaffOrSales
         ? [
@@ -1204,7 +1428,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Scaffold(
       appBar: safeTabIndex == 0
           ? AppBar(
-              title: Text(isStaffOrSales ? 'Store Dashboard' : 'Afri_BMS Dashboard'),
+              title: Text(
+                isStaffOrSales ? 'Store Dashboard' : 'Afri_BMS Dashboard',
+              ),
               actions: [
                 const SyncStatusBadge(),
                 IconButton(

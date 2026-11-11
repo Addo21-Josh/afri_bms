@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 enum AlertSeverity {
   critical, // Expired, Out of stock, severely overdue (>30d)
-  warning,  // Low stock, debt due soon/today
-  info,     // Daily sales milestone, sync notices
+  warning, // Low stock, debt due soon/today
+  info, // Daily sales milestone, sync notices
 }
 
 enum AlertType {

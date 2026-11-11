@@ -33,11 +33,9 @@ class CartState {
   bool get isEmpty => items.isEmpty;
   bool get isNotEmpty => items.isNotEmpty;
 
-  int get totalItemCount =>
-      items.fold(0, (sum, item) => sum + item.quantity);
+  int get totalItemCount => items.fold(0, (sum, item) => sum + item.quantity);
 
-  int get subtotal =>
-      items.fold(0, (sum, item) => sum + item.lineTotal);
+  int get subtotal => items.fold(0, (sum, item) => sum + item.lineTotal);
 
   int get discountAmount {
     if (discountType == CartDiscountType.fixed) {
@@ -48,7 +46,8 @@ class CartState {
     return 0;
   }
 
-  int get taxableAmount => (subtotal - discountAmount).clamp(0, double.maxFinite.toInt());
+  int get taxableAmount =>
+      (subtotal - discountAmount).clamp(0, double.maxFinite.toInt());
 
   int get taxAmount {
     if (taxRatePercent <= 0) return 0;
@@ -89,7 +88,9 @@ class PosCartNotifier extends StateNotifier<CartState> {
     int quantity = 1,
   }) {
     final effectivePrice = variant?.sellingPrice ?? product.sellingPrice;
-    final effectiveCost = variant != null ? product.costPrice : product.costPrice;
+    final effectiveCost = variant != null
+        ? product.costPrice
+        : product.costPrice;
 
     final existingIndex = state.items.indexWhere(
       (item) =>
@@ -164,7 +165,8 @@ class PosCartNotifier extends StateNotifier<CartState> {
       items: state.items
           .where(
             (item) =>
-                !(item.product.id == productId && item.variant?.id == variantId),
+                !(item.product.id == productId &&
+                    item.variant?.id == variantId),
           )
           .toList(),
     );
@@ -195,6 +197,8 @@ class PosCartNotifier extends StateNotifier<CartState> {
   }
 }
 
-final posCartProvider = StateNotifierProvider<PosCartNotifier, CartState>((ref) {
+final posCartProvider = StateNotifierProvider<PosCartNotifier, CartState>((
+  ref,
+) {
   return PosCartNotifier();
 });

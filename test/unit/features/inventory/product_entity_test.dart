@@ -44,21 +44,24 @@ void main() {
       expect(outOfStockProduct.isLowStock, isTrue);
     });
 
-    test('isLowStock returns false when current stock is strictly above reorderLevel', () {
-      final product = ProductEntity(
-        id: 'prod-1',
-        businessId: 'biz-1',
-        name: 'Juice Pack',
-        costPrice: 1200,
-        sellingPrice: 1800,
-        reorderLevel: 10,
-        currentBranchStock: 11,
-        createdAt: now,
-        updatedAt: now,
-      );
+    test(
+      'isLowStock returns false when current stock is strictly above reorderLevel',
+      () {
+        final product = ProductEntity(
+          id: 'prod-1',
+          businessId: 'biz-1',
+          name: 'Juice Pack',
+          costPrice: 1200,
+          sellingPrice: 1800,
+          reorderLevel: 10,
+          currentBranchStock: 11,
+          createdAt: now,
+          updatedAt: now,
+        );
 
-      expect(product.isLowStock, isFalse);
-    });
+        expect(product.isLowStock, isFalse);
+      },
+    );
 
     test('supports value equality through Equatable props', () {
       final productA = ProductEntity(

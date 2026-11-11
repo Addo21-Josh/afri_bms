@@ -7,11 +7,14 @@ import '../../data/repositories/user_management_repository_impl.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/sync/presentation/providers/sync_provider.dart';
 
-final userManagementRemoteDatasourceProvider = Provider<UserManagementRemoteDatasource>((ref) {
-  return UserManagementRemoteDatasourceImpl(Supabase.instance.client);
-});
+final userManagementRemoteDatasourceProvider =
+    Provider<UserManagementRemoteDatasource>((ref) {
+      return UserManagementRemoteDatasourceImpl(Supabase.instance.client);
+    });
 
-final userManagementRepositoryProvider = Provider<UserManagementRepository>((ref) {
+final userManagementRepositoryProvider = Provider<UserManagementRepository>((
+  ref,
+) {
   final remote = ref.watch(userManagementRemoteDatasourceProvider);
   return UserManagementRepositoryImpl(remoteDatasource: remote);
 });
@@ -27,7 +30,10 @@ final currentUserRoleProvider = FutureProvider<UserRoleType?>((ref) async {
   final userId = user?.id ?? await localCache.getLastUserId();
 
   Future<UserRoleType?> getCachedRole() async {
-    final cachedRole = await localCache.getCachedUserRole(currentBiz.id, userId);
+    final cachedRole = await localCache.getCachedUserRole(
+      currentBiz.id,
+      userId,
+    );
     if (cachedRole != null && cachedRole.isNotEmpty) {
       return UserRoleType.fromString(cachedRole);
     }
@@ -68,21 +74,18 @@ final currentUserRoleProvider = FutureProvider<UserRoleType?>((ref) async {
 });
 
 // Fetch staff list for active business
-final businessStaffListProvider = FutureProvider.autoDispose<List<StaffUserEntity>>((ref) async {
-  final currentBiz = ref.watch(currentBusinessProvider);
-  if (currentBiz == null) return [];
+final businessStaffListProvider =
+    FutureProvider.autoDispose<List<StaffUserEntity>>((ref) async {
+      final currentBiz = ref.watch(currentBusinessProvider);
+      if (currentBiz == null) return [];
 
-  final repo = ref.watch(userManagementRepositoryProvider);
-  final result = await repo.getBusinessStaff(currentBiz.id);
-  return result.fold(
-    (failure) => throw failure.message,
-    (staff) => staff,
-  );
-});
+      final repo = ref.watch(userManagementRepositoryProvider);
+      final result = await repo.getBusinessStaff(currentBiz.id);
+      return result.fold((failure) => throw failure.message, (staff) => staff);
+    });
 
 // Staff controller for mutations (assign, update, remove)
 class StaffController extends StateNotifier<AsyncValue<void>> {
-
   StaffController(this.ref) : super(const AsyncValue.data(null));
   final Ref ref;
 
@@ -179,6 +182,7 @@ class StaffController extends StateNotifier<AsyncValue<void>> {
   }
 }
 
-final staffControllerProvider = StateNotifierProvider<StaffController, AsyncValue<void>>((ref) {
-  return StaffController(ref);
-});
+final staffControllerProvider =
+    StateNotifierProvider<StaffController, AsyncValue<void>>((ref) {
+      return StaffController(ref);
+    });

@@ -19,7 +19,8 @@ class UserModel with _$UserModel {
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _UserModel;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 
   UserEntity toEntity() {
     return UserEntity(

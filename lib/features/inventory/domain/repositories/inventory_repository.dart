@@ -13,7 +13,10 @@ abstract class InventoryRepository {
     String? searchQuery,
   });
 
-  Future<Either<Failure, ProductEntity>> getProductById(String id, {String? branchId});
+  Future<Either<Failure, ProductEntity>> getProductById(
+    String id, {
+    String? branchId,
+  });
 
   Future<Either<Failure, ProductEntity>> createProduct({
     required String businessId,
@@ -38,7 +41,9 @@ abstract class InventoryRepository {
   Future<Either<Failure, void>> deleteProduct(String productId);
 
   // Categories
-  Future<Either<Failure, List<ProductCategoryEntity>>> getCategories(String businessId);
+  Future<Either<Failure, List<ProductCategoryEntity>>> getCategories(
+    String businessId,
+  );
   Future<Either<Failure, ProductCategoryEntity>> createCategory({
     required String businessId,
     required String name,
@@ -65,4 +70,3 @@ abstract class InventoryRepository {
     String? productId,
   });
 }
-

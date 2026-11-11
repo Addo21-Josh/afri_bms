@@ -28,7 +28,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   @override
-  Future<Either<Failure, CustomerEntity>> getCustomerById(String customerId) async {
+  Future<Either<Failure, CustomerEntity>> getCustomerById(
+    String customerId,
+  ) async {
     try {
       final model = await remoteDatasource.getCustomerById(customerId);
       return Right(model.toEntity());
@@ -64,7 +66,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   @override
-  Future<Either<Failure, CustomerEntity>> updateCustomer(CustomerEntity customer) async {
+  Future<Either<Failure, CustomerEntity>> updateCustomer(
+    CustomerEntity customer,
+  ) async {
     try {
       final model = CustomerModel(
         id: customer.id,
@@ -114,7 +118,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   @override
-  Future<Either<Failure, List<SaleEntity>>> getCustomerSales(String customerId) async {
+  Future<Either<Failure, List<SaleEntity>>> getCustomerSales(
+    String customerId,
+  ) async {
     try {
       final sales = await remoteDatasource.getCustomerSales(customerId);
       return Right(sales.map((s) => s.toEntity()).toList());

@@ -66,7 +66,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
               if (!state.isInitialized || !state.isRunning) {
                 return const SizedBox.shrink();
               }
-              final icon = state.torchState == TorchState.on ? Icons.flash_on : Icons.flash_off;
+              final icon = state.torchState == TorchState.on
+                  ? Icons.flash_on
+                  : Icons.flash_off;
               return IconButton(
                 icon: Icon(icon, color: Colors.white),
                 tooltip: 'Toggle Flashlight',
@@ -102,11 +104,18 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.redAccent,
+                        size: 48,
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'Camera Error: ${error.errorCode}',
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
@@ -210,7 +219,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     animation: _animationController,
                     builder: (context, child) {
                       return Positioned(
-                        top: _animationController.value * (scanBoxSize - 16) + 8,
+                        top:
+                            _animationController.value * (scanBoxSize - 16) + 8,
                         left: 12,
                         right: 12,
                         child: Container(

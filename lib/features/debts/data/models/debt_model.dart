@@ -25,7 +25,9 @@ class DebtModel extends DebtEntity {
       id: json['id'] as String,
       businessId: json['business_id'] as String,
       branchId: json['branch_id'] as String,
-      debtType: DebtType.fromString(json['debt_type'] as String? ?? 'receivable'),
+      debtType: DebtType.fromString(
+        json['debt_type'] as String? ?? 'receivable',
+      ),
       customerId: json['customer_id'] as String?,
       supplierId: json['supplier_id'] as String?,
       saleId: json['sale_id'] as String?,
@@ -33,7 +35,9 @@ class DebtModel extends DebtEntity {
       personPhone: json['person_phone'] as String?,
       initialAmount: (json['initial_amount'] as num).toInt(),
       remainingBalance: (json['remaining_balance'] as num).toInt(),
-      dueDate: json['due_date'] != null ? DateTime.parse(json['due_date'] as String) : null,
+      dueDate: json['due_date'] != null
+          ? DateTime.parse(json['due_date'] as String)
+          : null,
       status: DebtStatus.fromString(json['status'] as String? ?? 'active'),
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -54,7 +58,8 @@ class DebtModel extends DebtEntity {
       'person_phone': personPhone,
       'initial_amount': initialAmount,
       'remaining_balance': remainingBalance,
-      if (dueDate != null) 'due_date': dueDate!.toIso8601String().substring(0, 10),
+      if (dueDate != null)
+        'due_date': dueDate!.toIso8601String().substring(0, 10),
       'status': status.value,
       'notes': notes,
       'created_at': createdAt.toIso8601String(),
@@ -74,7 +79,8 @@ class DebtModel extends DebtEntity {
       if (personPhone != null) 'person_phone': personPhone,
       'initial_amount': initialAmount,
       'remaining_balance': remainingBalance,
-      if (dueDate != null) 'due_date': dueDate!.toIso8601String().substring(0, 10),
+      if (dueDate != null)
+        'due_date': dueDate!.toIso8601String().substring(0, 10),
       'status': status.value,
       if (notes != null) 'notes': notes,
     };

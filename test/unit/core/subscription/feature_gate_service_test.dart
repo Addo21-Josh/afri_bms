@@ -13,7 +13,7 @@ void main() {
     test('enforces product limits (max 100 on free)', () {
       expect(service.checkProductLimit(50).isAllowed, isTrue);
       expect(service.checkProductLimit(99).isAllowed, isTrue);
-      
+
       final blockedResult = service.checkProductLimit(100);
       expect(blockedResult.isAllowed, isFalse);
       expect(blockedResult.isBlocked, isTrue);

@@ -1,12 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum ReportDateFilter {
-  today,
-  thisWeek,
-  thisMonth,
-  thisYear,
-  custom,
-}
+enum ReportDateFilter { today, thisWeek, thisMonth, thisYear, custom }
 
 extension ReportDateFilterX on ReportDateFilter {
   String get label {

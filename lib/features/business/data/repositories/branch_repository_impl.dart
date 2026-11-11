@@ -11,7 +11,9 @@ class BranchRepositoryImpl implements BranchRepository {
   BranchRepositoryImpl({required this.remoteDatasource});
 
   @override
-  Future<Either<Failure, List<BranchEntity>>> getBranches(String businessId) async {
+  Future<Either<Failure, List<BranchEntity>>> getBranches(
+    String businessId,
+  ) async {
     try {
       final list = await remoteDatasource.getBusinessBranches(businessId);
       return Right(list);
@@ -49,7 +51,9 @@ class BranchRepositoryImpl implements BranchRepository {
   }
 
   @override
-  Future<Either<Failure, BranchEntity>> updateBranch(BranchEntity branch) async {
+  Future<Either<Failure, BranchEntity>> updateBranch(
+    BranchEntity branch,
+  ) async {
     try {
       final updated = await remoteDatasource.updateBranch(branch);
       return Right(updated);

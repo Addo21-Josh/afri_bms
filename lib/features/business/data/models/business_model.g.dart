@@ -14,7 +14,8 @@ _$BusinessModelImpl _$$BusinessModelImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       logoUrl: json['logo_url'] as String?,
       defaultCurrency: json['default_currency'] as String? ?? 'GHS',
-      supportedCurrencies: (json['supported_currencies'] as List<dynamic>?)
+      supportedCurrencies:
+          (json['supported_currencies'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const ['GHS'],

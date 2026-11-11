@@ -16,34 +16,37 @@ void main() {
   });
 
   group('ConflictResolver', () {
-    test('always returns applyClient for append-only tables (sales, expenses, debts, etc.)', () async {
-      final now = DateTime.now();
-      final appendOnlyTables = [
-        'sales',
-        'sale_items',
-        'expenses',
-        'debts',
-        'debt_payments',
-        'stock_movements',
-      ];
+    test(
+      'always returns applyClient for append-only tables (sales, expenses, debts, etc.)',
+      () async {
+        final now = DateTime.now();
+        final appendOnlyTables = [
+          'sales',
+          'sale_items',
+          'expenses',
+          'debts',
+          'debt_payments',
+          'stock_movements',
+        ];
 
-      for (final table in appendOnlyTables) {
-        final item = SyncQueueItem(
-          id: 'queue-1',
-          businessId: 'biz-1',
-          table: table,
-          recordId: 'rec-123',
-          operation: SyncOperation.insert,
-          payload: {'amount': 100},
-          createdAt: now,
-        );
+        for (final table in appendOnlyTables) {
+          final item = SyncQueueItem(
+            id: 'queue-1',
+            businessId: 'biz-1',
+            table: table,
+            recordId: 'rec-123',
+            operation: SyncOperation.insert,
+            payload: {'amount': 100},
+            createdAt: now,
+          );
 
-        final decision = await resolver.resolveConflict(item);
-        expect(decision, equals(ResolutionDecision.applyClient));
-      }
+          final decision = await resolver.resolveConflict(item);
+          expect(decision, equals(ResolutionDecision.applyClient));
+        }
 
-      // Supabase query should not even be triggered for append-only tables
-      verifyZeroInteractions(mockSupabase);
-    });
+        // Supabase query should not even be triggered for append-only tables
+        verifyZeroInteractions(mockSupabase);
+      },
+    );
   });
 }

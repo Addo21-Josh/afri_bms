@@ -28,7 +28,8 @@ abstract class UserManagementRemoteDatasource {
   Future<UserRoleType?> getCurrentUserRole(String businessId);
 }
 
-class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasource {
+class UserManagementRemoteDatasourceImpl
+    implements UserManagementRemoteDatasource {
   final SupabaseClient _supabaseClient;
 
   UserManagementRemoteDatasourceImpl(this._supabaseClient);
@@ -60,7 +61,9 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
           .order('created_at', ascending: false);
 
       final list = response as List;
-      return list.map((item) => StaffUserModel.fromJson(item as Map<String, dynamic>)).toList();
+      return list
+          .map((item) => StaffUserModel.fromJson(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       AppLogger.e('Get Business Staff Error: $e');
       throw AppException(e.toString());
@@ -83,15 +86,18 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
 
       // 1. Try calling the PostgreSQL create_staff_user procedure directly
       try {
-        final createdUserId = await _supabaseClient.rpc('create_staff_user', params: {
-          'p_email': normalizedEmail,
-          'p_password': password ?? 'AfriBMS@123',
-          'p_full_name': fullName ?? normalizedEmail.split('@').first,
-          'p_phone': phone,
-          'p_business_id': businessId,
-          'p_branch_id': branchId,
-          'p_role': role.toDbString(),
-        });
+        final createdUserId = await _supabaseClient.rpc(
+          'create_staff_user',
+          params: {
+            'p_email': normalizedEmail,
+            'p_password': password ?? 'AfriBMS@123',
+            'p_full_name': fullName ?? normalizedEmail.split('@').first,
+            'p_phone': phone,
+            'p_business_id': businessId,
+            'p_branch_id': branchId,
+            'p_role': role.toDbString(),
+          },
+        );
 
         if (createdUserId != null) {
           final staffData = await _supabaseClient
@@ -126,8 +132,12 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
         AppLogger.w('create_staff_user RPC error: $rpcErr');
         // If the error indicates the function doesn't exist (e.g. 42883 / PGRST202), fallback to lookup
         final errStr = rpcErr.toString();
-        if (!errStr.contains('PGRST202') && !errStr.contains('42883') && !errStr.contains('not found')) {
-          throw AppException(rpcErr is PostgrestException ? rpcErr.message : rpcErr.toString());
+        if (!errStr.contains('PGRST202') &&
+            !errStr.contains('42883') &&
+            !errStr.contains('not found')) {
+          throw AppException(
+            rpcErr is PostgrestException ? rpcErr.message : rpcErr.toString(),
+          );
         }
       }
 
@@ -200,7 +210,8 @@ class UserManagementRemoteDatasourceImpl implements UserManagementRemoteDatasour
       };
       if (newBranchId != null) updates['branch_id'] = newBranchId;
       if (isActive != null) updates['is_active'] = isActive;
-      if (customPermissions != null) updates['custom_permissions'] = customPermissions;
+      if (customPermissions != null)
+        updates['custom_permissions'] = customPermissions;
 
       await _supabaseClient.from('user_roles').update(updates).eq('id', roleId);
     } catch (e) {

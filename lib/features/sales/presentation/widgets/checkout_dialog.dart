@@ -11,10 +11,7 @@ import '../../../customers/presentation/widgets/customer_form_dialog.dart';
 import '../../../../core/utils/user_friendly_error.dart';
 
 class CheckoutDialog extends ConsumerStatefulWidget {
-  const CheckoutDialog({
-    super.key,
-    required this.currency,
-  });
+  const CheckoutDialog({super.key, required this.currency});
 
   final String currency;
 
@@ -71,7 +68,8 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   }
 
   void _addCashDenomination(int amountMajor) {
-    final current = double.tryParse(_amountTenderedController.text.trim()) ?? 0.0;
+    final current =
+        double.tryParse(_amountTenderedController.text.trim()) ?? 0.0;
     final next = current + amountMajor;
     setState(() {
       _amountTenderedController.text = next.toStringAsFixed(2);
@@ -95,8 +93,12 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
     final tenderedMinor = _selectedMethod == PaymentMethod.cash
         ? _parsedTenderedMinor
         : totalMinor;
-    final changeMinor = (tenderedMinor - totalMinor).clamp(0, double.maxFinite.toInt());
-    final isCashShort = _selectedMethod == PaymentMethod.cash && tenderedMinor < totalMinor;
+    final changeMinor = (tenderedMinor - totalMinor).clamp(
+      0,
+      double.maxFinite.toInt(),
+    );
+    final isCashShort =
+        _selectedMethod == PaymentMethod.cash && tenderedMinor < totalMinor;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -109,8 +111,12 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
             Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 8, 12),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.4,
+                ),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -119,7 +125,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                   Expanded(
                     child: Text(
                       'Complete Payment',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -134,7 +142,10 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
             // Scrollable Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -143,7 +154,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                        color: colorScheme.primaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: colorScheme.primaryContainer),
                       ),
@@ -161,14 +174,18 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Text(
-                              CurrencyFormatter.format(totalMinor, currencyCode: widget.currency),
+                              CurrencyFormatter.format(
+                                totalMinor,
+                                currencyCode: widget.currency,
+                              ),
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.primary,
                               ),
                             ),
                           ),
-                          if (cart.discountAmount > 0 || cart.taxAmount > 0) ...[
+                          if (cart.discountAmount > 0 ||
+                              cart.taxAmount > 0) ...[
                             const SizedBox(height: 6),
                             Wrap(
                               alignment: WrapAlignment.center,
@@ -183,12 +200,16 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                                 if (cart.discountAmount > 0)
                                   Text(
                                     '-${CurrencyFormatter.format(cart.discountAmount, currencyCode: widget.currency)} disc',
-                                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.green.shade800),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: Colors.green.shade800,
+                                    ),
                                   ),
                                 if (cart.taxAmount > 0)
                                   Text(
                                     '+${CurrencyFormatter.format(cart.taxAmount, currencyCode: widget.currency)} tax',
-                                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.orange.shade800),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: Colors.orange.shade800,
+                                    ),
                                   ),
                               ],
                             ),
@@ -199,7 +220,12 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                     const SizedBox(height: 20),
 
                     // Payment Method Tabs
-                    Text('Select Payment Method', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Select Payment Method',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     SegmentedButton<PaymentMethod>(
                       showSelectedIcon: false,
@@ -238,16 +264,25 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
 
                     // CASH TENDER SECTION
                     if (_selectedMethod == PaymentMethod.cash) ...[
-                      Text('Amount Tendered', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        'Amount Tendered',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       TextField(
                         controller: _amountTenderedController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.payments_outlined),
                           suffixText: widget.currency,
                           hintText: '0.00',
-                          errorText: isCashShort ? 'Amount tendered is less than total due' : null,
+                          errorText: isCashShort
+                              ? 'Amount tendered is less than total due'
+                              : null,
                         ),
                         onChanged: (_) => setState(() {}),
                       ),
@@ -284,24 +319,33 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
 
                       // Change Calculator Display
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: isCashShort
                               ? Colors.red.withValues(alpha: 0.08)
                               : Colors.green.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isCashShort ? Colors.red.shade300 : Colors.green.shade300,
+                            color: isCashShort
+                                ? Colors.red.shade300
+                                : Colors.green.shade300,
                           ),
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: Text(
-                                isCashShort ? 'Balance Remaining:' : 'Change to Customer:',
+                                isCashShort
+                                    ? 'Balance Remaining:'
+                                    : 'Change to Customer:',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: isCashShort ? Colors.red.shade900 : Colors.green.shade900,
+                                  color: isCashShort
+                                      ? Colors.red.shade900
+                                      : Colors.green.shade900,
                                 ),
                               ),
                             ),
@@ -310,12 +354,20 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                               fit: BoxFit.scaleDown,
                               child: Text(
                                 isCashShort
-                                    ? CurrencyFormatter.format(totalMinor - tenderedMinor, currencyCode: widget.currency)
-                                    : CurrencyFormatter.format(changeMinor, currencyCode: widget.currency),
+                                    ? CurrencyFormatter.format(
+                                        totalMinor - tenderedMinor,
+                                        currencyCode: widget.currency,
+                                      )
+                                    : CurrencyFormatter.format(
+                                        changeMinor,
+                                        currencyCode: widget.currency,
+                                      ),
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: isCashShort ? Colors.red.shade900 : Colors.green.shade900,
+                                  color: isCashShort
+                                      ? Colors.red.shade900
+                                      : Colors.green.shade900,
                                 ),
                               ),
                             ),
@@ -334,10 +386,13 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                           prefixIcon: Icon(Icons.network_cell),
                         ),
                         items: _momoProviders
-                            .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                            .map(
+                              (p) => DropdownMenuItem(value: p, child: Text(p)),
+                            )
                             .toList(),
                         onChanged: (val) {
-                          if (val != null) setState(() => _selectedMomoProvider = val);
+                          if (val != null)
+                            setState(() => _selectedMomoProvider = val);
                         },
                       ),
                       const SizedBox(height: 12),
@@ -385,7 +440,11 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.info_outline, color: Colors.amber.shade900, size: 20),
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.amber.shade900,
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
@@ -403,7 +462,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: _amountTenderedController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Down-payment Tendered (Optional)',
                           prefixIcon: const Icon(Icons.payments_outlined),
@@ -424,7 +485,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                         Expanded(
                           child: Text(
                             'Customer Info (Optional)',
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -438,12 +501,16 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                               setState(() {
                                 _selectedCustomerId = newCust.id;
                                 _customerNameController.text = newCust.name;
-                                _customerPhoneController.text = newCust.phone ?? '';
+                                _customerPhoneController.text =
+                                    newCust.phone ?? '';
                               });
                             }
                           },
                           icon: const Icon(Icons.person_add, size: 16),
-                          label: const Text('New', style: TextStyle(fontSize: 12)),
+                          label: const Text(
+                            'New',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),
@@ -453,8 +520,11 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                     Consumer(
                       builder: (context, ref, _) {
                         final customersAsync = ref.watch(customersListProvider);
-                        final customersList = customersAsync.hasValue ? customersAsync.value! : <CustomerEntity>[];
-                        if (customersList.isEmpty) return const SizedBox.shrink();
+                        final customersList = customersAsync.hasValue
+                            ? customersAsync.value!
+                            : <CustomerEntity>[];
+                        if (customersList.isEmpty)
+                          return const SizedBox.shrink();
 
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 10),
@@ -469,7 +539,10 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                             items: [
                               const DropdownMenuItem<String?>(
                                 value: null,
-                                child: Text('Walk-in / Unregistered Customer', overflow: TextOverflow.ellipsis),
+                                child: Text(
+                                  'Walk-in / Unregistered Customer',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               ...customersList.map(
                                 (c) => DropdownMenuItem<String?>(
@@ -485,11 +558,18 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                                       if (c.hasDebt) ...[
                                         const SizedBox(width: 8),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: Colors.red.shade50,
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: Colors.red.shade200),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.red.shade200,
+                                            ),
                                           ),
                                           child: Text(
                                             'Debt: ${CurrencyFormatter.format(c.outstandingBalance, currencyCode: widget.currency)}',
@@ -510,10 +590,13 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                               setState(() {
                                 _selectedCustomerId = selectedId;
                                 if (selectedId != null) {
-                                  final match = customersList.where((c) => c.id == selectedId).firstOrNull;
+                                  final match = customersList
+                                      .where((c) => c.id == selectedId)
+                                      .firstOrNull;
                                   if (match != null) {
                                     _customerNameController.text = match.name;
-                                    _customerPhoneController.text = match.phone ?? '';
+                                    _customerPhoneController.text =
+                                        match.phone ?? '';
                                   }
                                 } else {
                                   _customerNameController.clear();
@@ -570,7 +653,8 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                   onPressed: isCashShort || checkoutState.isLoading
                       ? null
                       : () async {
-                          final refStr = _selectedMethod == PaymentMethod.mobileMoney
+                          final refStr =
+                              _selectedMethod == PaymentMethod.mobileMoney
                               ? '$_selectedMomoProvider: ${_referenceController.text.trim()}'
                               : _referenceController.text.trim();
 
@@ -581,11 +665,19 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                                 amountTendered: tenderedMinor,
                                 changeGiven: changeMinor,
                                 customerId: _selectedCustomerId,
-                                paymentReference: refStr.isNotEmpty ? refStr : null,
-                                customerName: _customerNameController.text.trim().isNotEmpty
+                                paymentReference: refStr.isNotEmpty
+                                    ? refStr
+                                    : null,
+                                customerName:
+                                    _customerNameController.text
+                                        .trim()
+                                        .isNotEmpty
                                     ? _customerNameController.text.trim()
                                     : null,
-                                customerPhone: _customerPhoneController.text.trim().isNotEmpty
+                                customerPhone:
+                                    _customerPhoneController.text
+                                        .trim()
+                                        .isNotEmpty
                                     ? _customerPhoneController.text.trim()
                                     : null,
                                 notes: _notesController.text.trim().isNotEmpty
@@ -606,16 +698,21 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                                 ),
                               );
                             } else {
-                              final rawError = ref.read(salesCheckoutControllerProvider).error;
+                              final rawError = ref
+                                  .read(salesCheckoutControllerProvider)
+                                  .error;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
                                     UserFriendlyError.toFriendly(
                                       rawError,
-                                      defaultMessage: 'Unable to complete sale. Please check details and try again.',
+                                      defaultMessage:
+                                          'Unable to complete sale. Please check details and try again.',
                                     ),
                                   ),
-                                  backgroundColor: Theme.of(context).colorScheme.error,
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.error,
                                 ),
                               );
                             }
@@ -625,7 +722,10 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : const Icon(Icons.check_circle_outline),
                   label: Flexible(
@@ -633,7 +733,10 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                       checkoutState.isLoading
                           ? 'Processing Sale...'
                           : 'Complete Sale (${CurrencyFormatter.format(totalMinor, currencyCode: widget.currency)})',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

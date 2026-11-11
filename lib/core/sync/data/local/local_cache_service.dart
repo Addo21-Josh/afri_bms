@@ -85,14 +85,22 @@ class LocalCacheService {
   }
 
   // ─── PRODUCTS CACHE ───
-  Future<void> cacheProducts(String businessId, List<ProductEntity> products) async {
+  Future<void> cacheProducts(
+    String businessId,
+    List<ProductEntity> products,
+  ) async {
     final cache = await _readCache();
-    final jsonList = products.map((p) => ProductModel.fromEntity(p).toCacheJson()).toList();
+    final jsonList = products
+        .map((p) => ProductModel.fromEntity(p).toCacheJson())
+        .toList();
     cache['products_$businessId'] = jsonList;
     await _writeCache(cache);
   }
 
-  Future<List<ProductEntity>> getCachedProducts(String businessId, {String? branchId}) async {
+  Future<List<ProductEntity>> getCachedProducts(
+    String businessId, {
+    String? branchId,
+  }) async {
     final cache = await _readCache();
     final list = cache['products_$businessId'] as List<dynamic>?;
     if (list == null) return [];
@@ -111,7 +119,11 @@ class LocalCacheService {
     }
   }
 
-  Future<ProductEntity?> getCachedProductById(String businessId, String productId, {String? branchId}) async {
+  Future<ProductEntity?> getCachedProductById(
+    String businessId,
+    String productId, {
+    String? branchId,
+  }) async {
     final products = await getCachedProducts(businessId, branchId: branchId);
     try {
       return products.firstWhere((p) => p.id == productId);
@@ -120,7 +132,10 @@ class LocalCacheService {
     }
   }
 
-  Future<void> saveOfflineProduct(String businessId, ProductEntity product) async {
+  Future<void> saveOfflineProduct(
+    String businessId,
+    ProductEntity product,
+  ) async {
     final products = await getCachedProducts(businessId);
     final index = products.indexWhere((p) => p.id == product.id);
     if (index >= 0) {
@@ -131,11 +146,18 @@ class LocalCacheService {
     await cacheProducts(businessId, products);
   }
 
-  Future<void> deductOfflineStock(String businessId, String productId, int quantity) async {
+  Future<void> deductOfflineStock(
+    String businessId,
+    String productId,
+    int quantity,
+  ) async {
     await deductOfflineStockBatch(businessId, {productId: quantity});
   }
 
-  Future<void> deductOfflineStockBatch(String businessId, Map<String, int> productQuantities) async {
+  Future<void> deductOfflineStockBatch(
+    String businessId,
+    Map<String, int> productQuantities,
+  ) async {
     if (productQuantities.isEmpty) return;
     final products = await getCachedProducts(businessId);
     bool modified = false;
@@ -144,7 +166,10 @@ class LocalCacheService {
       final index = products.indexWhere((p) => p.id == entry.key);
       if (index >= 0) {
         final current = products[index];
-        final newStock = (current.currentBranchStock - entry.value).clamp(0, 999999);
+        final newStock = (current.currentBranchStock - entry.value).clamp(
+          0,
+          999999,
+        );
         products[index] = ProductEntity(
           id: current.id,
           businessId: current.businessId,
@@ -183,26 +208,42 @@ class LocalCacheService {
   }
 
   // ─── CATEGORIES CACHE ───
-  Future<void> cacheCategories(String businessId, List<ProductCategoryEntity> categories) async {
+  Future<void> cacheCategories(
+    String businessId,
+    List<ProductCategoryEntity> categories,
+  ) async {
     final cache = await _readCache();
-    final jsonList = categories.map((c) => ProductCategoryModel.fromEntity(c).toJson()).toList();
+    final jsonList = categories
+        .map((c) => ProductCategoryModel.fromEntity(c).toJson())
+        .toList();
     cache['categories_$businessId'] = jsonList;
     await _writeCache(cache);
   }
 
-  Future<List<ProductCategoryEntity>> getCachedCategories(String businessId) async {
+  Future<List<ProductCategoryEntity>> getCachedCategories(
+    String businessId,
+  ) async {
     final cache = await _readCache();
     final list = cache['categories_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      return list.map((json) => ProductCategoryModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+      return list
+          .map(
+            (json) => ProductCategoryModel.fromJson(
+              json as Map<String, dynamic>,
+            ).toEntity(),
+          )
+          .toList();
     } catch (e) {
       AppLogger.w('Error parsing cached categories: $e');
       return [];
     }
   }
 
-  Future<void> saveOfflineCategory(String businessId, ProductCategoryEntity category) async {
+  Future<void> saveOfflineCategory(
+    String businessId,
+    ProductCategoryEntity category,
+  ) async {
     final categories = await getCachedCategories(businessId);
     final index = categories.indexWhere((c) => c.id == category.id);
     if (index >= 0) {
@@ -214,9 +255,14 @@ class LocalCacheService {
   }
 
   // ─── CUSTOMERS CACHE ───
-  Future<void> cacheCustomers(String businessId, List<CustomerEntity> customers) async {
+  Future<void> cacheCustomers(
+    String businessId,
+    List<CustomerEntity> customers,
+  ) async {
     final cache = await _readCache();
-    final jsonList = customers.map((c) => CustomerModel.fromEntity(c).toJson()).toList();
+    final jsonList = customers
+        .map((c) => CustomerModel.fromEntity(c).toJson())
+        .toList();
     cache['customers_$businessId'] = jsonList;
     await _writeCache(cache);
   }
@@ -226,14 +272,22 @@ class LocalCacheService {
     final list = cache['customers_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      return list.map((json) => CustomerModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+      return list
+          .map(
+            (json) =>
+                CustomerModel.fromJson(json as Map<String, dynamic>).toEntity(),
+          )
+          .toList();
     } catch (e) {
       AppLogger.w('Error parsing cached customers: $e');
       return [];
     }
   }
 
-  Future<CustomerEntity?> getCachedCustomerById(String businessId, String customerId) async {
+  Future<CustomerEntity?> getCachedCustomerById(
+    String businessId,
+    String customerId,
+  ) async {
     final customers = await getCachedCustomers(businessId);
     try {
       return customers.firstWhere((c) => c.id == customerId);
@@ -242,7 +296,10 @@ class LocalCacheService {
     }
   }
 
-  Future<void> saveOfflineCustomer(String businessId, CustomerEntity customer) async {
+  Future<void> saveOfflineCustomer(
+    String businessId,
+    CustomerEntity customer,
+  ) async {
     final customers = await getCachedCustomers(businessId);
     final index = customers.indexWhere((c) => c.id == customer.id);
     if (index >= 0) {
@@ -256,7 +313,9 @@ class LocalCacheService {
   // ─── SALES CACHE ───
   Future<void> cacheSales(String businessId, List<SaleEntity> sales) async {
     final cache = await _readCache();
-    final jsonList = sales.map((s) => SaleModel.fromEntity(s).toCacheJson()).toList();
+    final jsonList = sales
+        .map((s) => SaleModel.fromEntity(s).toCacheJson())
+        .toList();
     cache['sales_$businessId'] = jsonList;
     await _writeCache(cache);
   }
@@ -266,14 +325,22 @@ class LocalCacheService {
     final list = cache['sales_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      return list.map((json) => SaleModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+      return list
+          .map(
+            (json) =>
+                SaleModel.fromJson(json as Map<String, dynamic>).toEntity(),
+          )
+          .toList();
     } catch (e) {
       AppLogger.w('Error parsing cached sales: $e');
       return [];
     }
   }
 
-  Future<SaleEntity?> getCachedSaleById(String businessId, String saleId) async {
+  Future<SaleEntity?> getCachedSaleById(
+    String businessId,
+    String saleId,
+  ) async {
     final sales = await getCachedSales(businessId);
     try {
       return sales.firstWhere((s) => s.id == saleId);
@@ -294,22 +361,29 @@ class LocalCacheService {
   }
 
   // ─── SUPPLIERS CACHE ───
-  Future<void> cacheSuppliers(String businessId, List<SupplierEntity> suppliers) async {
+  Future<void> cacheSuppliers(
+    String businessId,
+    List<SupplierEntity> suppliers,
+  ) async {
     final cache = await _readCache();
-    final jsonList = suppliers.map((s) => SupplierModel(
-      id: s.id,
-      businessId: s.businessId,
-      name: s.name,
-      contactPerson: s.contactPerson,
-      phone: s.phone,
-      email: s.email,
-      address: s.address,
-      outstandingBalance: s.outstandingBalance,
-      notes: s.notes,
-      isActive: s.isActive,
-      createdAt: s.createdAt,
-      updatedAt: s.updatedAt,
-    ).toJson()).toList();
+    final jsonList = suppliers
+        .map(
+          (s) => SupplierModel(
+            id: s.id,
+            businessId: s.businessId,
+            name: s.name,
+            contactPerson: s.contactPerson,
+            phone: s.phone,
+            email: s.email,
+            address: s.address,
+            outstandingBalance: s.outstandingBalance,
+            notes: s.notes,
+            isActive: s.isActive,
+            createdAt: s.createdAt,
+            updatedAt: s.updatedAt,
+          ).toJson(),
+        )
+        .toList();
     cache['suppliers_$businessId'] = jsonList;
     await _writeCache(cache);
   }
@@ -319,14 +393,19 @@ class LocalCacheService {
     final list = cache['suppliers_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      return list.map((json) => SupplierModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => SupplierModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       AppLogger.w('Error parsing cached suppliers: $e');
       return [];
     }
   }
 
-  Future<SupplierEntity?> getCachedSupplierById(String businessId, String supplierId) async {
+  Future<SupplierEntity?> getCachedSupplierById(
+    String businessId,
+    String supplierId,
+  ) async {
     final suppliers = await getCachedSuppliers(businessId);
     try {
       return suppliers.firstWhere((s) => s.id == supplierId);
@@ -335,7 +414,10 @@ class LocalCacheService {
     }
   }
 
-  Future<void> saveOfflineSupplier(String businessId, SupplierEntity supplier) async {
+  Future<void> saveOfflineSupplier(
+    String businessId,
+    SupplierEntity supplier,
+  ) async {
     final suppliers = await getCachedSuppliers(businessId);
     final index = suppliers.indexWhere((s) => s.id == supplier.id);
     if (index >= 0) {
@@ -346,43 +428,58 @@ class LocalCacheService {
     await cacheSuppliers(businessId, suppliers);
   }
 
-  Future<void> deleteOfflineSupplier(String businessId, String supplierId) async {
+  Future<void> deleteOfflineSupplier(
+    String businessId,
+    String supplierId,
+  ) async {
     final suppliers = await getCachedSuppliers(businessId);
     suppliers.removeWhere((s) => s.id == supplierId);
     await cacheSuppliers(businessId, suppliers);
   }
 
   // ─── EXPENSES CACHE ───
-  Future<void> cacheExpenses(String businessId, List<ExpenseEntity> expenses) async {
+  Future<void> cacheExpenses(
+    String businessId,
+    List<ExpenseEntity> expenses,
+  ) async {
     final cache = await _readCache();
-    final jsonList = expenses.map((e) => ExpenseModel(
-      id: e.id,
-      businessId: e.businessId,
-      branchId: e.branchId,
-      categoryId: e.categoryId,
-      categoryName: e.categoryName,
-      amount: e.amount,
-      description: e.description,
-      paymentMethod: e.paymentMethod,
-      paymentReference: e.paymentReference,
-      expenseDate: e.expenseDate,
-      receiptUrl: e.receiptUrl,
-      recordedBy: e.recordedBy,
-      recordedByName: e.recordedByName,
-      notes: e.notes,
-      createdAt: e.createdAt,
-      updatedAt: e.updatedAt,
-    ).toJson()).toList();
+    final jsonList = expenses
+        .map(
+          (e) => ExpenseModel(
+            id: e.id,
+            businessId: e.businessId,
+            branchId: e.branchId,
+            categoryId: e.categoryId,
+            categoryName: e.categoryName,
+            amount: e.amount,
+            description: e.description,
+            paymentMethod: e.paymentMethod,
+            paymentReference: e.paymentReference,
+            expenseDate: e.expenseDate,
+            receiptUrl: e.receiptUrl,
+            recordedBy: e.recordedBy,
+            recordedByName: e.recordedByName,
+            notes: e.notes,
+            createdAt: e.createdAt,
+            updatedAt: e.updatedAt,
+          ).toJson(),
+        )
+        .toList();
     cache['expenses_$businessId'] = jsonList;
     await _writeCache(cache);
   }
 
-  Future<List<ExpenseEntity>> getCachedExpenses(String businessId, {String? branchId}) async {
+  Future<List<ExpenseEntity>> getCachedExpenses(
+    String businessId, {
+    String? branchId,
+  }) async {
     final cache = await _readCache();
     final list = cache['expenses_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      var expenses = list.map((json) => ExpenseModel.fromJson(json as Map<String, dynamic>)).toList();
+      var expenses = list
+          .map((json) => ExpenseModel.fromJson(json as Map<String, dynamic>))
+          .toList();
       if (branchId != null && branchId.isNotEmpty) {
         expenses = expenses.where((e) => e.branchId == branchId).toList();
       }
@@ -393,7 +490,10 @@ class LocalCacheService {
     }
   }
 
-  Future<void> saveOfflineExpense(String businessId, ExpenseEntity expense) async {
+  Future<void> saveOfflineExpense(
+    String businessId,
+    ExpenseEntity expense,
+  ) async {
     final expenses = await getCachedExpenses(businessId);
     final index = expenses.indexWhere((e) => e.id == expense.id);
     if (index >= 0) {
@@ -413,34 +513,43 @@ class LocalCacheService {
   // ─── DEBTS CACHE ───
   Future<void> cacheDebts(String businessId, List<DebtEntity> debts) async {
     final cache = await _readCache();
-    final jsonList = debts.map((d) => DebtModel(
-      id: d.id,
-      businessId: d.businessId,
-      branchId: d.branchId,
-      debtType: d.debtType,
-      customerId: d.customerId,
-      supplierId: d.supplierId,
-      saleId: d.saleId,
-      personName: d.personName,
-      personPhone: d.personPhone,
-      initialAmount: d.initialAmount,
-      remainingBalance: d.remainingBalance,
-      dueDate: d.dueDate,
-      status: d.status,
-      notes: d.notes,
-      createdAt: d.createdAt,
-      updatedAt: d.updatedAt,
-    ).toJson()).toList();
+    final jsonList = debts
+        .map(
+          (d) => DebtModel(
+            id: d.id,
+            businessId: d.businessId,
+            branchId: d.branchId,
+            debtType: d.debtType,
+            customerId: d.customerId,
+            supplierId: d.supplierId,
+            saleId: d.saleId,
+            personName: d.personName,
+            personPhone: d.personPhone,
+            initialAmount: d.initialAmount,
+            remainingBalance: d.remainingBalance,
+            dueDate: d.dueDate,
+            status: d.status,
+            notes: d.notes,
+            createdAt: d.createdAt,
+            updatedAt: d.updatedAt,
+          ).toJson(),
+        )
+        .toList();
     cache['debts_$businessId'] = jsonList;
     await _writeCache(cache);
   }
 
-  Future<List<DebtEntity>> getCachedDebts(String businessId, {String? branchId}) async {
+  Future<List<DebtEntity>> getCachedDebts(
+    String businessId, {
+    String? branchId,
+  }) async {
     final cache = await _readCache();
     final list = cache['debts_$businessId'] as List<dynamic>?;
     if (list == null) return [];
     try {
-      var debts = list.map((json) => DebtModel.fromJson(json as Map<String, dynamic>)).toList();
+      var debts = list
+          .map((json) => DebtModel.fromJson(json as Map<String, dynamic>))
+          .toList();
       if (branchId != null && branchId.isNotEmpty) {
         debts = debts.where((d) => d.branchId == branchId).toList();
       }
@@ -451,7 +560,10 @@ class LocalCacheService {
     }
   }
 
-  Future<DebtEntity?> getCachedDebtById(String businessId, String debtId) async {
+  Future<DebtEntity?> getCachedDebtById(
+    String businessId,
+    String debtId,
+  ) async {
     final debts = await getCachedDebts(businessId);
     try {
       return debts.firstWhere((d) => d.id == debtId);
@@ -478,13 +590,20 @@ class LocalCacheService {
   }
 
   // ─── BUSINESSES CACHE ───
-  Future<void> cacheBusinesses(String userId, List<BusinessEntity> businesses) async {
+  Future<void> cacheBusinesses(
+    String userId,
+    List<BusinessEntity> businesses,
+  ) async {
     final cache = await _readCache();
-    final jsonList = businesses.map((b) => BusinessModel.fromEntity(b).toJson()).toList();
+    final jsonList = businesses
+        .map((b) => BusinessModel.fromEntity(b).toJson())
+        .toList();
     cache['businesses_$userId'] = jsonList;
     cache['cached_businesses'] = jsonList; // Global backup for any user ID loss
     if (businesses.isNotEmpty) {
-      cache['last_active_business'] = BusinessModel.fromEntity(businesses.first).toJson();
+      cache['last_active_business'] = BusinessModel.fromEntity(
+        businesses.first,
+      ).toJson();
       cache['last_authenticated_user_id'] ??= userId;
     }
     await _writeCache(cache);
@@ -498,7 +617,13 @@ class LocalCacheService {
       final list = cache['businesses_$userId'] as List<dynamic>?;
       if (list != null && list.isNotEmpty) {
         try {
-          return list.map((json) => BusinessModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+          return list
+              .map(
+                (json) => BusinessModel.fromJson(
+                  json as Map<String, dynamic>,
+                ).toEntity(),
+              )
+              .toList();
         } catch (e) {
           AppLogger.w('Error parsing cached businesses for $userId: $e');
         }
@@ -509,7 +634,13 @@ class LocalCacheService {
     final globalList = cache['cached_businesses'] as List<dynamic>?;
     if (globalList != null && globalList.isNotEmpty) {
       try {
-        return globalList.map((json) => BusinessModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+        return globalList
+            .map(
+              (json) => BusinessModel.fromJson(
+                json as Map<String, dynamic>,
+              ).toEntity(),
+            )
+            .toList();
       } catch (e) {
         AppLogger.w('Error parsing global cached businesses: $e');
       }
@@ -517,9 +648,17 @@ class LocalCacheService {
 
     // 3. Scan for any 'businesses_*' key in cache
     for (final entry in cache.entries) {
-      if (entry.key.startsWith('businesses_') && entry.value is List && (entry.value as List).isNotEmpty) {
+      if (entry.key.startsWith('businesses_') &&
+          entry.value is List &&
+          (entry.value as List).isNotEmpty) {
         try {
-          final list = (entry.value as List).map((json) => BusinessModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+          final list = (entry.value as List)
+              .map(
+                (json) => BusinessModel.fromJson(
+                  json as Map<String, dynamic>,
+                ).toEntity(),
+              )
+              .toList();
           if (list.isNotEmpty) return list;
         } catch (_) {}
       }
@@ -555,12 +694,19 @@ class LocalCacheService {
   }
 
   // ─── BRANCHES CACHE ───
-  Future<void> cacheBranches(String businessId, List<BranchEntity> branches) async {
+  Future<void> cacheBranches(
+    String businessId,
+    List<BranchEntity> branches,
+  ) async {
     final cache = await _readCache();
-    final jsonList = branches.map((b) => BranchModel.fromEntity(b).toJson()).toList();
+    final jsonList = branches
+        .map((b) => BranchModel.fromEntity(b).toJson())
+        .toList();
     cache['branches_$businessId'] = jsonList;
     if (branches.isNotEmpty) {
-      cache['last_active_branch'] = BranchModel.fromEntity(branches.first).toJson();
+      cache['last_active_branch'] = BranchModel.fromEntity(
+        branches.first,
+      ).toJson();
     }
     await _writeCache(cache);
   }
@@ -570,7 +716,12 @@ class LocalCacheService {
     final list = cache['branches_$businessId'] as List<dynamic>?;
     if (list != null && list.isNotEmpty) {
       try {
-        return list.map((json) => BranchModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+        return list
+            .map(
+              (json) =>
+                  BranchModel.fromJson(json as Map<String, dynamic>).toEntity(),
+            )
+            .toList();
       } catch (e) {
         AppLogger.w('Error parsing cached branches: $e');
       }
@@ -578,16 +729,25 @@ class LocalCacheService {
 
     // Scan for any branches_* key in cache
     for (final entry in cache.entries) {
-      if (entry.key.startsWith('branches_') && entry.value is List && (entry.value as List).isNotEmpty) {
+      if (entry.key.startsWith('branches_') &&
+          entry.value is List &&
+          (entry.value as List).isNotEmpty) {
         try {
-          final branches = (entry.value as List).map((json) => BranchModel.fromJson(json as Map<String, dynamic>).toEntity()).toList();
+          final branches = (entry.value as List)
+              .map(
+                (json) => BranchModel.fromJson(
+                  json as Map<String, dynamic>,
+                ).toEntity(),
+              )
+              .toList();
           if (branches.isNotEmpty) return branches;
         } catch (_) {}
       }
     }
 
     // Fallback to last active branch
-    final lastActiveBranch = cache['last_active_branch'] as Map<String, dynamic>?;
+    final lastActiveBranch =
+        cache['last_active_branch'] as Map<String, dynamic>?;
     if (lastActiveBranch != null) {
       try {
         final b = BranchModel.fromJson(lastActiveBranch).toEntity();
@@ -653,7 +813,9 @@ class LocalCacheService {
     final lastId = cache['last_selected_business_id'] as String?;
     if (lastId != null && lastId.isNotEmpty) return lastId;
     for (final entry in cache.entries) {
-      if (entry.key.startsWith('selected_business_') && entry.value is String && (entry.value as String).isNotEmpty) {
+      if (entry.key.startsWith('selected_business_') &&
+          entry.value is String &&
+          (entry.value as String).isNotEmpty) {
         return entry.value as String;
       }
     }
@@ -671,11 +833,15 @@ class LocalCacheService {
     final cache = await _readCache();
     final list = cache['businesses_$userId'] as List<dynamic>?;
     if (list != null) {
-      cache['businesses_$userId'] = list.where((item) => (item as Map<String, dynamic>)['id'] != businessId).toList();
+      cache['businesses_$userId'] = list
+          .where((item) => (item as Map<String, dynamic>)['id'] != businessId)
+          .toList();
     }
     final globalList = cache['cached_businesses'] as List<dynamic>?;
     if (globalList != null) {
-      cache['cached_businesses'] = globalList.where((item) => (item as Map<String, dynamic>)['id'] != businessId).toList();
+      cache['cached_businesses'] = globalList
+          .where((item) => (item as Map<String, dynamic>)['id'] != businessId)
+          .toList();
     }
     if (cache['selected_business_$userId'] == businessId) {
       cache.remove('selected_business_$userId');
@@ -687,7 +853,11 @@ class LocalCacheService {
   }
 
   // ─── USER ROLES CACHE ───
-  Future<void> cacheUserRole(String businessId, String userId, String role) async {
+  Future<void> cacheUserRole(
+    String businessId,
+    String userId,
+    String role,
+  ) async {
     final cache = await _readCache();
     cache['role_${businessId}_$userId'] = role;
     cache['last_known_role_$businessId'] = role;

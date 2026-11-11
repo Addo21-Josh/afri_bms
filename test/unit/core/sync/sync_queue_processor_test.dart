@@ -7,8 +7,11 @@ import 'package:afri_bms/core/sync/domain/services/conflict_resolver.dart';
 import 'package:afri_bms/core/sync/domain/services/sync_queue_processor.dart';
 
 class MockSyncQueueStorage extends Mock implements SyncQueueStorage {}
+
 class MockConflictResolver extends Mock implements ConflictResolver {}
+
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockGoTrueClient extends Mock implements GoTrueClient {}
 
 void main() {
@@ -35,8 +38,9 @@ void main() {
 
   group('SyncQueueProcessor', () {
     test('returns empty result when queue has no pending items', () async {
-      when(() => mockStorage.getPendingItems(businessId: any(named: 'businessId')))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockStorage.getPendingItems(businessId: any(named: 'businessId')),
+      ).thenAnswer((_) async => []);
 
       final result = await processor.processQueue();
 
@@ -46,18 +50,21 @@ void main() {
     });
 
     test('returns failed batch when user session is not active', () async {
-      when(() => mockStorage.getPendingItems(businessId: any(named: 'businessId')))
-          .thenAnswer((_) async => [
-                SyncQueueItem(
-                  id: 'q-1',
-                  businessId: 'biz-1',
-                  table: 'sales',
-                  recordId: 'sale-1',
-                  operation: SyncOperation.insert,
-                  payload: {'id': 'sale-1'},
-                  createdAt: DateTime.now(),
-                ),
-              ]);
+      when(
+        () => mockStorage.getPendingItems(businessId: any(named: 'businessId')),
+      ).thenAnswer(
+        (_) async => [
+          SyncQueueItem(
+            id: 'q-1',
+            businessId: 'biz-1',
+            table: 'sales',
+            recordId: 'sale-1',
+            operation: SyncOperation.insert,
+            payload: {'id': 'sale-1'},
+            createdAt: DateTime.now(),
+          ),
+        ],
+      );
 
       when(() => mockAuth.currentSession).thenReturn(null);
 

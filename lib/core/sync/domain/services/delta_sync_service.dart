@@ -29,7 +29,8 @@ class DeltaSyncService {
   static const String _metadataFileName = 'afri_delta_sync_meta.json';
   File? _metaFile;
 
-  DeltaSyncService(this._supabase, {LocalCacheService? localCache}) : _localCache = localCache;
+  DeltaSyncService(this._supabase, {LocalCacheService? localCache})
+    : _localCache = localCache;
 
   Future<File> _getFile() async {
     if (_metaFile != null) return _metaFile!;
@@ -55,11 +56,17 @@ class DeltaSyncService {
     }
   }
 
-  Future<void> setLastSyncTime(String table, String businessId, DateTime timestamp) async {
+  Future<void> setLastSyncTime(
+    String table,
+    String businessId,
+    DateTime timestamp,
+  ) async {
     try {
       final file = await _getFile();
       final content = await file.readAsString();
-      final map = content.isNotEmpty ? jsonDecode(content) as Map<String, dynamic> : <String, dynamic>{};
+      final map = content.isNotEmpty
+          ? jsonDecode(content) as Map<String, dynamic>
+          : <String, dynamic>{};
       final key = '${businessId}_$table';
       map[key] = timestamp.toIso8601String();
       await file.writeAsString(jsonEncode(map), flush: true);
@@ -84,7 +91,9 @@ class DeltaSyncService {
         query = query.gt('updated_at', lastSync.toIso8601String());
       }
 
-      final response = await query.order('updated_at', ascending: true).limit(500);
+      final response = await query
+          .order('updated_at', ascending: true)
+          .limit(500);
       final List<dynamic> records = response as List<dynamic>;
 
       if (_localCache != null && records.isNotEmpty) {
@@ -94,7 +103,9 @@ class DeltaSyncService {
       // Update sync marker
       await setLastSyncTime(table, businessId, now);
 
-      AppLogger.i('Delta sync pulled ${records.length} records for $table since ${lastSync?.toIso8601String() ?? 'beginning'}');
+      AppLogger.i(
+        'Delta sync pulled ${records.length} records for $table since ${lastSync?.toIso8601String() ?? 'beginning'}',
+      );
 
       return DeltaSyncResult(
         table: table,
@@ -103,11 +114,19 @@ class DeltaSyncService {
       );
     } catch (e) {
       AppLogger.e('Error pulling delta for $table: $e');
-      return DeltaSyncResult(table: table, recordsReceived: 0, syncTimestamp: now);
+      return DeltaSyncResult(
+        table: table,
+        recordsReceived: 0,
+        syncTimestamp: now,
+      );
     }
   }
 
-  Future<void> _applyRecordsToLocalCache(String table, String businessId, List<dynamic> records) async {
+  Future<void> _applyRecordsToLocalCache(
+    String table,
+    String businessId,
+    List<dynamic> records,
+  ) async {
     final cache = _localCache;
     if (cache == null) return;
     try {
@@ -141,13 +160,22 @@ class DeltaSyncService {
         }
       }
     } catch (e) {
-      AppLogger.w('Failed to apply delta records to local cache for $table: $e');
+      AppLogger.w(
+        'Failed to apply delta records to local cache for $table: $e',
+      );
     }
   }
 
   /// Pulls delta updates across all major business tables
   Future<List<DeltaSyncResult>> pullAllDeltas(String businessId) async {
-    final tables = ['products', 'customers', 'sales', 'debts', 'expenses', 'suppliers'];
+    final tables = [
+      'products',
+      'customers',
+      'sales',
+      'debts',
+      'expenses',
+      'suppliers',
+    ];
     final results = <DeltaSyncResult>[];
     for (final table in tables) {
       final res = await pullDelta(table: table, businessId: businessId);

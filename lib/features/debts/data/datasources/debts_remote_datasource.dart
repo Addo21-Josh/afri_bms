@@ -31,7 +31,7 @@ abstract class DebtsRemoteDataSource {
 
 class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
   DebtsRemoteDataSourceImpl({required SupabaseClient supabaseClient})
-      : _supabaseClient = supabaseClient;
+    : _supabaseClient = supabaseClient;
 
   final SupabaseClient _supabaseClient;
 
@@ -45,7 +45,10 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
     String? supplierId,
   }) async {
     try {
-      var query = _supabaseClient.from('debts').select().eq('business_id', businessId);
+      var query = _supabaseClient
+          .from('debts')
+          .select()
+          .eq('business_id', businessId);
 
       if (branchId != null) {
         query = query.eq('branch_id', branchId);
@@ -64,7 +67,9 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
       }
 
       final res = await query.order('created_at', ascending: false);
-      return (res as List).map((e) => DebtModel.fromJson(e as Map<String, dynamic>)).toList();
+      return (res as List)
+          .map((e) => DebtModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205' || e.message.contains('does not exist')) {
         return [];
@@ -77,7 +82,11 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
 
   @override
   Future<DebtModel> getDebtById(String debtId) async {
-    final res = await _supabaseClient.from('debts').select().eq('id', debtId).single();
+    final res = await _supabaseClient
+        .from('debts')
+        .select()
+        .eq('id', debtId)
+        .single();
     return DebtModel.fromJson(res);
   }
 
@@ -100,9 +109,12 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
             .eq('id', created.customerId!)
             .single();
         final currentBal = (cust['outstanding_balance'] as num?)?.toInt() ?? 0;
-        await _supabaseClient.from('customers').update({
-          'outstanding_balance': currentBal + created.remainingBalance,
-        }).eq('id', created.customerId!);
+        await _supabaseClient
+            .from('customers')
+            .update({
+              'outstanding_balance': currentBal + created.remainingBalance,
+            })
+            .eq('id', created.customerId!);
       } catch (_) {}
     }
 
@@ -115,9 +127,10 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
             .eq('id', created.supplierId!)
             .single();
         final currentBal = (supp['balance'] as num?)?.toInt() ?? 0;
-        await _supabaseClient.from('suppliers').update({
-          'balance': currentBal + created.remainingBalance,
-        }).eq('id', created.supplierId!);
+        await _supabaseClient
+            .from('suppliers')
+            .update({'balance': currentBal + created.remainingBalance})
+            .eq('id', created.supplierId!);
       } catch (_) {}
     }
 
@@ -131,7 +144,8 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
         .update({
           'remaining_balance': debt.remainingBalance,
           'status': debt.status.value,
-          if (debt.dueDate != null) 'due_date': debt.dueDate!.toIso8601String().substring(0, 10),
+          if (debt.dueDate != null)
+            'due_date': debt.dueDate!.toIso8601String().substring(0, 10),
           'notes': debt.notes,
           'updated_at': DateTime.now().toIso8601String(),
         })
@@ -154,7 +168,9 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
           .select()
           .eq('debt_id', debtId)
           .order('created_at', ascending: false);
-      return (res as List).map((e) => DebtPaymentModel.fromJson(e as Map<String, dynamic>)).toList();
+      return (res as List)
+          .map((e) => DebtPaymentModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205' || e.message.contains('does not exist')) {
         return [];
@@ -183,7 +199,8 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
       'amount': amount,
       'payment_method': paymentMethod,
     };
-    if (paymentReference != null) payload['payment_reference'] = paymentReference;
+    if (paymentReference != null)
+      payload['payment_reference'] = paymentReference;
     if (notes != null) payload['notes'] = notes;
     if (currentUser != null) payload['recorded_by'] = currentUser.id;
 
@@ -195,19 +212,30 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
     final payment = DebtPaymentModel.fromJson(res);
 
     // 2. Fetch current debt to compute new remaining balance
-    final debtRes = await _supabaseClient.from('debts').select().eq('id', debtId).single();
+    final debtRes = await _supabaseClient
+        .from('debts')
+        .select()
+        .eq('id', debtId)
+        .single();
     final currentDebt = DebtModel.fromJson(debtRes);
-    final newBalance = (currentDebt.remainingBalance - amount).clamp(0, currentDebt.initialAmount);
+    final newBalance = (currentDebt.remainingBalance - amount).clamp(
+      0,
+      currentDebt.initialAmount,
+    );
     final newStatus = newBalance <= 0 ? 'paid' : currentDebt.status.value;
 
-    await _supabaseClient.from('debts').update({
-      'remaining_balance': newBalance,
-      'status': newStatus,
-      'updated_at': DateTime.now().toIso8601String(),
-    }).eq('id', debtId);
+    await _supabaseClient
+        .from('debts')
+        .update({
+          'remaining_balance': newBalance,
+          'status': newStatus,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', debtId);
 
     // 3. Update linked Customer balance if receivable
-    if (currentDebt.customerId != null && currentDebt.debtType == DebtType.receivable) {
+    if (currentDebt.customerId != null &&
+        currentDebt.debtType == DebtType.receivable) {
       try {
         final cust = await _supabaseClient
             .from('customers')
@@ -215,15 +243,20 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
             .eq('id', currentDebt.customerId!)
             .single();
         final currentBal = (cust['outstanding_balance'] as num?)?.toInt() ?? 0;
-        final updatedBal = (currentBal - amount).clamp(0, double.infinity.toInt());
-        await _supabaseClient.from('customers').update({
-          'outstanding_balance': updatedBal,
-        }).eq('id', currentDebt.customerId!);
+        final updatedBal = (currentBal - amount).clamp(
+          0,
+          double.infinity.toInt(),
+        );
+        await _supabaseClient
+            .from('customers')
+            .update({'outstanding_balance': updatedBal})
+            .eq('id', currentDebt.customerId!);
       } catch (_) {}
     }
 
     // 4. Update linked Supplier balance if payable
-    if (currentDebt.supplierId != null && currentDebt.debtType == DebtType.payable) {
+    if (currentDebt.supplierId != null &&
+        currentDebt.debtType == DebtType.payable) {
       try {
         final supp = await _supabaseClient
             .from('suppliers')
@@ -231,10 +264,14 @@ class DebtsRemoteDataSourceImpl implements DebtsRemoteDataSource {
             .eq('id', currentDebt.supplierId!)
             .single();
         final currentBal = (supp['balance'] as num?)?.toInt() ?? 0;
-        final updatedBal = (currentBal - amount).clamp(0, double.infinity.toInt());
-        await _supabaseClient.from('suppliers').update({
-          'balance': updatedBal,
-        }).eq('id', currentDebt.supplierId!);
+        final updatedBal = (currentBal - amount).clamp(
+          0,
+          double.infinity.toInt(),
+        );
+        await _supabaseClient
+            .from('suppliers')
+            .update({'balance': updatedBal})
+            .eq('id', currentDebt.supplierId!);
       } catch (_) {}
     }
 

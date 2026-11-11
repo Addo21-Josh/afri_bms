@@ -25,7 +25,9 @@ class RevenueLineChart extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           'No sales transactions in this period yet',
-          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.outline,
+          ),
         ),
       );
     }
@@ -46,7 +48,12 @@ class RevenueLineChart extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 1.8,
       child: Padding(
-        padding: const EdgeInsets.only(right: 18, left: 12, top: 24, bottom: 12),
+        padding: const EdgeInsets.only(
+          right: 18,
+          left: 12,
+          top: 24,
+          bottom: 12,
+        ),
         child: LineChart(
           LineChartData(
             gridData: FlGridData(
@@ -60,13 +67,20 @@ class RevenueLineChart extends StatelessWidget {
             ),
             titlesData: FlTitlesData(
               show: true,
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 30,
-                  interval: (dailyPoints.length / 5).clamp(1.0, double.infinity),
+                  interval: (dailyPoints.length / 5).clamp(
+                    1.0,
+                    double.infinity,
+                  ),
                   getTitlesWidget: (value, meta) {
                     final index = value.toInt();
                     if (index >= 0 && index < dailyPoints.length) {
@@ -94,7 +108,10 @@ class RevenueLineChart extends StatelessWidget {
                   reservedSize: 55,
                   getTitlesWidget: (value, meta) {
                     return Text(
-                      CurrencyFormatter.format((value * 100).toInt(), currencyCode: currency),
+                      CurrencyFormatter.format(
+                        (value * 100).toInt(),
+                        currencyCode: currency,
+                      ),
                       style: TextStyle(
                         color: colorScheme.onSurfaceVariant,
                         fontSize: 9,
@@ -107,7 +124,10 @@ class RevenueLineChart extends StatelessWidget {
             ),
             borderData: FlBorderData(show: false),
             minX: 0,
-            maxX: (dailyPoints.length - 1).toDouble().clamp(0.0, double.infinity),
+            maxX: (dailyPoints.length - 1).toDouble().clamp(
+              0.0,
+              double.infinity,
+            ),
             minY: 0,
             maxY: bufferMax,
             lineTouchData: LineTouchData(
@@ -116,13 +136,24 @@ class RevenueLineChart extends StatelessWidget {
                 getTooltipItems: (touchedSpots) {
                   return touchedSpots.map((spot) {
                     final index = spot.x.toInt();
-                    final point = index < dailyPoints.length ? dailyPoints[index] : null;
-                    final dateStr = point != null ? DateFormat('EEE, d MMM').format(point.date) : '';
-                    final amountFormatted = CurrencyFormatter.format((spot.y * 100).toInt(), currencyCode: currency);
+                    final point = index < dailyPoints.length
+                        ? dailyPoints[index]
+                        : null;
+                    final dateStr = point != null
+                        ? DateFormat('EEE, d MMM').format(point.date)
+                        : '';
+                    final amountFormatted = CurrencyFormatter.format(
+                      (spot.y * 100).toInt(),
+                      currencyCode: currency,
+                    );
 
                     return LineTooltipItem(
                       '$dateStr\n$amountFormatted (${point?.salesCount ?? 0} sales)',
-                      TextStyle(color: colorScheme.onInverseSurface, fontWeight: FontWeight.bold, fontSize: 11),
+                      TextStyle(
+                        color: colorScheme.onInverseSurface,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
                     );
                   }).toList();
                 },
@@ -138,12 +169,13 @@ class RevenueLineChart extends StatelessWidget {
                 isStrokeCapRound: true,
                 dotData: FlDotData(
                   show: dailyPoints.length < 15,
-                  getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
-                    radius: 4,
-                    color: colorScheme.primary,
-                    strokeWidth: 2,
-                    strokeColor: colorScheme.surface,
-                  ),
+                  getDotPainter: (spot, percent, barData, index) =>
+                      FlDotCirclePainter(
+                        radius: 4,
+                        color: colorScheme.primary,
+                        strokeWidth: 2,
+                        strokeColor: colorScheme.surface,
+                      ),
                 ),
                 belowBarData: BarAreaData(
                   show: true,

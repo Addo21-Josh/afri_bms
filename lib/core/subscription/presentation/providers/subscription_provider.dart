@@ -25,9 +25,10 @@ final featureGateProvider = Provider<FeatureGateService>((ref) {
 });
 
 /// Controller to handle subscription upgrades, downgrades, and billing state
-class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>> {
+class SubscriptionController
+    extends StateNotifier<AsyncValue<SubscriptionTier>> {
   SubscriptionController(this._ref)
-      : super(AsyncValue.data(_ref.read(currentSubscriptionTierProvider)));
+    : super(AsyncValue.data(_ref.read(currentSubscriptionTierProvider)));
 
   final Ref _ref;
 
@@ -35,7 +36,10 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
   Future<bool> changeTier(SubscriptionTier newTier) async {
     final activeBiz = _ref.read(currentBusinessProvider);
     if (activeBiz == null) {
-      state = AsyncValue.error('No active business selected', StackTrace.current);
+      state = AsyncValue.error(
+        'No active business selected',
+        StackTrace.current,
+      );
       return false;
     }
 
@@ -45,7 +49,9 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
       // by the backend Edge Function / webhook
       _ref.invalidate(userBusinessesProvider);
       final refreshedList = await _ref.read(userBusinessesProvider.future);
-      final refreshedBiz = refreshedList.where((b) => b.id == activeBiz.id).firstOrNull;
+      final refreshedBiz = refreshedList
+          .where((b) => b.id == activeBiz.id)
+          .firstOrNull;
 
       if (refreshedBiz != null && refreshedBiz.subscriptionTier == newTier.id) {
         _ref.read(currentBusinessProvider.notifier).select(refreshedBiz);
@@ -54,7 +60,9 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
       }
 
       // 2. If it was a free tier activation or test bypass, update business
-      final updatedBiz = (refreshedBiz ?? activeBiz).copyWith(subscriptionTier: newTier.id);
+      final updatedBiz = (refreshedBiz ?? activeBiz).copyWith(
+        subscriptionTier: newTier.id,
+      );
       final repo = _ref.read(businessRepositoryProvider);
       final result = await repo.updateBusiness(updatedBiz);
 
@@ -64,21 +72,27 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
           final isTestMode = PaystackConfig.publicKey.startsWith('pk_test_');
           if (isTestMode) {
             // In Test Mode, update in-memory active business so developer can test all features
-            AppLogger.i('Test mode active: setting in-memory tier to ${newTier.displayName}');
+            AppLogger.i(
+              'Test mode active: setting in-memory tier to ${newTier.displayName}',
+            );
             _ref.read(currentBusinessProvider.notifier).select(updatedBiz);
             state = AsyncValue.data(newTier);
             return true;
           }
           if (refreshedBiz != null) {
             _ref.read(currentBusinessProvider.notifier).select(refreshedBiz);
-            state = AsyncValue.data(SubscriptionTier.fromString(refreshedBiz.subscriptionTier));
+            state = AsyncValue.data(
+              SubscriptionTier.fromString(refreshedBiz.subscriptionTier),
+            );
           } else {
             state = AsyncValue.error(failure.message, StackTrace.current);
           }
           return false;
         },
         (savedBiz) {
-          AppLogger.i('Subscription tier updated to ${newTier.displayName} for ${savedBiz.name}');
+          AppLogger.i(
+            'Subscription tier updated to ${newTier.displayName} for ${savedBiz.name}',
+          );
           _ref.read(currentBusinessProvider.notifier).select(savedBiz);
           _ref.invalidate(userBusinessesProvider);
           state = AsyncValue.data(newTier);
@@ -101,6 +115,8 @@ class SubscriptionController extends StateNotifier<AsyncValue<SubscriptionTier>>
 }
 
 final subscriptionControllerProvider =
-    StateNotifierProvider<SubscriptionController, AsyncValue<SubscriptionTier>>((ref) {
-  return SubscriptionController(ref);
-});
+    StateNotifierProvider<SubscriptionController, AsyncValue<SubscriptionTier>>(
+      (ref) {
+        return SubscriptionController(ref);
+      },
+    );

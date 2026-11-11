@@ -21,15 +21,33 @@ void main() {
     });
 
     test('formats international currencies (USD, EUR, GBP)', () {
-      expect(CurrencyFormatter.format(1000, currencyCode: 'USD'), contains('\$10.00'));
-      expect(CurrencyFormatter.format(1000, currencyCode: 'EUR'), contains('€10.00'));
-      expect(CurrencyFormatter.format(1000, currencyCode: 'GBP'), contains('£10.00'));
+      expect(
+        CurrencyFormatter.format(1000, currencyCode: 'USD'),
+        contains('\$10.00'),
+      );
+      expect(
+        CurrencyFormatter.format(1000, currencyCode: 'EUR'),
+        contains('€10.00'),
+      );
+      expect(
+        CurrencyFormatter.format(1000, currencyCode: 'GBP'),
+        contains('£10.00'),
+      );
     });
 
     test('formats other African currencies (KES, ZAR, KSh, FCFA)', () {
-      expect(CurrencyFormatter.format(10000, currencyCode: 'KES'), contains('KSh'));
-      expect(CurrencyFormatter.format(10000, currencyCode: 'ZAR'), contains('R'));
-      expect(CurrencyFormatter.format(10000, currencyCode: 'XOF'), contains('FCFA'));
+      expect(
+        CurrencyFormatter.format(10000, currencyCode: 'KES'),
+        contains('KSh'),
+      );
+      expect(
+        CurrencyFormatter.format(10000, currencyCode: 'ZAR'),
+        contains('R'),
+      );
+      expect(
+        CurrencyFormatter.format(10000, currencyCode: 'XOF'),
+        contains('FCFA'),
+      );
     });
   });
 }

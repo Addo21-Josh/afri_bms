@@ -6,7 +6,8 @@ import 'conflict_resolver.dart';
 import '../../../../core/utils/logger.dart';
 import '../../../../core/storage/secure_local_storage.dart';
 
-typedef SyncProgressCallback = void Function(int processed, int total, double progress);
+typedef SyncProgressCallback =
+    void Function(int processed, int total, double progress);
 
 class SyncBatchResult {
   final int totalProcessed;
@@ -53,9 +54,9 @@ class SyncQueueProcessor {
     required SyncQueueStorage storage,
     required ConflictResolver conflictResolver,
     required SupabaseClient supabase,
-  })  : _storage = storage,
-        _conflictResolver = conflictResolver,
-        _supabase = supabase;
+  }) : _storage = storage,
+       _conflictResolver = conflictResolver,
+       _supabase = supabase;
 
   /// Processes all pending items in the sync queue with progress reporting and batching
   Future<SyncBatchResult> processQueue({
@@ -64,7 +65,12 @@ class SyncQueueProcessor {
   }) async {
     final rawPending = await _storage.getPendingItems(businessId: businessId);
     if (rawPending.isEmpty) {
-      return const SyncBatchResult(totalProcessed: 0, successful: 0, failed: 0, errors: []);
+      return const SyncBatchResult(
+        totalProcessed: 0,
+        successful: 0,
+        failed: 0,
+        errors: [],
+      );
     }
 
     // Verify user is authenticated before attempting to sync protected tables
@@ -75,17 +81,23 @@ class SyncQueueProcessor {
           await _supabase.auth.recoverSession(sessionStr);
         }
       } catch (e) {
-        AppLogger.w('Failed to recover session before sync queue processing: $e');
+        AppLogger.w(
+          'Failed to recover session before sync queue processing: $e',
+        );
       }
     }
 
     if (_supabase.auth.currentSession == null) {
-      AppLogger.w('Cannot process sync queue: No authenticated Supabase session.');
+      AppLogger.w(
+        'Cannot process sync queue: No authenticated Supabase session.',
+      );
       return SyncBatchResult(
         totalProcessed: rawPending.length,
         successful: 0,
         failed: rawPending.length,
-        errors: const ['User session is not active. Please check your login credentials.'],
+        errors: const [
+          'User session is not active. Please check your login credentials.',
+        ],
       );
     }
 
@@ -107,14 +119,18 @@ class SyncQueueProcessor {
     final total = pendingItems.length;
     final Set<String> failedParentIds = {};
 
-    AppLogger.i('Starting sync queue processing for $total items (sorted by dependency priority)...');
+    AppLogger.i(
+      'Starting sync queue processing for $total items (sorted by dependency priority)...',
+    );
 
     for (int i = 0; i < total; i++) {
       final item = pendingItems[i];
 
       // Skip items that exceeded max retry limit
       if (item.attempts >= maxAttempts) {
-        AppLogger.w('Skipping item ${item.id} (${item.table}) - exceeded max retry attempts ($maxAttempts)');
+        AppLogger.w(
+          'Skipping item ${item.id} (${item.table}) - exceeded max retry attempts ($maxAttempts)',
+        );
         failedCount++;
         continue;
       }
@@ -123,9 +139,15 @@ class SyncQueueProcessor {
       if (item.table == 'sale_items') {
         final parentSaleId = item.payload['sale_id'] as String?;
         if (parentSaleId != null && failedParentIds.contains(parentSaleId)) {
-          AppLogger.w('Skipping sale_item ${item.recordId} because parent sale $parentSaleId failed in this sync batch.');
+          AppLogger.w(
+            'Skipping sale_item ${item.recordId} because parent sale $parentSaleId failed in this sync batch.',
+          );
           failedCount++;
-          await _storage.updateItemStatus(item.id, SyncItemStatus.failed, error: 'Parent sale failed to sync');
+          await _storage.updateItemStatus(
+            item.id,
+            SyncItemStatus.failed,
+            error: 'Parent sale failed to sync',
+          );
           continue;
         }
       }
@@ -151,11 +173,17 @@ class SyncQueueProcessor {
         successCount++;
       } catch (e) {
         final errorMsg = e.toString();
-        AppLogger.e('Failed syncing item ${item.id} (${item.table}): $errorMsg');
+        AppLogger.e(
+          'Failed syncing item ${item.id} (${item.table}): $errorMsg',
+        );
         errors.add('${item.table}: $errorMsg');
         failedCount++;
         failedParentIds.add(item.recordId);
-        await _storage.updateItemStatus(item.id, SyncItemStatus.failed, error: errorMsg);
+        await _storage.updateItemStatus(
+          item.id,
+          SyncItemStatus.failed,
+          error: errorMsg,
+        );
       }
 
       onProgress?.call(i + 1, total, (i + 1) / total);
@@ -164,7 +192,9 @@ class SyncQueueProcessor {
     // Auto-clean completed items
     await _storage.clearCompleted();
 
-    AppLogger.i('Sync queue complete: $successCount succeeded, $failedCount failed.');
+    AppLogger.i(
+      'Sync queue complete: $successCount succeeded, $failedCount failed.',
+    );
     return SyncBatchResult(
       totalProcessed: total,
       successful: successCount,
@@ -184,7 +214,9 @@ class SyncQueueProcessor {
           // If record already exists in Supabase (unique key conflict 23505),
           // treat as successfully synced without error
           if (e.code == '23505' || e.message.contains('duplicate key')) {
-            AppLogger.i('Item ${item.recordId} already exists in ${item.table}. Treating insert as completed.');
+            AppLogger.i(
+              'Item ${item.recordId} already exists in ${item.table}. Treating insert as completed.',
+            );
           } else {
             rethrow;
           }

@@ -76,7 +76,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
     String? searchQuery,
   }) async {
     try {
-      var query = _supabaseClient.from('products').select('''
+      var query = _supabaseClient
+          .from('products')
+          .select('''
         id,
         business_id,
         category_id,
@@ -123,7 +125,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
           expiry_date,
           updated_at
         )
-      ''').eq('business_id', businessId).eq('is_active', true);
+      ''')
+          .eq('business_id', businessId)
+          .eq('is_active', true);
 
       if (categoryId != null && categoryId.isNotEmpty) {
         query = query.eq('category_id', categoryId);
@@ -135,7 +139,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
 
       final response = await query.order('name');
       final list = response as List;
-      return list.map((item) => ProductModel.fromJson(item as Map<String, dynamic>)).toList();
+      return list
+          .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       AppLogger.e('Get Products Error: $e');
       throw AppException(e.toString());
@@ -145,7 +151,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
   @override
   Future<ProductModel> getProductById(String id) async {
     try {
-      final response = await _supabaseClient.from('products').select('''
+      final response = await _supabaseClient
+          .from('products')
+          .select('''
         id,
         business_id,
         category_id,
@@ -192,7 +200,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
           expiry_date,
           updated_at
         )
-      ''').eq('id', id).single();
+      ''')
+          .eq('id', id)
+          .single();
 
       return ProductModel.fromJson(response);
     } catch (e) {
@@ -202,7 +212,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
           str.contains('ClientException') ||
           str.contains('Failed host lookup') ||
           str.contains('errno = 7')) {
-        throw AppException('Unable to connect to server. Please check your internet connection.');
+        throw AppException(
+          'Unable to connect to server. Please check your internet connection.',
+        );
       }
       throw AppException(str);
     }
@@ -228,34 +240,42 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
   }) async {
     try {
       // 1. Insert product
-      final productData = await _supabaseClient.from('products').insert({
-        'business_id': businessId,
-        'category_id': categoryId,
-        'name': name,
-        'description': description,
-        'sku': sku,
-        'barcode': barcode,
-        'cost_price': costPrice,
-        'selling_price': sellingPrice,
-        'currency': currency,
-        'unit': unit,
-        'reorder_level': reorderLevel,
-        'image_urls': imageUrls,
-      }).select().single();
+      final productData = await _supabaseClient
+          .from('products')
+          .insert({
+            'business_id': businessId,
+            'category_id': categoryId,
+            'name': name,
+            'description': description,
+            'sku': sku,
+            'barcode': barcode,
+            'cost_price': costPrice,
+            'selling_price': sellingPrice,
+            'currency': currency,
+            'unit': unit,
+            'reorder_level': reorderLevel,
+            'image_urls': imageUrls,
+          })
+          .select()
+          .single();
 
       final newProductId = productData['id'] as String;
 
       // 2. Insert variants if any
       if (variants.isNotEmpty) {
-        final variantInserts = variants.map((v) => {
-              'product_id': newProductId,
-              'name': v.name,
-              'sku': v.sku,
-              'barcode': v.barcode,
-              'cost_price': v.costPrice,
-              'selling_price': v.sellingPrice,
-              'attributes': v.attributes,
-            }).toList();
+        final variantInserts = variants
+            .map(
+              (v) => {
+                'product_id': newProductId,
+                'name': v.name,
+                'sku': v.sku,
+                'barcode': v.barcode,
+                'cost_price': v.costPrice,
+                'selling_price': v.sellingPrice,
+                'attributes': v.attributes,
+              },
+            )
+            .toList();
 
         await _supabaseClient.from('product_variants').insert(variantInserts);
       }
@@ -279,19 +299,22 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
   @override
   Future<ProductModel> updateProduct(ProductEntity product) async {
     try {
-      await _supabaseClient.from('products').update({
-        'category_id': product.categoryId,
-        'name': product.name,
-        'description': product.description,
-        'sku': product.sku,
-        'barcode': product.barcode,
-        'cost_price': product.costPrice,
-        'selling_price': product.sellingPrice,
-        'unit': product.unit,
-        'reorder_level': product.reorderLevel,
-        'image_urls': product.imageUrls,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', product.id);
+      await _supabaseClient
+          .from('products')
+          .update({
+            'category_id': product.categoryId,
+            'name': product.name,
+            'description': product.description,
+            'sku': product.sku,
+            'barcode': product.barcode,
+            'cost_price': product.costPrice,
+            'selling_price': product.sellingPrice,
+            'unit': product.unit,
+            'reorder_level': product.reorderLevel,
+            'image_urls': product.imageUrls,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', product.id);
 
       return await getProductById(product.id);
     } catch (e) {
@@ -305,7 +328,10 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
     try {
       await _supabaseClient
           .from('products')
-          .update({'is_active': false, 'deleted_at': DateTime.now().toIso8601String()})
+          .update({
+            'is_active': false,
+            'deleted_at': DateTime.now().toIso8601String(),
+          })
           .eq('id', productId);
     } catch (e) {
       AppLogger.e('Delete Product Error: $e');
@@ -324,7 +350,12 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
           .order('name');
 
       final list = response as List;
-      return list.map((item) => ProductCategoryModel.fromJson(item as Map<String, dynamic>)).toList();
+      return list
+          .map(
+            (item) =>
+                ProductCategoryModel.fromJson(item as Map<String, dynamic>),
+          )
+          .toList();
     } catch (e) {
       AppLogger.e('Get Categories Error: $e');
       throw AppException(e.toString());
@@ -338,11 +369,15 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
     String? description,
   }) async {
     try {
-      final response = await _supabaseClient.from('product_categories').insert({
-        'business_id': businessId,
-        'name': name,
-        'description': description,
-      }).select().single();
+      final response = await _supabaseClient
+          .from('product_categories')
+          .insert({
+            'business_id': businessId,
+            'name': name,
+            'description': description,
+          })
+          .select()
+          .single();
 
       return ProductCategoryModel.fromJson(response);
     } catch (e) {
@@ -438,7 +473,9 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
     String? productId,
   }) async {
     try {
-      var query = _supabaseClient.from('stock_movements').select('''
+      var query = _supabaseClient
+          .from('stock_movements')
+          .select('''
         id,
         business_id,
         branch_id,
@@ -454,7 +491,8 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
         products ( name ),
         product_variants ( name ),
         profiles ( full_name )
-      ''').eq('business_id', businessId);
+      ''')
+          .eq('business_id', businessId);
 
       if (branchId != null) {
         query = query.eq('branch_id', branchId);
@@ -463,13 +501,20 @@ class InventoryRemoteDatasourceImpl implements InventoryRemoteDatasource {
         query = query.eq('product_id', productId);
       }
 
-      final response = await query.order('created_at', ascending: false).limit(100);
+      final response = await query
+          .order('created_at', ascending: false)
+          .limit(100);
       return (response as List<dynamic>)
-          .map((json) => StockMovementModel.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => StockMovementModel.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
-      if (e is PostgrestException && (e.code == 'PGRST205' || e.message.contains('stock_movements'))) {
-        AppLogger.w('stock_movements table not yet migrated in Supabase (PGRST205). Please run migration 20261009000003_sales_pos_schema.sql.');
+      if (e is PostgrestException &&
+          (e.code == 'PGRST205' || e.message.contains('stock_movements'))) {
+        AppLogger.w(
+          'stock_movements table not yet migrated in Supabase (PGRST205). Please run migration 20261009000003_sales_pos_schema.sql.',
+        );
         return [];
       }
       AppLogger.e('Get Stock Movements Error: $e');

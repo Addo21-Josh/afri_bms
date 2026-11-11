@@ -56,30 +56,40 @@ class BusinessRemoteDatasourceImpl implements BusinessRemoteDatasource {
           await _supabaseClient.from('profiles').upsert({
             'id': ownerId,
             'email': currentUser.email ?? '',
-            'full_name': currentUser.userMetadata?['full_name'] as String? ?? (currentUser.email?.split('@').first ?? 'User'),
+            'full_name':
+                currentUser.userMetadata?['full_name'] as String? ??
+                (currentUser.email?.split('@').first ?? 'User'),
             'phone': currentUser.userMetadata?['phone'] as String?,
           });
         }
       }
 
       // 1. Create Business
-      final businessData = await _supabaseClient.from('businesses').insert({
-        'owner_id': ownerId,
-        'name': name,
-        'default_currency': defaultCurrency,
-        'supported_currencies': [defaultCurrency],
-      }).select().single();
+      final businessData = await _supabaseClient
+          .from('businesses')
+          .insert({
+            'owner_id': ownerId,
+            'name': name,
+            'default_currency': defaultCurrency,
+            'supported_currencies': [defaultCurrency],
+          })
+          .select()
+          .single();
 
       final businessModel = BusinessModel.fromJson(businessData);
       final businessId = businessModel.id;
 
       // 2. Create Main Branch
-      final branchData = await _supabaseClient.from('branches').insert({
-        'business_id': businessId,
-        'name': firstBranchName,
-        'currency': defaultCurrency,
-        'is_main': true,
-      }).select().single();
+      final branchData = await _supabaseClient
+          .from('branches')
+          .insert({
+            'business_id': businessId,
+            'name': firstBranchName,
+            'currency': defaultCurrency,
+            'is_main': true,
+          })
+          .select()
+          .single();
 
       final branchModel = BranchModel.fromJson(branchData);
 
@@ -195,14 +205,18 @@ class BusinessRemoteDatasourceImpl implements BusinessRemoteDatasource {
     bool isMain = false,
   }) async {
     try {
-      final data = await _supabaseClient.from('branches').insert({
-        'business_id': businessId,
-        'name': name,
-        'currency': currency,
-        'address': address,
-        'phone': phone,
-        'is_main': isMain,
-      }).select().single();
+      final data = await _supabaseClient
+          .from('branches')
+          .insert({
+            'business_id': businessId,
+            'name': name,
+            'currency': currency,
+            'address': address,
+            'phone': phone,
+            'is_main': isMain,
+          })
+          .select()
+          .single();
 
       return BranchModel.fromJson(data).toEntity();
     } catch (e) {
@@ -253,10 +267,16 @@ class BusinessRemoteDatasourceImpl implements BusinessRemoteDatasource {
     try {
       // First clean up user roles and branches for this business if needed
       try {
-        await _supabaseClient.from('user_roles').delete().eq('business_id', businessId);
+        await _supabaseClient
+            .from('user_roles')
+            .delete()
+            .eq('business_id', businessId);
       } catch (_) {}
       try {
-        await _supabaseClient.from('branches').delete().eq('business_id', businessId);
+        await _supabaseClient
+            .from('branches')
+            .delete()
+            .eq('business_id', businessId);
       } catch (_) {}
       await _supabaseClient.from('businesses').delete().eq('id', businessId);
     } catch (e) {

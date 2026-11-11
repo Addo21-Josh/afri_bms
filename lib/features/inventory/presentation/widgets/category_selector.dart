@@ -43,7 +43,10 @@ class CategorySelectorBar extends ConsumerWidget {
               if (nameCtrl.text.trim().isNotEmpty) {
                 final createdCat = await ref
                     .read(inventoryControllerProvider.notifier)
-                    .createCategory(nameCtrl.text.trim(), description: descCtrl.text.trim());
+                    .createCategory(
+                      nameCtrl.text.trim(),
+                      description: descCtrl.text.trim(),
+                    );
                 if (ctx.mounted && createdCat != null) {
                   Navigator.pop(ctx);
                 }
@@ -85,7 +88,9 @@ class CategorySelectorBar extends ConsumerWidget {
                 selected: isSelected,
                 label: Text(cat.name),
                 onSelected: (val) {
-                  ref.read(selectedCategoryFilterProvider.notifier).state = val ? cat.id : null;
+                  ref.read(selectedCategoryFilterProvider.notifier).state = val
+                      ? cat.id
+                      : null;
                 },
               ),
             );

@@ -20,7 +20,9 @@ abstract class SupplierRepository {
     String? notes,
   });
 
-  Future<Either<Failure, SupplierEntity>> updateSupplier(SupplierEntity supplier);
+  Future<Either<Failure, SupplierEntity>> updateSupplier(
+    SupplierEntity supplier,
+  );
 
   Future<Either<Failure, void>> deleteSupplier(String supplierId);
 

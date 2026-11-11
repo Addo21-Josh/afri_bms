@@ -20,13 +20,18 @@ class ProductDetailScreen extends ConsumerWidget {
 
   final String productId;
 
-  void _openBarcodeDialog(BuildContext context, WidgetRef ref, dynamic product) {
+  void _openBarcodeDialog(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic product,
+  ) {
     final gate = ref.read(featureGateProvider);
     if (!gate.limits.barcodeGeneration) {
       UpgradePromptSheet.show(
         context,
         featureName: 'Barcode & QR Code Generation',
-        customMessage: 'Generating and exporting barcodes and label sheets is available on Afri_BMS Pro & Enterprise.',
+        customMessage:
+            'Generating and exporting barcodes and label sheets is available on Afri_BMS Pro & Enterprise.',
         currentTier: gate.tier,
         suggestedTier: SubscriptionTier.pro,
       );
@@ -34,14 +39,18 @@ class ProductDetailScreen extends ConsumerWidget {
     }
     showDialog(
       context: context,
-      builder: (_) => BarcodeGeneratorDialog(
-        product: product,
-        currency: product.currency,
-      ),
+      builder: (_) =>
+          BarcodeGeneratorDialog(product: product, currency: product.currency),
     );
   }
 
-  void _showAdjustStockDialog(BuildContext context, WidgetRef ref, int currentStock, String branchId, String unit) {
+  void _showAdjustStockDialog(
+    BuildContext context,
+    WidgetRef ref,
+    int currentStock,
+    String branchId,
+    String unit,
+  ) {
     final qtyCtrl = TextEditingController(text: currentStock.toString());
     final reasonCtrl = TextEditingController();
     final batchCtrl = TextEditingController();
@@ -65,11 +74,26 @@ class ProductDetailScreen extends ConsumerWidget {
                     prefixIcon: Icon(Icons.category_outlined),
                   ),
                   items: const [
-                    DropdownMenuItem(value: 'adjustment', child: Text('Count Correction / Audit')),
-                    DropdownMenuItem(value: 'restock', child: Text('Restock / New Shipment')),
-                    DropdownMenuItem(value: 'damaged', child: Text('Damaged / Broken')),
-                    DropdownMenuItem(value: 'expired', child: Text('Expired Goods')),
-                    DropdownMenuItem(value: 'return', child: Text('Customer Return')),
+                    DropdownMenuItem(
+                      value: 'adjustment',
+                      child: Text('Count Correction / Audit'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'restock',
+                      child: Text('Restock / New Shipment'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'damaged',
+                      child: Text('Damaged / Broken'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'expired',
+                      child: Text('Expired Goods'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'return',
+                      child: Text('Customer Return'),
+                    ),
                   ],
                   onChanged: (val) {
                     if (val != null) setDialogState(() => selectedType = val);
@@ -106,8 +130,12 @@ class ProductDetailScreen extends ConsumerWidget {
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: context,
-                      initialDate: selectedExpiry ?? DateTime.now().add(const Duration(days: 180)),
-                      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                      initialDate:
+                          selectedExpiry ??
+                          DateTime.now().add(const Duration(days: 180)),
+                      firstDate: DateTime.now().subtract(
+                        const Duration(days: 365),
+                      ),
                       lastDate: DateTime.now().add(const Duration(days: 3650)),
                     );
                     if (picked != null) {
@@ -133,34 +161,50 @@ class ProductDetailScreen extends ConsumerWidget {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
               onPressed: () async {
                 final newQty = int.tryParse(qtyCtrl.text.trim());
                 if (newQty != null) {
-                  final success = await ref.read(inventoryControllerProvider.notifier).adjustStock(
-                    productId: productId,
-                    branchId: branchId,
-                    newQuantity: newQty,
-                    type: selectedType,
-                    reason: reasonCtrl.text.trim().isNotEmpty ? reasonCtrl.text.trim() : null,
-                    batchNumber: batchCtrl.text.trim().isNotEmpty ? batchCtrl.text.trim() : null,
-                    expiryDate: selectedExpiry,
-                  );
+                  final success = await ref
+                      .read(inventoryControllerProvider.notifier)
+                      .adjustStock(
+                        productId: productId,
+                        branchId: branchId,
+                        newQuantity: newQty,
+                        type: selectedType,
+                        reason: reasonCtrl.text.trim().isNotEmpty
+                            ? reasonCtrl.text.trim()
+                            : null,
+                        batchNumber: batchCtrl.text.trim().isNotEmpty
+                            ? batchCtrl.text.trim()
+                            : null,
+                        expiryDate: selectedExpiry,
+                      );
                   if (ctx.mounted) {
                     if (success) {
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Stock count and audit log updated successfully')),
+                        const SnackBar(
+                          content: Text(
+                            'Stock count and audit log updated successfully',
+                          ),
+                        ),
                       );
                     } else {
-                      final rawError = ref.read(inventoryControllerProvider).error;
+                      final rawError = ref
+                          .read(inventoryControllerProvider)
+                          .error;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             UserFriendlyError.toFriendly(
                               rawError,
-                              defaultMessage: 'Unable to update stock audit. Please try again.',
+                              defaultMessage:
+                                  'Unable to update stock audit. Please try again.',
                             ),
                           ),
                           backgroundColor: Theme.of(context).colorScheme.error,
@@ -184,7 +228,9 @@ class ProductDetailScreen extends ConsumerWidget {
     final currentBranch = ref.watch(currentBranchProvider);
     final userRole = ref.watch(currentUserRoleProvider).value;
     // Explicit permission: Only Admin and Branch Manager can edit products, adjust stock, or view cost prices
-    final canManageProducts = userRole == UserRoleType.admin || userRole == UserRoleType.branchManager;
+    final canManageProducts =
+        userRole == UserRoleType.admin ||
+        userRole == UserRoleType.branchManager;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -194,60 +240,73 @@ class ProductDetailScreen extends ConsumerWidget {
         if (canManageProducts)
           productAsync.maybeWhen(
             data: (product) => Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.qr_code_2),
-                tooltip: 'Barcode & Labels',
-                onPressed: () => _openBarcodeDialog(context, ref, product),
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                tooltip: 'Edit Product',
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ProductFormScreen(existingProduct: product),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.delete_outline, color: colorScheme.error),
-                tooltip: 'Delete Product',
-                onPressed: () async {
-                  final confirm = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text('Delete Product?'),
-                      content: Text('Are you sure you want to delete ${product.name}?'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                        FilledButton(
-                          style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
-                          onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('Delete'),
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.qr_code_2),
+                  tooltip: 'Barcode & Labels',
+                  onPressed: () => _openBarcodeDialog(context, ref, product),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: 'Edit Product',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ProductFormScreen(existingProduct: product),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete_outline, color: colorScheme.error),
+                  tooltip: 'Delete Product',
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete Product?'),
+                        content: Text(
+                          'Are you sure you want to delete ${product.name}?',
                         ),
-                      ],
-                    ),
-                  );
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: colorScheme.error,
+                            ),
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
 
-                  if (confirm == true) {
-                    final success = await ref.read(inventoryControllerProvider.notifier).deleteProduct(productId);
-                    if (context.mounted && success) {
-                      context.pop();
+                    if (confirm == true) {
+                      final success = await ref
+                          .read(inventoryControllerProvider.notifier)
+                          .deleteProduct(productId);
+                      if (context.mounted && success) {
+                        context.pop();
+                      }
                     }
-                  }
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
+            orElse: () => const SizedBox.shrink(),
           ),
-          orElse: () => const SizedBox.shrink(),
-        ),
       ],
       body: productAsync.when(
         data: (product) {
           final profitMargin = product.sellingPrice > 0
-              ? (((product.sellingPrice - product.costPrice) / product.sellingPrice) * 100).toStringAsFixed(1)
+              ? (((product.sellingPrice - product.costPrice) /
+                            product.sellingPrice) *
+                        100)
+                    .toStringAsFixed(1)
               : '0.0';
 
           return SingleChildScrollView(
@@ -274,10 +333,16 @@ class ProductDetailScreen extends ConsumerWidget {
                               width: 64,
                               height: 64,
                               decoration: BoxDecoration(
-                                color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+                                color: colorScheme.primaryContainer.withValues(
+                                  alpha: 0.3,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Icon(Icons.inventory_2, size: 36, color: colorScheme.primary),
+                              child: Icon(
+                                Icons.inventory_2,
+                                size: 36,
+                                color: colorScheme.primary,
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -286,7 +351,9 @@ class ProductDetailScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     product.name,
-                                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Wrap(
@@ -296,12 +363,23 @@ class ProductDetailScreen extends ConsumerWidget {
                                       if (product.category != null)
                                         Chip(
                                           visualDensity: VisualDensity.compact,
-                                          label: Text(product.category!.name, style: const TextStyle(fontSize: 12)),
+                                          label: Text(
+                                            product.category!.name,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
                                         ),
                                       Chip(
                                         visualDensity: VisualDensity.compact,
-                                        avatar: const Icon(Icons.straighten, size: 14),
-                                        label: Text(ProductUnits.format(product.unit), style: const TextStyle(fontSize: 12)),
+                                        avatar: const Icon(
+                                          Icons.straighten,
+                                          size: 14,
+                                        ),
+                                        label: Text(
+                                          ProductUnits.format(product.unit),
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -310,11 +388,14 @@ class ProductDetailScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        if (product.description != null && product.description!.isNotEmpty) ...[
+                        if (product.description != null &&
+                            product.description!.isNotEmpty) ...[
                           const SizedBox(height: 12),
                           Text(
                             product.description!,
-                            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ],
@@ -335,15 +416,31 @@ class ProductDetailScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Financials & Pricing', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Financials & Pricing',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const Divider(height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Selling Price', style: TextStyle(color: colorScheme.onSurfaceVariant)),
                             Text(
-                              CurrencyFormatter.format(product.sellingPrice, currencyCode: product.currency),
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
+                              'Selling Price',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              CurrencyFormatter.format(
+                                product.sellingPrice,
+                                currencyCode: product.currency,
+                              ),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.primary,
+                              ),
                             ),
                           ],
                         ),
@@ -352,10 +449,20 @@ class ProductDetailScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Cost Price', style: TextStyle(color: colorScheme.onSurfaceVariant)),
                               Text(
-                                CurrencyFormatter.format(product.costPrice, currencyCode: product.currency),
-                                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                'Cost Price',
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Text(
+                                CurrencyFormatter.format(
+                                  product.costPrice,
+                                  currencyCode: product.currency,
+                                ),
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
@@ -363,10 +470,18 @@ class ProductDetailScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Profit Margin', style: TextStyle(color: colorScheme.onSurfaceVariant)),
+                              Text(
+                                'Profit Margin',
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                               Text(
                                 '$profitMargin%',
-                                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
                               ),
                             ],
                           ),
@@ -392,7 +507,12 @@ class ProductDetailScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Stock Status', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                            Text(
+                              'Stock Status',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             if (canManageProducts && currentBranch != null)
                               TextButton.icon(
                                 onPressed: () => _showAdjustStockDialog(
@@ -412,14 +532,20 @@ class ProductDetailScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              currentBranch != null ? currentBranch.name : 'All Branches Total',
-                              style: TextStyle(color: colorScheme.onSurfaceVariant),
+                              currentBranch != null
+                                  ? currentBranch.name
+                                  : 'All Branches Total',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                             ),
                             Text(
                               '${product.currentBranchStock} ${product.unit}',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: product.isLowStock ? Colors.orange.shade800 : Colors.green.shade800,
+                                color: product.isLowStock
+                                    ? Colors.orange.shade800
+                                    : Colors.green.shade800,
                               ),
                             ),
                           ],
@@ -428,7 +554,12 @@ class ProductDetailScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Reorder Level Alert', style: TextStyle(color: colorScheme.onSurfaceVariant)),
+                            Text(
+                              'Reorder Level Alert',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                             Text('${product.reorderLevel} ${product.unit}'),
                           ],
                         ),
@@ -451,19 +582,39 @@ class ProductDetailScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Product Variants (${product.variants.length})',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            'Product Variants (${product.variants.length})',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const Divider(height: 24),
-                          ...product.variants.map((v) => ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(v.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                subtitle: Text(v.sku != null ? 'SKU: ${v.sku}' : 'Default Variant'),
-                                trailing: Text(
-                                  CurrencyFormatter.format(v.sellingPrice, currencyCode: product.currency),
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                          ...product.variants.map(
+                            (v) => ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                v.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              )),
+                              ),
+                              subtitle: Text(
+                                v.sku != null
+                                    ? 'SKU: ${v.sku}'
+                                    : 'Default Variant',
+                              ),
+                              trailing: Text(
+                                CurrencyFormatter.format(
+                                  v.sellingPrice,
+                                  currencyCode: product.currency,
+                                ),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -483,28 +634,54 @@ class ProductDetailScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Identifiers', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Identifiers',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const Divider(height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('SKU', style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                            Text(product.sku ?? 'Not set', style: const TextStyle(fontWeight: FontWeight.w600)),
+                            Text(
+                              'SKU',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              product.sku ?? 'Not set',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Barcode', style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                            Text(product.barcode ?? 'Not set', style: const TextStyle(fontWeight: FontWeight.w600)),
+                            Text(
+                              'Barcode',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              product.barcode ?? 'Not set',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
-                            onPressed: () => _openBarcodeDialog(context, ref, product),
+                            onPressed: () =>
+                                _openBarcodeDialog(context, ref, product),
                             icon: const Icon(Icons.qr_code_2),
                             label: const Text('View Barcode & Print Labels'),
                           ),

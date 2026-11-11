@@ -45,8 +45,14 @@ void main() {
       );
 
       final items = [item1, item2];
-      final calculatedSubtotal = items.fold<int>(0, (sum, it) => sum + (it.unitPrice * it.quantity));
-      final calculatedDiscount = items.fold<int>(0, (sum, it) => sum + it.discountAmount);
+      final calculatedSubtotal = items.fold<int>(
+        0,
+        (sum, it) => sum + (it.unitPrice * it.quantity),
+      );
+      final calculatedDiscount = items.fold<int>(
+        0,
+        (sum, it) => sum + it.discountAmount,
+      );
       final calculatedTotal = calculatedSubtotal - calculatedDiscount;
 
       expect(calculatedSubtotal, equals(6600)); // GH₵66.00

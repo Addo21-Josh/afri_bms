@@ -5,7 +5,10 @@ import '../models/customer_model.dart';
 import '../../../sales/data/models/sale_model.dart';
 
 abstract class CustomersRemoteDatasource {
-  Future<List<CustomerModel>> getCustomers(String businessId, {String? searchQuery});
+  Future<List<CustomerModel>> getCustomers(
+    String businessId, {
+    String? searchQuery,
+  });
   Future<CustomerModel> getCustomerById(String customerId);
   Future<CustomerModel> createCustomer({
     required String businessId,
@@ -31,7 +34,10 @@ class CustomersRemoteDatasourceImpl implements CustomersRemoteDatasource {
   CustomersRemoteDatasourceImpl(this._supabaseClient);
 
   @override
-  Future<List<CustomerModel>> getCustomers(String businessId, {String? searchQuery}) async {
+  Future<List<CustomerModel>> getCustomers(
+    String businessId, {
+    String? searchQuery,
+  }) async {
     try {
       var query = _supabaseClient
           .from('customers')
@@ -46,10 +52,14 @@ class CustomersRemoteDatasourceImpl implements CustomersRemoteDatasource {
 
       final response = await query.order('name', ascending: true);
       final list = response as List;
-      return list.map((json) => CustomerModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => CustomerModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205') {
-        AppLogger.w('public.customers table not found in schema cache. Migration pending: ${e.message}');
+        AppLogger.w(
+          'public.customers table not found in schema cache. Migration pending: ${e.message}',
+        );
         return [];
       }
       AppLogger.e('Get Customers PostgrestException: $e');
@@ -140,7 +150,10 @@ class CustomersRemoteDatasourceImpl implements CustomersRemoteDatasource {
     try {
       await _supabaseClient
           .from('customers')
-          .update({'is_active': false, 'updated_at': DateTime.now().toIso8601String()})
+          .update({
+            'is_active': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
           .eq('id', customerId);
     } catch (e) {
       AppLogger.e('Delete Customer Error: $e');
@@ -161,8 +174,12 @@ class CustomersRemoteDatasourceImpl implements CustomersRemoteDatasource {
           .eq('id', customerId)
           .single();
 
-      final currentBalance = (current['outstanding_balance'] as num?)?.toInt() ?? 0;
-      final newBalance = (currentBalance + balanceAdjustment).clamp(0, double.maxFinite.toInt());
+      final currentBalance =
+          (current['outstanding_balance'] as num?)?.toInt() ?? 0;
+      final newBalance = (currentBalance + balanceAdjustment).clamp(
+        0,
+        double.maxFinite.toInt(),
+      );
 
       final updated = await _supabaseClient
           .from('customers')
@@ -191,7 +208,9 @@ class CustomersRemoteDatasourceImpl implements CustomersRemoteDatasource {
           .order('created_at', ascending: false);
 
       final list = response as List;
-      return list.map((json) => SaleModel.fromJson(json as Map<String, dynamic>)).toList();
+      return list
+          .map((json) => SaleModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST205') {
         return [];

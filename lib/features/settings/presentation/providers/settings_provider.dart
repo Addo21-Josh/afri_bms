@@ -52,7 +52,8 @@ class LocaleNotifier extends StateNotifier<Locale> {
   Future<void> _loadSavedLocale() async {
     try {
       final code = await _secureStorage.read(key: _keyLocale);
-      if (code != null && AppLanguages.supported.any((l) => l.languageCode == code)) {
+      if (code != null &&
+          AppLanguages.supported.any((l) => l.languageCode == code)) {
         state = Locale(code);
       }
     } catch (e) {
@@ -64,7 +65,10 @@ class LocaleNotifier extends StateNotifier<Locale> {
     if (state == newLocale) return;
     state = newLocale;
     try {
-      await _secureStorage.write(key: _keyLocale, value: newLocale.languageCode);
+      await _secureStorage.write(
+        key: _keyLocale,
+        value: newLocale.languageCode,
+      );
       AppLogger.i('App locale updated to: ${newLocale.languageCode}');
     } catch (e) {
       AppLogger.w('Failed persisting locale: $e');
@@ -101,8 +105,8 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
       final val = mode == ThemeMode.light
           ? 'light'
           : mode == ThemeMode.dark
-              ? 'dark'
-              : 'system';
+          ? 'dark'
+          : 'system';
       await _secureStorage.write(key: _keyThemeMode, value: val);
       AppLogger.i('Theme mode updated to: $val');
     } catch (e) {
@@ -111,7 +115,9 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 }
 
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((
+  ref,
+) {
   return ThemeModeNotifier();
 });
 
@@ -172,15 +178,25 @@ class PrinterConfigNotifier extends StateNotifier<PrinterConfig> {
       autoPrintReceipt: autoPrint,
     );
     try {
-      if (name != null) await _secureStorage.write(key: _keyPrinterName, value: name);
-      if (widthMm != null) await _secureStorage.write(key: _keyPrinterPaperWidth, value: widthMm.toString());
-      if (autoPrint != null) await _secureStorage.write(key: _keyAutoPrint, value: autoPrint.toString());
+      if (name != null)
+        await _secureStorage.write(key: _keyPrinterName, value: name);
+      if (widthMm != null)
+        await _secureStorage.write(
+          key: _keyPrinterPaperWidth,
+          value: widthMm.toString(),
+        );
+      if (autoPrint != null)
+        await _secureStorage.write(
+          key: _keyAutoPrint,
+          value: autoPrint.toString(),
+        );
     } catch (e) {
       AppLogger.w('Failed saving printer config: $e');
     }
   }
 }
 
-final printerConfigProvider = StateNotifierProvider<PrinterConfigNotifier, PrinterConfig>((ref) {
-  return PrinterConfigNotifier();
-});
+final printerConfigProvider =
+    StateNotifierProvider<PrinterConfigNotifier, PrinterConfig>((ref) {
+      return PrinterConfigNotifier();
+    });

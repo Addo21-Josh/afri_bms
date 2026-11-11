@@ -32,7 +32,9 @@ class CloudBackupService {
     required String businessName,
     bool uploadToStorage = true,
   }) async {
-    AppLogger.i('Generating full JSON backup for $businessName ($businessId)...');
+    AppLogger.i(
+      'Generating full JSON backup for $businessName ($businessId)...',
+    );
 
     // 1. Gather all entity tables with direct business_id column
     final directTables = [
@@ -51,7 +53,10 @@ class CloudBackupService {
 
     for (final table in directTables) {
       try {
-        final records = await _supabase.from(table).select().eq('business_id', businessId);
+        final records = await _supabase
+            .from(table)
+            .select()
+            .eq('business_id', businessId);
         final list = records as List<dynamic>;
         backupData[table] = list;
         counts[table] = list.length;
@@ -68,7 +73,8 @@ class CloudBackupService {
 
     // Pull product_variants and stock for backed-up products
     try {
-      final productIds = (backupData['products'] as List<dynamic>?)
+      final productIds =
+          (backupData['products'] as List<dynamic>?)
               ?.map((p) => p['id'] as String)
               .toList() ??
           [];
@@ -109,7 +115,8 @@ class CloudBackupService {
 
     // Pull sale_items belonging to the backed-up sales
     try {
-      final saleIds = (backupData['sales'] as List<dynamic>?)
+      final saleIds =
+          (backupData['sales'] as List<dynamic>?)
               ?.map((s) => s['id'] as String)
               .toList() ??
           [];
@@ -134,7 +141,8 @@ class CloudBackupService {
 
     // Pull debt_payments belonging to the backed-up debts
     try {
-      final debtIds = (backupData['debts'] as List<dynamic>?)
+      final debtIds =
+          (backupData['debts'] as List<dynamic>?)
               ?.map((d) => d['id'] as String)
               .toList() ??
           [];
@@ -169,12 +177,15 @@ class CloudBackupService {
       'data': backupData,
     };
 
-    final jsonString = const JsonEncoder.withIndent('  ').convert(backupPayload);
+    final jsonString = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(backupPayload);
 
     // 2. Save locally
     final dir = await getApplicationDocumentsDirectory();
     final sanitizedBiz = businessName.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
-    final fileName = 'afribms_backup_${sanitizedBiz}_${DateTime.now().millisecondsSinceEpoch}.json';
+    final fileName =
+        'afribms_backup_${sanitizedBiz}_${DateTime.now().millisecondsSinceEpoch}.json';
     final backupFile = File('${dir.path}/$fileName');
     await backupFile.writeAsString(jsonString, flush: true);
 
@@ -182,14 +193,21 @@ class CloudBackupService {
     if (uploadToStorage) {
       try {
         final storagePath = '$businessId/$fileName';
-        await _supabase.storage.from('backups').upload(
+        await _supabase.storage
+            .from('backups')
+            .upload(
               storagePath,
               backupFile,
-              fileOptions: const FileOptions(contentType: 'application/json', upsert: true),
+              fileOptions: const FileOptions(
+                contentType: 'application/json',
+                upsert: true,
+              ),
             );
         AppLogger.i('Backup uploaded to Supabase Storage: $storagePath');
       } catch (e) {
-        AppLogger.w('Could not upload backup to Supabase storage bucket (offline or bucket missing): $e');
+        AppLogger.w(
+          'Could not upload backup to Supabase storage bucket (offline or bucket missing): $e',
+        );
       }
     }
 
@@ -213,7 +231,9 @@ class CloudBackupService {
     AppLogger.i('Restoring from backup JSON...');
 
     if (backupJson['app'] != 'Afri_BMS' || backupJson['data'] == null) {
-      throw const FormatException('Invalid backup file. Missing Afri_BMS signature.');
+      throw const FormatException(
+        'Invalid backup file. Missing Afri_BMS signature.',
+      );
     }
 
     final data = backupJson['data'] as Map<String, dynamic>;
@@ -240,7 +260,8 @@ class CloudBackupService {
       // Handle legacy 'categories' key mapping to 'product_categories'
       List<dynamic>? records;
       if (table == 'product_categories') {
-        records = (data['product_categories'] as List<dynamic>?) ??
+        records =
+            (data['product_categories'] as List<dynamic>?) ??
             (data['categories'] as List<dynamic>?);
       } else {
         records = data[table] as List<dynamic>?;
@@ -254,7 +275,12 @@ class CloudBackupService {
           final recordMap = Map<String, dynamic>.from(r as Map);
 
           // Tables that don't have direct business_id column
-          const nonBusinessIdTables = {'sale_items', 'product_variants', 'stock', 'debt_payments'};
+          const nonBusinessIdTables = {
+            'sale_items',
+            'product_variants',
+            'stock',
+            'debt_payments',
+          };
           if (!nonBusinessIdTables.contains(table)) {
             recordMap['business_id'] = businessId; // ensure target business
           }
@@ -283,7 +309,9 @@ class CloudBackupService {
                 // Record already exists in Supabase, count as intact
                 success++;
               } else {
-                AppLogger.w('Notice inserting $table record (${recordMap['id']}): ${e.message}');
+                AppLogger.w(
+                  'Notice inserting $table record (${recordMap['id']}): ${e.message}',
+                );
               }
             }
           } else {
@@ -293,13 +321,18 @@ class CloudBackupService {
               success++;
             } on PostgrestException catch (e) {
               // If foreign key failed (e.g. category was removed), clear category_id and retry
-              if (table == 'products' && (e.code == '23503' || e.message.contains('foreign key'))) {
+              if (table == 'products' &&
+                  (e.code == '23503' || e.message.contains('foreign key'))) {
                 try {
                   recordMap['category_id'] = null;
-                  await _supabase.from(table).upsert(recordMap, onConflict: 'id');
+                  await _supabase
+                      .from(table)
+                      .upsert(recordMap, onConflict: 'id');
                   success++;
                 } catch (retryErr) {
-                  AppLogger.e('Failed restoring product without category: $retryErr');
+                  AppLogger.e(
+                    'Failed restoring product without category: $retryErr',
+                  );
                 }
               } else {
                 AppLogger.e('Failed upserting record in $table: $e');

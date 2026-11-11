@@ -23,13 +23,13 @@ class StockEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        productId,
-        variantId,
-        branchId,
-        quantity,
-        batchNumber,
-        expiryDate,
-        updatedAt,
-      ];
+    id,
+    productId,
+    variantId,
+    branchId,
+    quantity,
+    batchNumber,
+    expiryDate,
+    updatedAt,
+  ];
 }

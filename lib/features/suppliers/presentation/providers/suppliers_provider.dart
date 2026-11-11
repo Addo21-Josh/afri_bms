@@ -9,7 +9,9 @@ import '../../../business/presentation/providers/business_provider.dart';
 import '../../../../core/sync/presentation/providers/sync_provider.dart';
 import '../../../../core/sync/domain/models/sync_queue_item.dart';
 
-final suppliersRemoteDatasourceProvider = Provider<SuppliersRemoteDatasource>((ref) {
+final suppliersRemoteDatasourceProvider = Provider<SuppliersRemoteDatasource>((
+  ref,
+) {
   return SuppliersRemoteDatasourceImpl(Supabase.instance.client);
 });
 
@@ -21,7 +23,9 @@ final supplierRepositoryProvider = Provider<SupplierRepository>((ref) {
 final supplierSearchQueryProvider = StateProvider<String>((ref) => '');
 
 // Fetch suppliers list for active business with offline cache fallback
-final suppliersListProvider = FutureProvider.autoDispose<List<SupplierEntity>>((ref) async {
+final suppliersListProvider = FutureProvider.autoDispose<List<SupplierEntity>>((
+  ref,
+) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return [];
 
@@ -33,7 +37,13 @@ final suppliersListProvider = FutureProvider.autoDispose<List<SupplierEntity>>((
     final cached = await localCache.getCachedSuppliers(currentBiz.id);
     if (searchQuery.isNotEmpty) {
       final q = searchQuery.toLowerCase().trim();
-      return cached.where((s) => s.name.toLowerCase().contains(q) || (s.phone?.contains(q) ?? false)).toList();
+      return cached
+          .where(
+            (s) =>
+                s.name.toLowerCase().contains(q) ||
+                (s.phone?.contains(q) ?? false),
+          )
+          .toList();
     }
     return cached;
   }
@@ -61,37 +71,44 @@ final suppliersListProvider = FutureProvider.autoDispose<List<SupplierEntity>>((
 });
 
 // Single supplier detail provider with offline cache fallback
-final supplierDetailProvider = FutureProvider.autoDispose.family<SupplierEntity, String>((ref, supplierId) async {
-  final currentBiz = ref.watch(currentBusinessProvider);
-  final isOnline = ref.watch(syncProvider.select((s) => s.isOnline));
-  final localCache = ref.watch(localCacheServiceProvider);
+final supplierDetailProvider = FutureProvider.autoDispose
+    .family<SupplierEntity, String>((ref, supplierId) async {
+      final currentBiz = ref.watch(currentBusinessProvider);
+      final isOnline = ref.watch(syncProvider.select((s) => s.isOnline));
+      final localCache = ref.watch(localCacheServiceProvider);
 
-  if (!isOnline && currentBiz != null) {
-    final cached = await localCache.getCachedSupplierById(currentBiz.id, supplierId);
-    if (cached != null) return cached;
-  }
+      if (!isOnline && currentBiz != null) {
+        final cached = await localCache.getCachedSupplierById(
+          currentBiz.id,
+          supplierId,
+        );
+        if (cached != null) return cached;
+      }
 
-  final repo = ref.watch(supplierRepositoryProvider);
-  try {
-    final result = await repo.getSupplierById(supplierId);
-    return await result.fold(
-      (failure) async {
+      final repo = ref.watch(supplierRepositoryProvider);
+      try {
+        final result = await repo.getSupplierById(supplierId);
+        return await result.fold((failure) async {
+          if (currentBiz != null) {
+            final cached = await localCache.getCachedSupplierById(
+              currentBiz.id,
+              supplierId,
+            );
+            if (cached != null) return cached;
+          }
+          throw failure.message;
+        }, (supplier) => supplier);
+      } catch (e) {
         if (currentBiz != null) {
-          final cached = await localCache.getCachedSupplierById(currentBiz.id, supplierId);
+          final cached = await localCache.getCachedSupplierById(
+            currentBiz.id,
+            supplierId,
+          );
           if (cached != null) return cached;
         }
-        throw failure.message;
-      },
-      (supplier) => supplier,
-    );
-  } catch (e) {
-    if (currentBiz != null) {
-      final cached = await localCache.getCachedSupplierById(currentBiz.id, supplierId);
-      if (cached != null) return cached;
-    }
-    rethrow;
-  }
-});
+        rethrow;
+      }
+    });
 
 class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
   final Ref ref;
@@ -136,25 +153,27 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
       final localCache = ref.read(localCacheServiceProvider);
       await localCache.saveOfflineSupplier(currentBiz.id, offlineSupplier);
 
-      await ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'suppliers',
-        operation: SyncOperation.insert,
-        recordId: offlineId,
-        payload: {
-          'id': offlineId,
-          'business_id': currentBiz.id,
-          'name': name,
-          'contact_person': contactPerson,
-          'phone': phone,
-          'email': email,
-          'address': address,
-          'outstanding_balance': 0,
-          'notes': notes,
-          'is_active': true,
-          'created_at': now.toIso8601String(),
-          'updated_at': now.toIso8601String(),
-        },
-      );
+      await ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'suppliers',
+            operation: SyncOperation.insert,
+            recordId: offlineId,
+            payload: {
+              'id': offlineId,
+              'business_id': currentBiz.id,
+              'name': name,
+              'contact_person': contactPerson,
+              'phone': phone,
+              'email': email,
+              'address': address,
+              'outstanding_balance': 0,
+              'notes': notes,
+              'is_active': true,
+              'created_at': now.toIso8601String(),
+              'updated_at': now.toIso8601String(),
+            },
+          );
 
       ref.invalidate(suppliersListProvider);
       state = AsyncValue.data(offlineSupplier);
@@ -179,7 +198,9 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
         return null;
       },
       (supplier) {
-        ref.read(localCacheServiceProvider).saveOfflineSupplier(currentBiz.id, supplier);
+        ref
+            .read(localCacheServiceProvider)
+            .saveOfflineSupplier(currentBiz.id, supplier);
         ref.invalidate(suppliersListProvider);
         state = AsyncValue.data(supplier);
         return supplier;
@@ -194,22 +215,26 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
     if (!isOnline) {
       final currentBiz = ref.read(currentBusinessProvider);
       if (currentBiz != null) {
-        await ref.read(localCacheServiceProvider).saveOfflineSupplier(currentBiz.id, supplier);
-        await ref.read(syncProvider.notifier).enqueueOperation(
-          table: 'suppliers',
-          operation: SyncOperation.update,
-          recordId: supplier.id,
-          payload: {
-            'name': supplier.name,
-            'contact_person': supplier.contactPerson,
-            'phone': supplier.phone,
-            'email': supplier.email,
-            'address': supplier.address,
-            'notes': supplier.notes,
-            'is_active': supplier.isActive,
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-        );
+        await ref
+            .read(localCacheServiceProvider)
+            .saveOfflineSupplier(currentBiz.id, supplier);
+        await ref
+            .read(syncProvider.notifier)
+            .enqueueOperation(
+              table: 'suppliers',
+              operation: SyncOperation.update,
+              recordId: supplier.id,
+              payload: {
+                'name': supplier.name,
+                'contact_person': supplier.contactPerson,
+                'phone': supplier.phone,
+                'email': supplier.email,
+                'address': supplier.address,
+                'notes': supplier.notes,
+                'is_active': supplier.isActive,
+                'updated_at': DateTime.now().toIso8601String(),
+              },
+            );
         ref.invalidate(suppliersListProvider);
         ref.invalidate(supplierDetailProvider(supplier.id));
         state = AsyncValue.data(supplier);
@@ -229,7 +254,9 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
       (updated) {
         final currentBiz = ref.read(currentBusinessProvider);
         if (currentBiz != null) {
-          ref.read(localCacheServiceProvider).saveOfflineSupplier(currentBiz.id, updated);
+          ref
+              .read(localCacheServiceProvider)
+              .saveOfflineSupplier(currentBiz.id, updated);
         }
         ref.invalidate(suppliersListProvider);
         ref.invalidate(supplierDetailProvider(supplier.id));
@@ -245,13 +272,17 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
     final currentBiz = ref.read(currentBusinessProvider);
 
     if (!isOnline && currentBiz != null) {
-      await ref.read(localCacheServiceProvider).deleteOfflineSupplier(currentBiz.id, supplierId);
-      await ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'suppliers',
-        operation: SyncOperation.delete,
-        recordId: supplierId,
-        payload: {},
-      );
+      await ref
+          .read(localCacheServiceProvider)
+          .deleteOfflineSupplier(currentBiz.id, supplierId);
+      await ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'suppliers',
+            operation: SyncOperation.delete,
+            recordId: supplierId,
+            payload: {},
+          );
       ref.invalidate(suppliersListProvider);
       state = const AsyncValue.data(null);
       return true;
@@ -268,7 +299,9 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
       },
       (_) {
         if (currentBiz != null) {
-          ref.read(localCacheServiceProvider).deleteOfflineSupplier(currentBiz.id, supplierId);
+          ref
+              .read(localCacheServiceProvider)
+              .deleteOfflineSupplier(currentBiz.id, supplierId);
         }
         ref.invalidate(suppliersListProvider);
         state = const AsyncValue.data(null);
@@ -298,7 +331,9 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
       (updated) {
         final currentBiz = ref.read(currentBusinessProvider);
         if (currentBiz != null) {
-          ref.read(localCacheServiceProvider).saveOfflineSupplier(currentBiz.id, updated);
+          ref
+              .read(localCacheServiceProvider)
+              .saveOfflineSupplier(currentBiz.id, updated);
         }
         ref.invalidate(suppliersListProvider);
         ref.invalidate(supplierDetailProvider(supplierId));
@@ -309,6 +344,9 @@ class SupplierController extends StateNotifier<AsyncValue<SupplierEntity?>> {
   }
 }
 
-final supplierControllerProvider = StateNotifierProvider<SupplierController, AsyncValue<SupplierEntity?>>((ref) {
-  return SupplierController(ref);
-});
+final supplierControllerProvider =
+    StateNotifierProvider<SupplierController, AsyncValue<SupplierEntity?>>((
+      ref,
+    ) {
+      return SupplierController(ref);
+    });

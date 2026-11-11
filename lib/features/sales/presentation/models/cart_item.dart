@@ -19,12 +19,14 @@ class CartItem extends Equatable {
   final int quantity;
   final int discountAmount; // Minor units per item
 
-  String get id => variant != null ? '${product.id}_${variant!.id}' : product.id;
+  String get id =>
+      variant != null ? '${product.id}_${variant!.id}' : product.id;
 
   String get displayName =>
       variant != null ? '${product.name} (${variant!.name})' : product.name;
 
-  int get effectiveUnitPrice => (unitPrice - discountAmount).clamp(0, double.maxFinite.toInt());
+  int get effectiveUnitPrice =>
+      (unitPrice - discountAmount).clamp(0, double.maxFinite.toInt());
 
   int get lineTotal => effectiveUnitPrice * quantity;
 
@@ -53,11 +55,11 @@ class CartItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        product.id,
-        variant?.id,
-        unitPrice,
-        unitCostPrice,
-        quantity,
-        discountAmount,
-      ];
+    product.id,
+    variant?.id,
+    unitPrice,
+    unitCostPrice,
+    quantity,
+    discountAmount,
+  ];
 }

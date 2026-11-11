@@ -12,7 +12,9 @@ import '../../../../core/sync/presentation/providers/sync_provider.dart';
 import '../../../../core/sync/domain/models/sync_queue_item.dart';
 import '../../../../core/utils/logger.dart';
 
-final customersRemoteDatasourceProvider = Provider<CustomersRemoteDatasource>((ref) {
+final customersRemoteDatasourceProvider = Provider<CustomersRemoteDatasource>((
+  ref,
+) {
   return CustomersRemoteDatasourceImpl(Supabase.instance.client);
 });
 
@@ -24,7 +26,9 @@ final customerRepositoryProvider = Provider<CustomerRepository>((ref) {
 final customerSearchQueryProvider = StateProvider<String>((ref) => '');
 
 // Fetch customers list for active business with offline cache fallback
-final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((ref) async {
+final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
+  ref,
+) async {
   final currentBiz = ref.watch(currentBusinessProvider);
   if (currentBiz == null) return [];
 
@@ -53,7 +57,9 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
 
   return result.fold(
     (failure) async {
-      AppLogger.w('Customers fetch failed: ${failure.message}. Falling back to offline cache.');
+      AppLogger.w(
+        'Customers fetch failed: ${failure.message}. Falling back to offline cache.',
+      );
       final cached = await localCache.getCachedCustomers(currentBiz.id);
       if (searchQuery.isNotEmpty) {
         final query = searchQuery.toLowerCase();
@@ -73,53 +79,57 @@ final customersListProvider = FutureProvider.autoDispose<List<CustomerEntity>>((
 });
 
 // Single customer details provider with offline fallback
-final customerDetailProvider = FutureProvider.autoDispose.family<CustomerEntity, String>((ref, customerId) async {
-  final currentBiz = ref.watch(currentBusinessProvider);
-  final repo = ref.watch(customerRepositoryProvider);
-  final localCache = ref.watch(localCacheServiceProvider);
-  final syncState = ref.watch(syncProvider);
+final customerDetailProvider = FutureProvider.autoDispose
+    .family<CustomerEntity, String>((ref, customerId) async {
+      final currentBiz = ref.watch(currentBusinessProvider);
+      final repo = ref.watch(customerRepositoryProvider);
+      final localCache = ref.watch(localCacheServiceProvider);
+      final syncState = ref.watch(syncProvider);
 
-  if (!syncState.isOnline) {
-    if (currentBiz != null) {
-      final cached = await localCache.getCachedCustomerById(currentBiz.id, customerId);
-      if (cached != null) return cached;
-    }
-    throw 'Customer details not available in offline cache';
-  }
-
-  final result = await repo.getCustomerById(customerId);
-  return result.fold(
-    (failure) async {
-      if (currentBiz != null) {
-        final cached = await localCache.getCachedCustomerById(currentBiz.id, customerId);
-        if (cached != null) return cached;
+      if (!syncState.isOnline) {
+        if (currentBiz != null) {
+          final cached = await localCache.getCachedCustomerById(
+            currentBiz.id,
+            customerId,
+          );
+          if (cached != null) return cached;
+        }
+        throw 'Customer details not available in offline cache';
       }
-      throw failure.message;
-    },
-    (customer) => customer,
-  );
-});
+
+      final result = await repo.getCustomerById(customerId);
+      return result.fold((failure) async {
+        if (currentBiz != null) {
+          final cached = await localCache.getCachedCustomerById(
+            currentBiz.id,
+            customerId,
+          );
+          if (cached != null) return cached;
+        }
+        throw failure.message;
+      }, (customer) => customer);
+    });
 
 // Customer purchase history provider
-final customerSalesHistoryProvider = FutureProvider.autoDispose.family<List<SaleEntity>, String>((ref, customerId) async {
-  final currentBiz = ref.watch(currentBusinessProvider);
-  final syncState = ref.watch(syncProvider);
+final customerSalesHistoryProvider = FutureProvider.autoDispose
+    .family<List<SaleEntity>, String>((ref, customerId) async {
+      final currentBiz = ref.watch(currentBusinessProvider);
+      final syncState = ref.watch(syncProvider);
 
-  if (!syncState.isOnline) {
-    if (currentBiz != null) {
-      final cached = await ref.watch(localCacheServiceProvider).getCachedSales(currentBiz.id);
-      return cached.where((s) => s.customerId == customerId).toList();
-    }
-    return [];
-  }
+      if (!syncState.isOnline) {
+        if (currentBiz != null) {
+          final cached = await ref
+              .watch(localCacheServiceProvider)
+              .getCachedSales(currentBiz.id);
+          return cached.where((s) => s.customerId == customerId).toList();
+        }
+        return [];
+      }
 
-  final repo = ref.watch(customerRepositoryProvider);
-  final result = await repo.getCustomerSales(customerId);
-  return result.fold(
-    (failure) => throw failure.message,
-    (sales) => sales,
-  );
-});
+      final repo = ref.watch(customerRepositoryProvider);
+      final result = await repo.getCustomerSales(customerId);
+      return result.fold((failure) => throw failure.message, (sales) => sales);
+    });
 
 class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
   CustomerController(this.ref) : super(const AsyncValue.data(null));
@@ -159,13 +169,15 @@ class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
       );
 
       await localCache.saveOfflineCustomer(currentBiz.id, localCust);
-      await ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'customers',
-        operation: SyncOperation.insert,
-        recordId: localCust.id,
-        payload: CustomerModel.fromEntity(localCust).toJson(),
-        businessId: currentBiz.id,
-      );
+      await ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'customers',
+            operation: SyncOperation.insert,
+            recordId: localCust.id,
+            payload: CustomerModel.fromEntity(localCust).toJson(),
+            businessId: currentBiz.id,
+          );
 
       ref.invalidate(customersListProvider);
       state = AsyncValue.data(localCust);
@@ -199,13 +211,15 @@ class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
         );
 
         await localCache.saveOfflineCustomer(currentBiz.id, localCust);
-        await ref.read(syncProvider.notifier).enqueueOperation(
-          table: 'customers',
-          operation: SyncOperation.insert,
-          recordId: localCust.id,
-          payload: CustomerModel.fromEntity(localCust).toJson(),
-          businessId: currentBiz.id,
-        );
+        await ref
+            .read(syncProvider.notifier)
+            .enqueueOperation(
+              table: 'customers',
+              operation: SyncOperation.insert,
+              recordId: localCust.id,
+              payload: CustomerModel.fromEntity(localCust).toJson(),
+              businessId: currentBiz.id,
+            );
 
         ref.invalidate(customersListProvider);
         state = AsyncValue.data(localCust);
@@ -287,6 +301,9 @@ class CustomerController extends StateNotifier<AsyncValue<CustomerEntity?>> {
   }
 }
 
-final customerControllerProvider = StateNotifierProvider<CustomerController, AsyncValue<CustomerEntity?>>((ref) {
-  return CustomerController(ref);
-});
+final customerControllerProvider =
+    StateNotifierProvider<CustomerController, AsyncValue<CustomerEntity?>>((
+      ref,
+    ) {
+      return CustomerController(ref);
+    });

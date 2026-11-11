@@ -10,13 +10,10 @@ class SkeletonLoading extends StatelessWidget {
     this.margin,
   });
 
-  const SkeletonLoading.circular({
-    super.key,
-    required double size,
-    this.margin,
-  })  : width = size,
-        height = size,
-        borderRadius = 9999;
+  const SkeletonLoading.circular({super.key, required double size, this.margin})
+    : width = size,
+      height = size,
+      borderRadius = 9999;
 
   final double width;
   final double height;
@@ -63,9 +60,15 @@ class SkeletonListTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SkeletonLoading(width: MediaQuery.of(context).size.width * 0.45, height: 16),
+                SkeletonLoading(
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  height: 16,
+                ),
                 const SizedBox(height: 8),
-                SkeletonLoading(width: MediaQuery.of(context).size.width * 0.25, height: 12),
+                SkeletonLoading(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  height: 12,
+                ),
               ],
             ),
           ),

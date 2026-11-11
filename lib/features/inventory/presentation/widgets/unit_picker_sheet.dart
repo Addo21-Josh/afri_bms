@@ -203,9 +203,14 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                       )
                     : null,
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 filled: true,
-                fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                fillColor: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -228,7 +233,9 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                     avatar: Icon(
                       cat.icon,
                       size: 16,
-                      color: isSelected ? colorScheme.onPrimary : colorScheme.primary,
+                      color: isSelected
+                          ? colorScheme.onPrimary
+                          : colorScheme.primary,
                     ),
                     label: Text(cat.label),
                     selected: isSelected,
@@ -248,15 +255,24 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _promptCustomUnit(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: colorScheme.primary.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.add_circle_outline, color: colorScheme.primary, size: 20),
+                    Icon(
+                      Icons.add_circle_outline,
+                      color: colorScheme.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -286,11 +302,17 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.search_off, size: 48, color: colorScheme.outline),
+                          Icon(
+                            Icons.search_off,
+                            size: 48,
+                            color: colorScheme.outline,
+                          ),
                           const SizedBox(height: 12),
                           Text(
                             'No predefined unit found for "$_searchQuery"',
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           const Text(
@@ -302,7 +324,9 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                           FilledButton.icon(
                             onPressed: () {
                               final query = _searchQuery.trim();
-                              widget.onSelected(query.isNotEmpty ? query : 'pcs');
+                              widget.onSelected(
+                                query.isNotEmpty ? query : 'pcs',
+                              );
                               Navigator.pop(context);
                             },
                             icon: const Icon(Icons.add),
@@ -318,19 +342,26 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                     separatorBuilder: (_, _) => const SizedBox(height: 6),
                     itemBuilder: (context, index) {
                       final u = units[index];
-                      final isSelected = u.code.toLowerCase() == activeUnitClean;
+                      final isSelected =
+                          u.code.toLowerCase() == activeUnitClean;
 
                       return Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                           side: BorderSide(
-                            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                            color: isSelected
+                                ? colorScheme.primary
+                                : colorScheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
                             width: isSelected ? 1.5 : 1,
                           ),
                         ),
                         color: isSelected
-                            ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                            ? colorScheme.primaryContainer.withValues(
+                                alpha: 0.3,
+                              )
                             : colorScheme.surface,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
@@ -339,7 +370,10 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                             Navigator.pop(context);
                           },
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             child: Row(
                               children: [
                                 Container(
@@ -348,19 +382,26 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                                     color: colorScheme.surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Icon(u.category.icon, size: 20, color: colorScheme.primary),
+                                  child: Icon(
+                                    u.category.icon,
+                                    size: 20,
+                                    color: colorScheme.primary,
+                                  ),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         u.name,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
-                                          color: isSelected ? colorScheme.primary : null,
+                                          color: isSelected
+                                              ? colorScheme.primary
+                                              : null,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
@@ -378,7 +419,10 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                                 ),
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? colorScheme.primary
@@ -390,13 +434,19 @@ class _ProductUnitPickerSheetState extends State<ProductUnitPickerSheet> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
-                                      color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+                                      color: isSelected
+                                          ? colorScheme.onPrimary
+                                          : colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ),
                                 if (isSelected) ...[
                                   const SizedBox(width: 8),
-                                  Icon(Icons.check_circle, size: 20, color: colorScheme.primary),
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 20,
+                                    color: colorScheme.primary,
+                                  ),
                                 ],
                               ],
                             ),

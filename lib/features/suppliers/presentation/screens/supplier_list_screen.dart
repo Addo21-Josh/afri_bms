@@ -63,12 +63,18 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref.read(supplierSearchQueryProvider.notifier).state = '';
+                          ref.read(supplierSearchQueryProvider.notifier).state =
+                              '';
                         },
                       )
                     : null,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onChanged: (val) {
                 ref.read(supplierSearchQueryProvider.notifier).state = val;
@@ -81,30 +87,47 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
             data: (suppliers) {
               if (suppliers.isEmpty) return const SizedBox.shrink();
               final owedCount = suppliers.where((s) => s.hasBalance).length;
-              final totalOwedMinor = suppliers.fold<int>(0, (sum, s) => sum + s.outstandingBalance);
-              final totalOwedFormatted = (totalOwedMinor / 100).toStringAsFixed(2);
+              final totalOwedMinor = suppliers.fold<int>(
+                0,
+                (sum, s) => sum + s.outstandingBalance,
+              );
+              final totalOwedFormatted = (totalOwedMinor / 100).toStringAsFixed(
+                2,
+              );
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Card(
                         elevation: 0,
-                        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Total Suppliers',
-                                style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.outline,
+                                ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 '${suppliers.length}',
-                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -115,16 +138,25 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                     Expanded(
                       child: Card(
                         elevation: 0,
-                        color: totalOwedMinor > 0 ? Colors.orange.shade50 : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        color: totalOwedMinor > 0
+                            ? Colors.orange.shade50
+                            : colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.5,
+                              ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Payable to Suppliers ($owedCount)',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: totalOwedMinor > 0 ? Colors.orange.shade900 : colorScheme.outline,
+                                  color: totalOwedMinor > 0
+                                      ? Colors.orange.shade900
+                                      : colorScheme.outline,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -132,7 +164,9 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                                 '$currency $totalOwedFormatted',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: totalOwedMinor > 0 ? Colors.orange.shade900 : null,
+                                  color: totalOwedMinor > 0
+                                      ? Colors.orange.shade900
+                                      : null,
                                 ),
                               ),
                             ],
@@ -157,9 +191,16 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.local_shipping_outlined, size: 54, color: Colors.grey),
+                      const Icon(
+                        Icons.local_shipping_outlined,
+                        size: 54,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(height: 12),
-                      Text('Error loading suppliers: $err', textAlign: TextAlign.center),
+                      Text(
+                        'Error loading suppliers: $err',
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 12),
                       OutlinedButton(
                         onPressed: () => ref.invalidate(suppliersListProvider),
@@ -177,11 +218,19 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.local_shipping_outlined, size: 64, color: colorScheme.outline),
+                          Icon(
+                            Icons.local_shipping_outlined,
+                            size: 64,
+                            color: colorScheme.outline,
+                          ),
                           const SizedBox(height: 16),
                           Text(
-                            _searchController.text.isNotEmpty ? 'No matching suppliers found' : 'No suppliers added yet',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            _searchController.text.isNotEmpty
+                                ? 'No matching suppliers found'
+                                : 'No suppliers added yet',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -211,14 +260,19 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final supplier = suppliers[index];
-                      final balanceFormatted = (supplier.outstandingBalance / 100).toStringAsFixed(2);
+                      final balanceFormatted =
+                          (supplier.outstandingBalance / 100).toStringAsFixed(
+                            2,
+                          );
 
                       return Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: BorderSide(
-                            color: supplier.hasBalance ? Colors.orange.shade300 : colorScheme.outlineVariant,
+                            color: supplier.hasBalance
+                                ? Colors.orange.shade300
+                                : colorScheme.outlineVariant,
                           ),
                         ),
                         child: InkWell(
@@ -232,7 +286,8 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 22,
-                                  backgroundColor: colorScheme.secondaryContainer,
+                                  backgroundColor:
+                                      colorScheme.secondaryContainer,
                                   child: Text(
                                     supplier.initials,
                                     style: TextStyle(
@@ -244,33 +299,54 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         supplier.name,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
                                       const SizedBox(height: 3),
-                                      if (supplier.contactPerson != null && supplier.contactPerson!.isNotEmpty) ...[
+                                      if (supplier.contactPerson != null &&
+                                          supplier
+                                              .contactPerson!
+                                              .isNotEmpty) ...[
                                         Text(
                                           'Rep: ${supplier.contactPerson}',
-                                          style: TextStyle(color: Colors.grey.shade800, fontSize: 13),
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: 13,
+                                          ),
                                         ),
                                         const SizedBox(height: 2),
                                       ],
                                       Row(
                                         children: [
-                                          if (supplier.phone != null && supplier.phone!.isNotEmpty) ...[
-                                            Icon(Icons.phone_outlined, size: 13, color: Colors.grey.shade600),
+                                          if (supplier.phone != null &&
+                                              supplier.phone!.isNotEmpty) ...[
+                                            Icon(
+                                              Icons.phone_outlined,
+                                              size: 13,
+                                              color: Colors.grey.shade600,
+                                            ),
                                             const SizedBox(width: 4),
                                             Text(
                                               supplier.phone!,
-                                              style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                                              style: TextStyle(
+                                                color: Colors.grey.shade700,
+                                                fontSize: 13,
+                                              ),
                                             ),
                                           ] else ...[
                                             Text(
                                               'No phone recorded',
-                                              style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                                              style: TextStyle(
+                                                color: Colors.grey.shade500,
+                                                fontSize: 12,
+                                              ),
                                             ),
                                           ],
                                         ],
@@ -280,14 +356,20 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                                 ),
                                 if (supplier.hasBalance) ...[
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.orange.shade50,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.orange.shade300),
+                                      border: Border.all(
+                                        color: Colors.orange.shade300,
+                                      ),
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Text(
                                           'Owed',
@@ -310,7 +392,10 @@ class _SupplierListScreenState extends ConsumerState<SupplierListScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                 ],
-                                const Icon(Icons.chevron_right, color: Colors.grey),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey,
+                                ),
                               ],
                             ),
                           ),

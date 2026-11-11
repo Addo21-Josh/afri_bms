@@ -42,17 +42,17 @@ class SupplierEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        name,
-        contactPerson,
-        phone,
-        email,
-        address,
-        outstandingBalance,
-        notes,
-        isActive,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    businessId,
+    name,
+    contactPerson,
+    phone,
+    email,
+    address,
+    outstandingBalance,
+    notes,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
 }

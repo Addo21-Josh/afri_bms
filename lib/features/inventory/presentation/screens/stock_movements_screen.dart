@@ -66,7 +66,9 @@ class StockMovementsScreen extends ConsumerWidget {
           // Branch selector bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: .3),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: .3,
+            ),
             child: Row(
               children: [
                 Icon(Icons.store, size: 20, color: theme.colorScheme.primary),
@@ -84,7 +86,11 @@ class StockMovementsScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: Colors.red,
+                      ),
                       const SizedBox(height: 12),
                       Text('Error: $err', textAlign: TextAlign.center),
                       const SizedBox(height: 12),
@@ -104,19 +110,24 @@ class StockMovementsScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.inventory_2_outlined,
-                              size: 64, color: theme.colorScheme.outline),
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: 64,
+                            color: theme.colorScheme.outline,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'No Stock Movements Yet',
-                            style: theme.textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Stock additions, sales, and manual adjustments will appear here in chronological order.',
-                            style: theme.textTheme.bodyMedium
-                                ?.copyWith(color: theme.colorScheme.outline),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -130,19 +141,24 @@ class StockMovementsScreen extends ConsumerWidget {
                 return ListView.separated(
                   padding: const EdgeInsets.all(12),
                   itemCount: movements.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final m = movements[index];
                     final color = _getTypeColor(m.type);
                     final icon = _getTypeIcon(m.type);
-                    final qtyText = m.quantity > 0 ? '+${m.quantity}' : '${m.quantity}';
+                    final qtyText = m.quantity > 0
+                        ? '+${m.quantity}'
+                        : '${m.quantity}';
 
                     return Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withValues(alpha: .5),
+                          color: theme.colorScheme.outlineVariant.withValues(
+                            alpha: .5,
+                          ),
                         ),
                       ),
                       child: Padding(
@@ -172,20 +188,28 @@ class StockMovementsScreen extends ConsumerWidget {
                                           m.productName ?? 'Product Item',
                                           style: theme.textTheme.titleSmall
                                               ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 2),
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: m.isAddition
-                                              ? Colors.green.withValues(alpha: .12)
-                                              : Colors.red.withValues(alpha: .12),
-                                          borderRadius:
-                                              BorderRadius.circular(6),
+                                              ? Colors.green.withValues(
+                                                  alpha: .12,
+                                                )
+                                              : Colors.red.withValues(
+                                                  alpha: .12,
+                                                ),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           qtyText,
@@ -205,10 +229,11 @@ class StockMovementsScreen extends ConsumerWidget {
                                     const SizedBox(height: 2),
                                     Text(
                                       'Variant: ${m.variantName}',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme.colorScheme.primary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                     ),
                                   ],
                                   const SizedBox(height: 4),
@@ -216,11 +241,14 @@ class StockMovementsScreen extends ConsumerWidget {
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 6, vertical: 2),
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: color.withValues(alpha: .15),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         child: Text(
                                           m.type.label,
@@ -238,9 +266,10 @@ class StockMovementsScreen extends ConsumerWidget {
                                           'Batch: ${m.batchNumber}',
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
-                                            color: theme.colorScheme.outline,
-                                            fontSize: 11,
-                                          ),
+                                                color:
+                                                    theme.colorScheme.outline,
+                                                fontSize: 11,
+                                              ),
                                         ),
                                       ],
                                       if (m.userName != null) ...[
@@ -249,9 +278,10 @@ class StockMovementsScreen extends ConsumerWidget {
                                           'By: ${m.userName}',
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
-                                            color: theme.colorScheme.outline,
-                                            fontSize: 11,
-                                          ),
+                                                color:
+                                                    theme.colorScheme.outline,
+                                                fontSize: 11,
+                                              ),
                                         ),
                                       ],
                                     ],
@@ -262,7 +292,9 @@ class StockMovementsScreen extends ConsumerWidget {
                                     Text(
                                       m.reason!,
                                       style: theme.textTheme.bodySmall
-                                          ?.copyWith(fontStyle: FontStyle.italic),
+                                          ?.copyWith(
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                     ),
                                   ],
                                   const SizedBox(height: 4),

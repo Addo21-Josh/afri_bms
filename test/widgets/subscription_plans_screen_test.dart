@@ -13,20 +13,22 @@ class FakeCurrentBusiness extends CurrentBusiness {
 }
 
 void main() {
-  Widget buildTestWidget({SubscriptionTier currentTier = SubscriptionTier.free}) {
+  Widget buildTestWidget({
+    SubscriptionTier currentTier = SubscriptionTier.free,
+  }) {
     return ProviderScope(
       overrides: [
         currentBusinessProvider.overrideWith(FakeCurrentBusiness.new),
         currentSubscriptionTierProvider.overrideWithValue(currentTier),
       ],
-      child: const MaterialApp(
-        home: SubscriptionPlansScreen(),
-      ),
+      child: const MaterialApp(home: SubscriptionPlansScreen()),
     );
   }
 
   group('SubscriptionPlansScreen Widget Tests', () {
-    testWidgets('renders plan title, billing cycle toggle and tier cards', (tester) async {
+    testWidgets('renders plan title, billing cycle toggle and tier cards', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 2.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -47,14 +49,19 @@ void main() {
       expect(find.text('Free'), findsWidgets);
 
       // Scroll to reveal Pro and Enterprise
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -500));
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, -500),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Afri_BMS Pro'), findsOneWidget);
       expect(find.textContaining('50'), findsWidgets);
     });
 
-    testWidgets('toggling yearly switches pricing and shows yearly badge', (tester) async {
+    testWidgets('toggling yearly switches pricing and shows yearly badge', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 2.0;
       addTearDown(tester.view.resetPhysicalSize);

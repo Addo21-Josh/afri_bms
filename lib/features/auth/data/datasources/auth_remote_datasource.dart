@@ -29,7 +29,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         email: email,
         password: password,
       );
-      
+
       if (response.user == null) {
         throw AppException('Sign in failed: No user returned');
       }
@@ -47,7 +47,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return UserModel(
         id: response.user!.id,
         email: response.user!.email ?? email,
-        fullName: response.user!.userMetadata?['full_name'] as String? ?? email.split('@').first,
+        fullName:
+            response.user!.userMetadata?['full_name'] as String? ??
+            email.split('@').first,
         phone: response.user!.userMetadata?['phone'] as String?,
       );
     } catch (e) {
@@ -67,10 +69,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       final response = await _supabaseClient.auth.signUp(
         email: email,
         password: password,
-        data: {
-          'full_name': fullName,
-          'phone': phone,
-        },
+        data: {'full_name': fullName, 'phone': phone},
       );
 
       if (response.user == null) {
@@ -188,7 +187,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return UserModel(
         id: user.id,
         email: user.email ?? '',
-        fullName: user.userMetadata?['full_name'] as String? ?? (user.email?.split('@').first ?? 'User'),
+        fullName:
+            user.userMetadata?['full_name'] as String? ??
+            (user.email?.split('@').first ?? 'User'),
         phone: user.userMetadata?['phone'] as String?,
       );
     } catch (e) {

@@ -20,14 +20,16 @@ final autoReorderListProvider = Provider<List<AutoReorderItem>>((ref) {
       final int suggestedQty = diff > 0 ? diff : 1;
       final estimatedCost = suggestedQty * product.costPrice;
 
-      reorderItems.add(AutoReorderItem(
-        product: product,
-        currentStock: stock,
-        reorderLevel: reorder,
-        suggestedQuantity: suggestedQty,
-        unitCostPrice: product.costPrice,
-        estimatedTotalCost: estimatedCost,
-      ));
+      reorderItems.add(
+        AutoReorderItem(
+          product: product,
+          currentStock: stock,
+          reorderLevel: reorder,
+          suggestedQuantity: suggestedQty,
+          unitCostPrice: product.costPrice,
+          estimatedTotalCost: estimatedCost,
+        ),
+      );
     }
   }
 
@@ -48,12 +50,15 @@ final salesVelocityProvider = Provider<List<SalesVelocityItem>>((ref) {
 
   final now = DateTime.now();
   final past30Days = now.subtract(const Duration(days: 30));
-  final recentSales = sales.where((s) => s.createdAt.isAfter(past30Days)).toList();
+  final recentSales = sales
+      .where((s) => s.createdAt.isAfter(past30Days))
+      .toList();
 
   final Map<String, int> productUnitsSold = {};
   for (final s in recentSales) {
     for (final item in s.items) {
-      productUnitsSold[item.productId] = (productUnitsSold[item.productId] ?? 0) + item.quantity;
+      productUnitsSold[item.productId] =
+          (productUnitsSold[item.productId] ?? 0) + item.quantity;
     }
   }
 
@@ -61,21 +66,26 @@ final salesVelocityProvider = Provider<List<SalesVelocityItem>>((ref) {
   for (final product in products) {
     final units = productUnitsSold[product.id] ?? 0;
     final velocity = units / 30.0;
-    final daysRemaining = velocity > 0 ? (product.currentBranchStock / velocity).round() : null;
+    final daysRemaining = velocity > 0
+        ? (product.currentBranchStock / velocity).round()
+        : null;
 
-    velocityItems.add(SalesVelocityItem(
-      productId: product.id,
-      productName: product.name,
-      currentStock: product.currentBranchStock,
-      unitsSold: units,
-      velocityPerDay: velocity,
-      daysRemaining: daysRemaining,
-    ));
+    velocityItems.add(
+      SalesVelocityItem(
+        productId: product.id,
+        productName: product.name,
+        currentStock: product.currentBranchStock,
+        unitsSold: units,
+        velocityPerDay: velocity,
+        daysRemaining: daysRemaining,
+      ),
+    );
   }
 
   // Sort by shortest days remaining (highest risk of running out first)
   velocityItems.sort((a, b) {
-    if (a.daysRemaining == null && b.daysRemaining == null) return b.unitsSold.compareTo(a.unitsSold);
+    if (a.daysRemaining == null && b.daysRemaining == null)
+      return b.unitsSold.compareTo(a.unitsSold);
     if (a.daysRemaining == null) return 1;
     if (b.daysRemaining == null) return -1;
     return a.daysRemaining!.compareTo(b.daysRemaining!);
@@ -93,7 +103,8 @@ final branchPerformanceProvider = Provider<List<BranchPerformanceItem>>((ref) {
   final Map<String, int> branchOrders = {};
 
   for (final s in sales) {
-    branchRevenue[s.branchId] = (branchRevenue[s.branchId] ?? 0) + s.totalAmount;
+    branchRevenue[s.branchId] =
+        (branchRevenue[s.branchId] ?? 0) + s.totalAmount;
     branchOrders[s.branchId] = (branchOrders[s.branchId] ?? 0) + 1;
   }
 
@@ -103,13 +114,15 @@ final branchPerformanceProvider = Provider<List<BranchPerformanceItem>>((ref) {
     final orders = branchOrders[branch.id] ?? 0;
     final aov = orders > 0 ? (rev / orders).round() : 0;
 
-    items.add(BranchPerformanceItem(
-      branchId: branch.id,
-      branchName: branch.name,
-      totalRevenue: rev,
-      ordersCount: orders,
-      averageOrderValue: aov,
-    ));
+    items.add(
+      BranchPerformanceItem(
+        branchId: branch.id,
+        branchName: branch.name,
+        totalRevenue: rev,
+        ordersCount: orders,
+        averageOrderValue: aov,
+      ),
+    );
   }
 
   items.sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
@@ -117,7 +130,9 @@ final branchPerformanceProvider = Provider<List<BranchPerformanceItem>>((ref) {
 });
 
 // Most Profitable Products Ranking Provider
-final productProfitabilityProvider = Provider<List<ProductProfitabilityItem>>((ref) {
+final productProfitabilityProvider = Provider<List<ProductProfitabilityItem>>((
+  ref,
+) {
   final sales = ref.watch(salesListProvider).value ?? [];
 
   final Map<String, _ProfitAgg> aggMap = {};
@@ -128,7 +143,8 @@ final productProfitabilityProvider = Provider<List<ProductProfitabilityItem>>((r
       final cost = item.unitCostPrice * item.quantity;
       final profit = revenue - cost;
 
-      final cur = aggMap[item.productId] ?? _ProfitAgg(item.productName, 0, 0, 0, 0);
+      final cur =
+          aggMap[item.productId] ?? _ProfitAgg(item.productName, 0, 0, 0, 0);
       aggMap[item.productId] = _ProfitAgg(
         item.productName,
         cur.qty + item.quantity,
@@ -140,7 +156,9 @@ final productProfitabilityProvider = Provider<List<ProductProfitabilityItem>>((r
   }
 
   final List<ProductProfitabilityItem> items = aggMap.entries.map((e) {
-    final margin = e.value.revenue > 0 ? (e.value.profit / e.value.revenue) * 100 : 0.0;
+    final margin = e.value.revenue > 0
+        ? (e.value.profit / e.value.revenue) * 100
+        : 0.0;
     return ProductProfitabilityItem(
       productId: e.key,
       productName: e.value.name,
@@ -150,8 +168,7 @@ final productProfitabilityProvider = Provider<List<ProductProfitabilityItem>>((r
       totalProfit: e.value.profit,
       profitMarginPercent: margin,
     );
-  }).toList()
-    ..sort((a, b) => b.totalProfit.compareTo(a.totalProfit));
+  }).toList()..sort((a, b) => b.totalProfit.compareTo(a.totalProfit));
 
   return items;
 });
@@ -199,16 +216,18 @@ final customerPatternsProvider = Provider<List<CustomerPatternItem>>((ref) {
     final count = mySales.length;
     final aov = count > 0 ? (totalSpend / count).round() : 0;
 
-    patterns.add(CustomerPatternItem(
-      customerId: c.id,
-      customerName: c.name,
-      phone: c.phone,
-      ordersCount: count,
-      totalSpent: totalSpend,
-      averageSpend: aov,
-      preferredPaymentMethod: topMethod,
-      lastOrderDate: lastDate,
-    ));
+    patterns.add(
+      CustomerPatternItem(
+        customerId: c.id,
+        customerName: c.name,
+        phone: c.phone,
+        ordersCount: count,
+        totalSpent: totalSpend,
+        averageSpend: aov,
+        preferredPaymentMethod: topMethod,
+        lastOrderDate: lastDate,
+      ),
+    );
   }
 
   patterns.sort((a, b) => b.totalSpent.compareTo(a.totalSpent));

@@ -23,10 +23,12 @@ class PdfReceiptPreviewScreen extends ConsumerStatefulWidget {
   final String currency;
 
   @override
-  ConsumerState<PdfReceiptPreviewScreen> createState() => _PdfReceiptPreviewScreenState();
+  ConsumerState<PdfReceiptPreviewScreen> createState() =>
+      _PdfReceiptPreviewScreenState();
 }
 
-class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScreen> {
+class _PdfReceiptPreviewScreenState
+    extends ConsumerState<PdfReceiptPreviewScreen> {
   bool _isThermalFormat = false;
 
   Future<void> _shareReceiptPdf() async {
@@ -57,7 +59,8 @@ class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScree
     final totalFormatted = (widget.sale.totalAmount / 100).toStringAsFixed(2);
     final bizName = ref.read(currentBusinessProvider)?.name ?? 'Our Store';
 
-    final text = 'Hello ${widget.sale.customerName ?? 'Customer'}! Thank you for shopping with $bizName. '
+    final text =
+        'Hello ${widget.sale.customerName ?? 'Customer'}! Thank you for shopping with $bizName. '
         'Your receipt #${widget.sale.saleNumber} total is ${widget.currency} $totalFormatted. '
         'View receipt online: https://afribms.app/receipt/${widget.sale.saleNumber}';
 
@@ -86,7 +89,8 @@ class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScree
     final totalFormatted = (widget.sale.totalAmount / 100).toStringAsFixed(2);
     final bizName = ref.read(currentBusinessProvider)?.name ?? 'Our Store';
 
-    final body = 'Receipt from $bizName: Sale #${widget.sale.saleNumber}. '
+    final body =
+        'Receipt from $bizName: Sale #${widget.sale.saleNumber}. '
         'Total: ${widget.currency} $totalFormatted. Paid: ${widget.sale.paymentMethod.label}. '
         'Thank you!';
 
@@ -100,9 +104,9 @@ class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScree
       await launchUrl(uri);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open SMS app')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open SMS app')));
       }
     }
   }
@@ -117,8 +121,12 @@ class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScree
         title: Text('Receipt #${widget.sale.saleNumber}'),
         actions: [
           IconButton(
-            tooltip: _isThermalFormat ? 'Switch to A5 Page' : 'Switch to Thermal 80mm',
-            icon: Icon(_isThermalFormat ? Icons.receipt_long : Icons.print_outlined),
+            tooltip: _isThermalFormat
+                ? 'Switch to A5 Page'
+                : 'Switch to Thermal 80mm',
+            icon: Icon(
+              _isThermalFormat ? Icons.receipt_long : Icons.print_outlined,
+            ),
             onPressed: () {
               if (!_isThermalFormat) {
                 final gate = ref.read(featureGateProvider);
@@ -126,7 +134,8 @@ class _PdfReceiptPreviewScreenState extends ConsumerState<PdfReceiptPreviewScree
                   UpgradePromptSheet.show(
                     context,
                     featureName: 'Thermal Receipt Printing',
-                    customMessage: 'Thermal 80mm/58mm printing is available on Afri_BMS Pro & Enterprise.',
+                    customMessage:
+                        'Thermal 80mm/58mm printing is available on Afri_BMS Pro & Enterprise.',
                     currentTier: gate.tier,
                     suggestedTier: SubscriptionTier.pro,
                   );

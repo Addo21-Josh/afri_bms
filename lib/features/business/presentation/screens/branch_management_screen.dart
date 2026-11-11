@@ -11,10 +11,15 @@ import '../../../../core/subscription/presentation/widgets/upgrade_prompt_sheet.
 class BranchManagementScreen extends ConsumerWidget {
   const BranchManagementScreen({super.key});
 
-  void _showBranchDialog(BuildContext context, WidgetRef ref, [BranchEntity? branch]) {
+  void _showBranchDialog(
+    BuildContext context,
+    WidgetRef ref, [
+    BranchEntity? branch,
+  ]) {
     final isEditing = branch != null;
     if (!isEditing) {
-      final currentCount = ref.read(businessBranchesProvider).value?.length ?? 0;
+      final currentCount =
+          ref.read(businessBranchesProvider).value?.length ?? 0;
       final gate = ref.read(featureGateProvider);
       final check = gate.checkBranchLimit(currentCount);
       if (check.isBlocked) {
@@ -30,10 +35,15 @@ class BranchManagementScreen extends ConsumerWidget {
     }
 
     final nameController = TextEditingController(text: branch?.name ?? '');
-    final addressController = TextEditingController(text: branch?.address ?? '');
+    final addressController = TextEditingController(
+      text: branch?.address ?? '',
+    );
     final phoneController = TextEditingController(text: branch?.phone ?? '');
     final currencyController = TextEditingController(
-      text: branch?.currency ?? ref.read(currentBusinessProvider)?.defaultCurrency ?? 'GHS',
+      text:
+          branch?.currency ??
+          ref.read(currentBusinessProvider)?.defaultCurrency ??
+          'GHS',
     );
     bool isMain = branch?.isMain ?? false;
     final formKey = GlobalKey<FormState>();
@@ -52,25 +62,33 @@ class BranchManagementScreen extends ConsumerWidget {
                   children: [
                     TextFormField(
                       controller: nameController,
-                      decoration: const InputDecoration(labelText: 'Branch Name'),
-                      validator: (val) => Validators.required(val, 'Branch name is required'),
+                      decoration: const InputDecoration(
+                        labelText: 'Branch Name',
+                      ),
+                      validator: (val) =>
+                          Validators.required(val, 'Branch name is required'),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: currencyController,
                       decoration: const InputDecoration(labelText: 'Currency'),
-                      validator: (val) => Validators.required(val, 'Currency is required'),
+                      validator: (val) =>
+                          Validators.required(val, 'Currency is required'),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: phoneController,
-                      decoration: const InputDecoration(labelText: 'Phone (optional)'),
+                      decoration: const InputDecoration(
+                        labelText: 'Phone (optional)',
+                      ),
                       keyboardType: TextInputType.phone,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: addressController,
-                      decoration: const InputDecoration(labelText: 'Address (optional)'),
+                      decoration: const InputDecoration(
+                        labelText: 'Address (optional)',
+                      ),
                     ),
                     const SizedBox(height: 12),
                     SwitchListTile(
@@ -107,20 +125,32 @@ class BranchManagementScreen extends ConsumerWidget {
                       phone: phoneController.text.trim(),
                       isMain: isMain,
                     );
-                    ref.read(branchControllerProvider.notifier).updateBranch(updated);
+                    ref
+                        .read(branchControllerProvider.notifier)
+                        .updateBranch(updated);
                   } else {
-                    ref.read(branchControllerProvider.notifier).createBranch(
-                      businessId: currentBiz.id,
-                      name: nameController.text.trim(),
-                      currency: currencyController.text.trim().toUpperCase(),
-                      address: addressController.text.trim(),
-                      phone: phoneController.text.trim(),
-                      isMain: isMain,
-                    );
+                    ref
+                        .read(branchControllerProvider.notifier)
+                        .createBranch(
+                          businessId: currentBiz.id,
+                          name: nameController.text.trim(),
+                          currency: currencyController.text
+                              .trim()
+                              .toUpperCase(),
+                          address: addressController.text.trim(),
+                          phone: phoneController.text.trim(),
+                          isMain: isMain,
+                        );
                   }
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(isEditing ? 'Branch updated' : 'Branch created successfully')),
+                    SnackBar(
+                      content: Text(
+                        isEditing
+                            ? 'Branch updated'
+                            : 'Branch created successfully',
+                      ),
+                    ),
                   );
                 },
                 child: Text(isEditing ? 'Update' : 'Create'),
@@ -140,9 +170,7 @@ class BranchManagementScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Branches'),
-      ),
+      appBar: AppBar(title: const Text('Manage Branches')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showBranchDialog(context, ref),
         icon: const Icon(Icons.add_business_rounded),
@@ -153,7 +181,8 @@ class BranchManagementScreen extends ConsumerWidget {
           if (branches.isEmpty) {
             return EmptyStateWidget(
               title: 'No Branches Found',
-              subtitle: 'Add your first branch to start organizing your inventory and sales.',
+              subtitle:
+                  'Add your first branch to start organizing your inventory and sales.',
               icon: Icons.store_mall_directory_outlined,
               action: FilledButton.icon(
                 onPressed: () => _showBranchDialog(context, ref),
@@ -183,7 +212,10 @@ class BranchManagementScreen extends ConsumerWidget {
                   ),
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   leading: CircleAvatar(
                     backgroundColor: branch.isMain
                         ? colorScheme.primaryContainer
@@ -192,7 +224,9 @@ class BranchManagementScreen extends ConsumerWidget {
                         ? colorScheme.primary
                         : colorScheme.onSurfaceVariant,
                     child: Icon(
-                      branch.isMain ? Icons.store_rounded : Icons.location_city_outlined,
+                      branch.isMain
+                          ? Icons.store_rounded
+                          : Icons.location_city_outlined,
                     ),
                   ),
                   title: Row(
@@ -207,7 +241,10 @@ class BranchManagementScreen extends ConsumerWidget {
                       ),
                       if (branch.isMain)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
@@ -228,10 +265,7 @@ class BranchManagementScreen extends ConsumerWidget {
                     children: [
                       const SizedBox(height: 4),
                       if (branch.address != null && branch.address!.isNotEmpty)
-                        Text(
-                          branch.address!,
-                          style: theme.textTheme.bodySmall,
-                        ),
+                        Text(branch.address!, style: theme.textTheme.bodySmall),
                       Text(
                         'Currency: ${branch.currency}',
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -246,16 +280,21 @@ class BranchManagementScreen extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.edit_outlined),
                         tooltip: 'Edit Branch',
-                        onPressed: () => _showBranchDialog(context, ref, branch),
+                        onPressed: () =>
+                            _showBranchDialog(context, ref, branch),
                       ),
                       if (!isSelected)
                         IconButton(
                           icon: const Icon(Icons.check_circle_outline),
                           tooltip: 'Switch to this branch',
                           onPressed: () {
-                            ref.read(currentBranchProvider.notifier).select(branch);
+                            ref
+                                .read(currentBranchProvider.notifier)
+                                .select(branch);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Switched to ${branch.name}')),
+                              SnackBar(
+                                content: Text('Switched to ${branch.name}'),
+                              ),
                             );
                           },
                         ),

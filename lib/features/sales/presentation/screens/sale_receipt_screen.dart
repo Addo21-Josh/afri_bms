@@ -45,7 +45,9 @@ class SaleReceiptScreen extends ConsumerWidget {
                   elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withOpacity(0.5),
+                    ),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -100,16 +102,34 @@ class SaleReceiptScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Receipt #:', style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline)),
-                            Text(sale.saleNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              'Receipt #:',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline,
+                              ),
+                            ),
+                            Text(
+                              sale.saleNumber,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Date:', style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline)),
-                            Text(dateFormat.format(sale.createdAt), style: theme.textTheme.bodySmall),
+                            Text(
+                              'Date:',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline,
+                              ),
+                            ),
+                            Text(
+                              dateFormat.format(sale.createdAt),
+                              style: theme.textTheme.bodySmall,
+                            ),
                           ],
                         ),
                         if (sale.cashierName != null) ...[
@@ -117,8 +137,16 @@ class SaleReceiptScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Cashier:', style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline)),
-                              Text(sale.cashierName!, style: theme.textTheme.bodySmall),
+                              Text(
+                                'Cashier:',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.outline,
+                                ),
+                              ),
+                              Text(
+                                sale.cashierName!,
+                                style: theme.textTheme.bodySmall,
+                              ),
                             ],
                           ),
                         ],
@@ -127,8 +155,18 @@ class SaleReceiptScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Customer:', style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline)),
-                              Text(sale.customerName!, style: const TextStyle(fontWeight: FontWeight.w600)),
+                              Text(
+                                'Customer:',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.outline,
+                                ),
+                              ),
+                              Text(
+                                sale.customerName!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -140,9 +178,37 @@ class SaleReceiptScreen extends ConsumerWidget {
                         // Items Header
                         Row(
                           children: [
-                            Expanded(flex: 3, child: Text('ITEM', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.outline))),
-                            Expanded(child: Text('QTY', textAlign: TextAlign.center, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.outline))),
-                            Expanded(flex: 2, child: Text('PRICE', textAlign: TextAlign.right, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.outline))),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'ITEM',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.outline,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'QTY',
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.outline,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'PRICE',
+                                textAlign: TextAlign.right,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.outline,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -157,23 +223,43 @@ class SaleReceiptScreen extends ConsumerWidget {
                                 Expanded(
                                   flex: 3,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                      Text(
+                                        item.productName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                       if (item.variantName != null)
-                                        Text('(${item.variantName})', style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline)),
+                                        Text(
+                                          '(${item.variantName})',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: colorScheme.outline,
+                                              ),
+                                        ),
                                     ],
                                   ),
                                 ),
                                 Expanded(
-                                  child: Text('${item.quantity}', textAlign: TextAlign.center),
+                                  child: Text(
+                                    '${item.quantity}',
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    CurrencyFormatter.format(item.totalPrice, currencyCode: currency),
+                                    CurrencyFormatter.format(
+                                      item.totalPrice,
+                                      currencyCode: currency,
+                                    ),
                                     textAlign: TextAlign.right,
-                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -189,8 +275,18 @@ class SaleReceiptScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Subtotal', style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                            Text(CurrencyFormatter.format(sale.subtotal, currencyCode: currency)),
+                            Text(
+                              'Subtotal',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              CurrencyFormatter.format(
+                                sale.subtotal,
+                                currencyCode: currency,
+                              ),
+                            ),
                           ],
                         ),
                         if (sale.discountAmount > 0) ...[
@@ -198,8 +294,14 @@ class SaleReceiptScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Discount', style: TextStyle(color: Colors.green)),
-                              Text('-${CurrencyFormatter.format(sale.discountAmount, currencyCode: currency)}', style: const TextStyle(color: Colors.green)),
+                              const Text(
+                                'Discount',
+                                style: TextStyle(color: Colors.green),
+                              ),
+                              Text(
+                                '-${CurrencyFormatter.format(sale.discountAmount, currencyCode: currency)}',
+                                style: const TextStyle(color: Colors.green),
+                              ),
                             ],
                           ),
                         ],
@@ -208,8 +310,15 @@ class SaleReceiptScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Tax', style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                              Text('+${CurrencyFormatter.format(sale.taxAmount, currencyCode: currency)}'),
+                              Text(
+                                'Tax',
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Text(
+                                '+${CurrencyFormatter.format(sale.taxAmount, currencyCode: currency)}',
+                              ),
                             ],
                           ),
                         ],
@@ -221,9 +330,17 @@ class SaleReceiptScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('TOTAL DUE', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                             Text(
-                              CurrencyFormatter.format(sale.totalAmount, currencyCode: currency),
+                              'TOTAL DUE',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              CurrencyFormatter.format(
+                                sale.totalAmount,
+                                currencyCode: currency,
+                              ),
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.primary,
@@ -243,29 +360,60 @@ class SaleReceiptScreen extends ConsumerWidget {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Payment Method:', style: theme.textTheme.bodySmall),
-                                  Text(sale.paymentMethod.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(
+                                    'Payment Method:',
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                  Text(
+                                    sale.paymentMethod.label,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                               if (sale.paymentMethod == PaymentMethod.cash) ...[
                                 const SizedBox(height: 4),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Amount Tendered:', style: theme.textTheme.bodySmall),
-                                    Text(CurrencyFormatter.format(sale.amountTendered, currencyCode: currency)),
+                                    Text(
+                                      'Amount Tendered:',
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                    Text(
+                                      CurrencyFormatter.format(
+                                        sale.amountTendered,
+                                        currencyCode: currency,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Change Given:', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
                                     Text(
-                                      CurrencyFormatter.format(sale.changeGiven, currencyCode: currency),
-                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                                      'Change Given:',
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    Text(
+                                      CurrencyFormatter.format(
+                                        sale.changeGiven,
+                                        currencyCode: currency,
+                                      ),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -273,10 +421,19 @@ class SaleReceiptScreen extends ConsumerWidget {
                               if (sale.paymentReference != null) ...[
                                 const SizedBox(height: 4),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Ref:', style: theme.textTheme.bodySmall),
-                                    Text(sale.paymentReference!, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                    Text(
+                                      'Ref:',
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                    Text(
+                                      sale.paymentReference!,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],

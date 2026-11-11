@@ -27,10 +27,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      ref.read(authControllerProvider.notifier).signIn(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+      ref
+          .read(authControllerProvider.notifier)
+          .signIn(_emailController.text.trim(), _passwordController.text);
     }
   }
 
@@ -106,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
-                  
+
                   TextFormField(
                     controller: _emailController,
                     decoration: const InputDecoration(
@@ -117,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     validator: Validators.email,
                   ),
                   const SizedBox(height: 16),
-                  
+
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -125,7 +124,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                         onPressed: () {
                           setState(() {
@@ -135,10 +136,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     obscureText: _obscurePassword,
-                    validator: (val) => Validators.required(val, 'Password is required'),
+                    validator: (val) =>
+                        Validators.required(val, 'Password is required'),
                   ),
                   const SizedBox(height: 8),
-                  
+
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -149,7 +151,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   FilledButton(
                     onPressed: authState.isLoading ? null : _submit,
                     style: FilledButton.styleFrom(
@@ -164,7 +166,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         : const Text('Sign In'),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

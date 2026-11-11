@@ -9,13 +9,11 @@ import '../../../business/presentation/providers/business_provider.dart';
 class SupplierDetailScreen extends ConsumerStatefulWidget {
   final String supplierId;
 
-  const SupplierDetailScreen({
-    super.key,
-    required this.supplierId,
-  });
+  const SupplierDetailScreen({super.key, required this.supplierId});
 
   @override
-  ConsumerState<SupplierDetailScreen> createState() => _SupplierDetailScreenState();
+  ConsumerState<SupplierDetailScreen> createState() =>
+      _SupplierDetailScreenState();
 }
 
 class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
@@ -86,7 +84,9 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                   prefixIcon: Icon(Icons.payments_outlined),
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (val) {
                   final parsed = double.tryParse(val ?? '');
                   if (parsed == null || parsed <= 0) {
@@ -142,15 +142,15 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
     final colorScheme = theme.colorScheme;
 
     return supplierAsync.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, _) => Scaffold(
         appBar: AppBar(),
-        body: Center(
-          child: Text('Error loading supplier: $err'),
-        ),
+        body: Center(child: Text('Error loading supplier: $err')),
       ),
       data: (supplier) {
-        final balanceFormatted = (supplier.outstandingBalance / 100).toStringAsFixed(2);
+        final balanceFormatted = (supplier.outstandingBalance / 100)
+            .toStringAsFixed(2);
 
         return Scaffold(
           appBar: AppBar(
@@ -208,29 +208,37 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                                 children: [
                                   Text(
                                     supplier.name,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
-                                  if (supplier.contactPerson != null && supplier.contactPerson!.isNotEmpty) ...[
+                                  if (supplier.contactPerson != null &&
+                                      supplier.contactPerson!.isNotEmpty) ...[
                                     const SizedBox(height: 2),
                                     Text(
                                       'Contact: ${supplier.contactPerson}',
-                                      style: TextStyle(color: Colors.grey.shade700),
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                      ),
                                     ),
                                   ],
                                   if (supplier.phone != null) ...[
                                     const SizedBox(height: 2),
                                     Text(
                                       supplier.phone!,
-                                      style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ],
                                   if (supplier.email != null) ...[
                                     const SizedBox(height: 2),
                                     Text(
                                       supplier.email!,
-                                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ],
                                 ],
@@ -238,12 +246,17 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                             ),
                           ],
                         ),
-                        if (supplier.address != null && supplier.address!.isNotEmpty) ...[
+                        if (supplier.address != null &&
+                            supplier.address!.isNotEmpty) ...[
                           const Divider(height: 24),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.location_on_outlined, size: 18, color: colorScheme.outline),
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 18,
+                                color: colorScheme.outline,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -254,17 +267,25 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                             ],
                           ),
                         ],
-                        if (supplier.notes != null && supplier.notes!.isNotEmpty) ...[
+                        if (supplier.notes != null &&
+                            supplier.notes!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.notes_outlined, size: 18, color: colorScheme.outline),
+                              Icon(
+                                Icons.notes_outlined,
+                                size: 18,
+                                color: colorScheme.outline,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   supplier.notes!,
-                                  style: TextStyle(color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
                               ),
                             ],
@@ -279,11 +300,17 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                 // Financial Balance & Debt Card
                 Card(
                   elevation: 0,
-                  color: supplier.hasBalance ? Colors.orange.shade50 : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: supplier.hasBalance
+                      ? Colors.orange.shade50
+                      : colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
-                      color: supplier.hasBalance ? Colors.orange.shade300 : colorScheme.outlineVariant,
+                      color: supplier.hasBalance
+                          ? Colors.orange.shade300
+                          : colorScheme.outlineVariant,
                     ),
                   ),
                   child: Padding(
@@ -299,7 +326,9 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                                 Text(
                                   'Payable Balance Owed',
                                   style: TextStyle(
-                                    color: supplier.hasBalance ? Colors.orange.shade900 : colorScheme.outline,
+                                    color: supplier.hasBalance
+                                        ? Colors.orange.shade900
+                                        : colorScheme.outline,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -309,7 +338,9 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: supplier.hasBalance ? Colors.orange.shade900 : colorScheme.onSurface,
+                                    color: supplier.hasBalance
+                                        ? Colors.orange.shade900
+                                        : colorScheme.onSurface,
                                   ),
                                 ),
                               ],
@@ -317,7 +348,9 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                             Icon(
                               Icons.account_balance_wallet_outlined,
                               size: 32,
-                              color: supplier.hasBalance ? Colors.orange.shade800 : colorScheme.outline,
+                              color: supplier.hasBalance
+                                  ? Colors.orange.shade800
+                                  : colorScheme.outline,
                             ),
                           ],
                         ),
@@ -326,7 +359,9 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton.icon(
-                              style: FilledButton.styleFrom(backgroundColor: Colors.orange.shade900),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.orange.shade900,
+                              ),
                               onPressed: () => _openPaymentDialog(supplier),
                               icon: const Icon(Icons.payments_outlined),
                               label: const Text('Record Payout / Settlement'),

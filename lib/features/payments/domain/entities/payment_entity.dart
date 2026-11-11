@@ -36,19 +36,19 @@ class PaymentEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        branchId,
-        saleId,
-        customerId,
-        supplierId,
-        amount,
-        paymentMethod,
-        provider,
-        reference,
-        phoneNumber,
-        status,
-        notes,
-        createdAt,
-      ];
+    id,
+    businessId,
+    branchId,
+    saleId,
+    customerId,
+    supplierId,
+    amount,
+    paymentMethod,
+    provider,
+    reference,
+    phoneNumber,
+    status,
+    notes,
+    createdAt,
+  ];
 }

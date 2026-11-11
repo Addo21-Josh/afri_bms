@@ -1,5 +1,8 @@
 class Validators {
-  static String? required(String? value, [String message = 'This field is required']) {
+  static String? required(
+    String? value, [
+    String message = 'This field is required',
+  ]) {
     if (value == null || value.trim().isEmpty) {
       return message;
     }
@@ -32,7 +35,11 @@ class Validators {
     return null;
   }
 
-  static String? nonNegativeNumber(String? value, {bool required = true, String fieldName = 'Amount'}) {
+  static String? nonNegativeNumber(
+    String? value, {
+    bool required = true,
+    String fieldName = 'Amount',
+  }) {
     final trimmed = value?.trim();
     if (trimmed == null || trimmed.isEmpty) {
       return required ? '$fieldName is required' : null;
@@ -47,7 +54,11 @@ class Validators {
     return null;
   }
 
-  static String? nonNegativeInteger(String? value, {bool required = false, String fieldName = 'Quantity'}) {
+  static String? nonNegativeInteger(
+    String? value, {
+    bool required = false,
+    String fieldName = 'Quantity',
+  }) {
     final trimmed = value?.trim();
     if (trimmed == null || trimmed.isEmpty) {
       return required ? '$fieldName is required' : null;

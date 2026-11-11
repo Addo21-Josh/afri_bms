@@ -24,7 +24,9 @@ class SyncQueueStorage {
       final content = await file.readAsString();
       if (content.isEmpty) return [];
       final List<dynamic> list = jsonDecode(content) as List<dynamic>;
-      return list.map((item) => SyncQueueItem.fromMap(item as Map<String, dynamic>)).toList();
+      return list
+          .map((item) => SyncQueueItem.fromMap(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       AppLogger.e('Error loading sync queue: $e');
       return [];
@@ -50,11 +52,13 @@ class SyncQueueStorage {
     final items = await getAllItems();
 
     for (final item in newItems) {
-      final index = items.indexWhere((i) =>
-          i.table == item.table &&
-          i.recordId == item.recordId &&
-          i.operation == item.operation &&
-          i.status == SyncItemStatus.pending);
+      final index = items.indexWhere(
+        (i) =>
+            i.table == item.table &&
+            i.recordId == item.recordId &&
+            i.operation == item.operation &&
+            i.status == SyncItemStatus.pending,
+      );
 
       if (index >= 0) {
         items[index] = item; // Update payload with latest changes
@@ -68,8 +72,13 @@ class SyncQueueStorage {
   Future<List<SyncQueueItem>> getPendingItems({String? businessId}) async {
     final items = await getAllItems();
     return items.where((i) {
-      final matchesBiz = businessId == null || businessId.isEmpty || i.businessId == businessId;
-      return matchesBiz && (i.status == SyncItemStatus.pending || i.status == SyncItemStatus.failed);
+      final matchesBiz =
+          businessId == null ||
+          businessId.isEmpty ||
+          i.businessId == businessId;
+      return matchesBiz &&
+          (i.status == SyncItemStatus.pending ||
+              i.status == SyncItemStatus.failed);
     }).toList();
   }
 
@@ -90,9 +99,15 @@ class SyncQueueStorage {
       final current = items[index];
       items[index] = current.copyWith(
         status: status,
-        attempts: status == SyncItemStatus.failed ? current.attempts + 1 : current.attempts,
+        attempts: status == SyncItemStatus.failed
+            ? current.attempts + 1
+            : current.attempts,
         lastError: error,
-        completedAt: completedAt ?? (status == SyncItemStatus.completed ? DateTime.now() : current.completedAt),
+        completedAt:
+            completedAt ??
+            (status == SyncItemStatus.completed
+                ? DateTime.now()
+                : current.completedAt),
       );
       await _saveAllItems(items);
     }
@@ -102,7 +117,9 @@ class SyncQueueStorage {
     final items = await getAllItems();
     for (int i = 0; i < items.length; i++) {
       if (items[i].status == SyncItemStatus.failed) {
-        if (businessId == null || businessId.isEmpty || items[i].businessId == businessId) {
+        if (businessId == null ||
+            businessId.isEmpty ||
+            items[i].businessId == businessId) {
           items[i] = items[i].copyWith(
             status: SyncItemStatus.pending,
             lastError: null,

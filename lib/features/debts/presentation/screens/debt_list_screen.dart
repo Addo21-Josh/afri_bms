@@ -48,7 +48,8 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
     final debtsAsync = ref.watch(debtsListProvider);
 
     final isReceivable = currentFilter.debtType == DebtType.receivable;
-    final totalReceivables = ref.watch(totalReceivablesSummaryProvider).value ?? 0;
+    final totalReceivables =
+        ref.watch(totalReceivablesSummaryProvider).value ?? 0;
     final totalPayables = ref.watch(totalPayablesSummaryProvider).value ?? 0;
     final activeTotal = isReceivable ? totalReceivables : totalPayables;
 
@@ -67,7 +68,8 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
         onPressed: () async {
           final created = await showDialog<bool>(
             context: context,
-            builder: (_) => CreateDebtDialog(initialType: currentFilter.debtType),
+            builder: (_) =>
+                CreateDebtDialog(initialType: currentFilter.debtType),
           );
           if (created == true) {
             ref.read(debtsListProvider.notifier).refresh();
@@ -96,9 +98,9 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
               ],
               selected: {currentFilter.debtType},
               onSelectionChanged: (set) {
-                ref.read(debtFilterProvider.notifier).update(
-                      (s) => s.copyWith(debtType: set.first),
-                    );
+                ref
+                    .read(debtFilterProvider.notifier)
+                    .update((s) => s.copyWith(debtType: set.first));
               },
             ),
           ),
@@ -125,8 +127,12 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
             child: Row(
               children: [
                 Icon(
-                  isReceivable ? Icons.account_balance_wallet : Icons.receipt_long,
-                  color: isReceivable ? colorScheme.primary : colorScheme.tertiary,
+                  isReceivable
+                      ? Icons.account_balance_wallet
+                      : Icons.receipt_long,
+                  color: isReceivable
+                      ? colorScheme.primary
+                      : colorScheme.tertiary,
                   size: 32,
                 ),
                 const SizedBox(width: 14),
@@ -135,23 +141,32 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isReceivable ? 'TOTAL UNCOLLECTED RECEIVABLES' : 'TOTAL UNPAID SUPPLIER PAYABLES',
+                        isReceivable
+                            ? 'TOTAL UNCOLLECTED RECEIVABLES'
+                            : 'TOTAL UNPAID SUPPLIER PAYABLES',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.1,
-                          color: isReceivable ? colorScheme.onPrimaryContainer : colorScheme.onTertiaryContainer,
+                          color: isReceivable
+                              ? colorScheme.onPrimaryContainer
+                              : colorScheme.onTertiaryContainer,
                         ),
                       ),
                       const SizedBox(height: 4),
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          CurrencyFormatter.format(activeTotal, currencyCode: currency),
+                          CurrencyFormatter.format(
+                            activeTotal,
+                            currencyCode: currency,
+                          ),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: isReceivable ? colorScheme.primary : colorScheme.tertiary,
+                            color: isReceivable
+                                ? colorScheme.primary
+                                : colorScheme.tertiary,
                           ),
                         ),
                       ),
@@ -168,22 +183,30 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: isReceivable ? 'Search customer name or phone...' : 'Search supplier name...',
+                hintText: isReceivable
+                    ? 'Search customer name or phone...'
+                    : 'Search supplier name...',
                 prefixIcon: const Icon(Icons.search),
                 isDense: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref.read(debtFilterProvider.notifier).update((s) => s.copyWith(searchQuery: ''));
+                          ref
+                              .read(debtFilterProvider.notifier)
+                              .update((s) => s.copyWith(searchQuery: ''));
                         },
                       )
                     : null,
               ),
               onChanged: (val) {
-                ref.read(debtFilterProvider.notifier).update((s) => s.copyWith(searchQuery: val));
+                ref
+                    .read(debtFilterProvider.notifier)
+                    .update((s) => s.copyWith(searchQuery: val));
               },
             ),
           ),
@@ -198,7 +221,9 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                   label: const Text('All Aging'),
                   selected: currentFilter.agingBucket == null,
                   onSelected: (val) {
-                    ref.read(debtFilterProvider.notifier).update((s) => s.copyWith(clearAging: true));
+                    ref
+                        .read(debtFilterProvider.notifier)
+                        .update((s) => s.copyWith(clearAging: true));
                   },
                 ),
                 const SizedBox(width: 6),
@@ -206,8 +231,13 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                   label: const Text('Current (< 30d)'),
                   selected: currentFilter.agingBucket == AgingBucket.current,
                   onSelected: (val) {
-                    ref.read(debtFilterProvider.notifier).update(
-                          (s) => s.copyWith(agingBucket: val ? AgingBucket.current : null, clearAging: !val),
+                    ref
+                        .read(debtFilterProvider.notifier)
+                        .update(
+                          (s) => s.copyWith(
+                            agingBucket: val ? AgingBucket.current : null,
+                            clearAging: !val,
+                          ),
                         );
                   },
                 ),
@@ -216,8 +246,13 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                   label: const Text('30 - 59d'),
                   selected: currentFilter.agingBucket == AgingBucket.thirtyDays,
                   onSelected: (val) {
-                    ref.read(debtFilterProvider.notifier).update(
-                          (s) => s.copyWith(agingBucket: val ? AgingBucket.thirtyDays : null, clearAging: !val),
+                    ref
+                        .read(debtFilterProvider.notifier)
+                        .update(
+                          (s) => s.copyWith(
+                            agingBucket: val ? AgingBucket.thirtyDays : null,
+                            clearAging: !val,
+                          ),
                         );
                   },
                 ),
@@ -226,19 +261,36 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                   label: const Text('60 - 89d'),
                   selected: currentFilter.agingBucket == AgingBucket.sixtyDays,
                   onSelected: (val) {
-                    ref.read(debtFilterProvider.notifier).update(
-                          (s) => s.copyWith(agingBucket: val ? AgingBucket.sixtyDays : null, clearAging: !val),
+                    ref
+                        .read(debtFilterProvider.notifier)
+                        .update(
+                          (s) => s.copyWith(
+                            agingBucket: val ? AgingBucket.sixtyDays : null,
+                            clearAging: !val,
+                          ),
                         );
                   },
                 ),
                 const SizedBox(width: 6),
                 FilterChip(
                   label: const Text('90d+ (Overdue)'),
-                  selected: currentFilter.agingBucket == AgingBucket.ninetyDaysPlus,
-                  avatar: const Icon(Icons.warning_amber_rounded, size: 16, color: Colors.red),
+                  selected:
+                      currentFilter.agingBucket == AgingBucket.ninetyDaysPlus,
+                  avatar: const Icon(
+                    Icons.warning_amber_rounded,
+                    size: 16,
+                    color: Colors.red,
+                  ),
                   onSelected: (val) {
-                    ref.read(debtFilterProvider.notifier).update(
-                          (s) => s.copyWith(agingBucket: val ? AgingBucket.ninetyDaysPlus : null, clearAging: !val),
+                    ref
+                        .read(debtFilterProvider.notifier)
+                        .update(
+                          (s) => s.copyWith(
+                            agingBucket: val
+                                ? AgingBucket.ninetyDaysPlus
+                                : null,
+                            clearAging: !val,
+                          ),
                         );
                   },
                 ),
@@ -267,21 +319,29 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            isReceivable ? Icons.check_circle_outline : Icons.sentiment_satisfied_alt,
+                            isReceivable
+                                ? Icons.check_circle_outline
+                                : Icons.sentiment_satisfied_alt,
                             size: 64,
                             color: Colors.green,
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            isReceivable ? 'No outstanding receivables!' : 'No unpaid supplier bills!',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            isReceivable
+                                ? 'No outstanding receivables!'
+                                : 'No unpaid supplier bills!',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             isReceivable
                                 ? 'All customers are fully settled up.'
                                 : 'All supplier payables are up to date.',
-                            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -293,10 +353,13 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
                   itemCount: debts.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final debt = debts[index];
-                    final dateCreated = DateFormat('MMM d, yyyy').format(debt.createdAt);
+                    final dateCreated = DateFormat(
+                      'MMM d, yyyy',
+                    ).format(debt.createdAt);
                     final agingColor = _getAgingBadgeColor(debt.agingBucket);
 
                     return Card(
@@ -304,7 +367,9 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: BorderSide(
-                          color: debt.isOverdue ? Colors.red.shade300 : colorScheme.outlineVariant,
+                          color: debt.isOverdue
+                              ? Colors.red.shade300
+                              : colorScheme.outlineVariant,
                           width: debt.isOverdue ? 1.5 : 1,
                         ),
                       ),
@@ -326,9 +391,13 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 18,
-                                    backgroundColor: agingColor.withValues(alpha: 0.15),
+                                    backgroundColor: agingColor.withValues(
+                                      alpha: 0.15,
+                                    ),
                                     child: Icon(
-                                      isReceivable ? Icons.person : Icons.local_shipping,
+                                      isReceivable
+                                          ? Icons.person
+                                          : Icons.local_shipping,
                                       color: agingColor,
                                       size: 18,
                                     ),
@@ -336,11 +405,15 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           debt.personName,
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         Text(
@@ -351,11 +424,18 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: agingColor.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: agingColor.withValues(alpha: 0.4)),
+                                      border: Border.all(
+                                        color: agingColor.withValues(
+                                          alpha: 0.4,
+                                        ),
+                                      ),
                                     ),
                                     child: Text(
                                       debt.agingBucket.label,
@@ -372,14 +452,17 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
 
                               // Balance and Progress
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Remaining: ${CurrencyFormatter.format(debt.remainingBalance, currencyCode: currency)}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: debt.isOverdue ? Colors.red.shade900 : colorScheme.error,
+                                      color: debt.isOverdue
+                                          ? Colors.red.shade900
+                                          : colorScheme.error,
                                     ),
                                   ),
                                   Text(
@@ -391,12 +474,15 @@ class _DebtListScreenState extends ConsumerState<DebtListScreen> {
                               const SizedBox(height: 6),
                               LinearProgressIndicator(
                                 value: debt.initialAmount > 0
-                                    ? (debt.paidAmount / debt.initialAmount).clamp(0.0, 1.0)
+                                    ? (debt.paidAmount / debt.initialAmount)
+                                          .clamp(0.0, 1.0)
                                     : 0.0,
                                 minHeight: 6,
                                 borderRadius: BorderRadius.circular(3),
                                 backgroundColor: Colors.grey.shade200,
-                                color: debt.status == DebtStatus.paid ? Colors.green : colorScheme.primary,
+                                color: debt.status == DebtStatus.paid
+                                    ? Colors.green
+                                    : colorScheme.primary,
                               ),
                             ],
                           ),

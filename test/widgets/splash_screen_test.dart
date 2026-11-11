@@ -4,14 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:afri_bms/features/auth/presentation/screens/splash_screen.dart';
 
 void main() {
-  testWidgets('SplashScreen renders app brand title and slogan', (tester) async {
+  testWidgets('SplashScreen renders app brand title and slogan', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(
-          home: SplashScreen(
-            autoNavigate: false,
-          ),
-        ),
+        child: MaterialApp(home: SplashScreen(autoNavigate: false)),
       ),
     );
 

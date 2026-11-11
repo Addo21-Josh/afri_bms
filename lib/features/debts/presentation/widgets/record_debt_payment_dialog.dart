@@ -16,10 +16,12 @@ class RecordDebtPaymentDialog extends ConsumerStatefulWidget {
   final String currency;
 
   @override
-  ConsumerState<RecordDebtPaymentDialog> createState() => _RecordDebtPaymentDialogState();
+  ConsumerState<RecordDebtPaymentDialog> createState() =>
+      _RecordDebtPaymentDialogState();
 }
 
-class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialog> {
+class _RecordDebtPaymentDialogState
+    extends ConsumerState<RecordDebtPaymentDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
   final _referenceController = TextEditingController();
@@ -84,21 +86,27 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
     final amountMinor = (parsedAmount * 100).round();
     if (amountMinor > widget.debt.remainingBalance) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Payment amount cannot exceed the remaining balance')),
+        const SnackBar(
+          content: Text('Payment amount cannot exceed the remaining balance'),
+        ),
       );
       return;
     }
 
     setState(() => _isLoading = true);
-    final success = await ref.read(debtControllerProvider.notifier).recordPayment(
-      debtId: widget.debt.id,
-      amount: amountMinor,
-      paymentMethod: _paymentMethod,
-      paymentReference: _referenceController.text.trim().isNotEmpty
-          ? _referenceController.text.trim()
-          : null,
-      notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
-    );
+    final success = await ref
+        .read(debtControllerProvider.notifier)
+        .recordPayment(
+          debtId: widget.debt.id,
+          amount: amountMinor,
+          paymentMethod: _paymentMethod,
+          paymentReference: _referenceController.text.trim().isNotEmpty
+              ? _referenceController.text.trim()
+              : null,
+          notes: _notesController.text.trim().isNotEmpty
+              ? _notesController.text.trim()
+              : null,
+        );
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -111,7 +119,8 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
             content: Text(
               UserFriendlyError.toFriendly(
                 err,
-                defaultMessage: 'Unable to record payment. Please check details and try again.',
+                defaultMessage:
+                    'Unable to record payment. Please check details and try again.',
               ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -125,7 +134,10 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final remainingFormatted = CurrencyFormatter.format(widget.debt.remainingBalance, currencyCode: widget.currency);
+    final remainingFormatted = CurrencyFormatter.format(
+      widget.debt.remainingBalance,
+      currencyCode: widget.currency,
+    );
 
     return AlertDialog(
       title: Row(
@@ -133,10 +145,7 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
           Icon(Icons.payment, color: colorScheme.primary),
           const SizedBox(width: 8),
           const Expanded(
-            child: Text(
-              'Record Repayment',
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: Text('Record Repayment', overflow: TextOverflow.ellipsis),
           ),
         ],
       ),
@@ -154,13 +163,18 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
               const SizedBox(height: 4),
               Text(
                 'Remaining Balance: $remainingFormatted',
-                style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: colorScheme.error,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Payment Amount *',
                   prefixText: '${widget.currency} ',
@@ -183,7 +197,10 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
                   prefixIcon: Icon(Icons.account_balance_wallet_outlined),
                 ),
                 items: _methods.map((m) {
-                  return DropdownMenuItem(value: m, child: Text(_formatMethod(m)));
+                  return DropdownMenuItem(
+                    value: m,
+                    child: Text(_formatMethod(m)),
+                  );
                 }).toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _paymentMethod = val);
@@ -221,7 +238,11 @@ class _RecordDebtPaymentDialogState extends ConsumerState<RecordDebtPaymentDialo
         FilledButton(
           onPressed: _isLoading ? null : _submit,
           child: _isLoading
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text('Confirm Payment'),
         ),
       ],

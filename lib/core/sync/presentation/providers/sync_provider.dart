@@ -111,11 +111,13 @@ class SyncNotifier extends StateNotifier<SyncState> {
     required SyncQueueStorage storage,
     required SyncQueueProcessor processor,
     required DeltaSyncService deltaService,
-  })  : _ref = ref,
-        _storage = storage,
-        _processor = processor,
-        _deltaService = deltaService,
-        super(const SyncState(isOnline: true, isSyncing: false, pendingCount: 0)) {
+  }) : _ref = ref,
+       _storage = storage,
+       _processor = processor,
+       _deltaService = deltaService,
+       super(
+         const SyncState(isOnline: true, isSyncing: false, pendingCount: 0),
+       ) {
     _init();
   }
 
@@ -133,7 +135,11 @@ class SyncNotifier extends StateNotifier<SyncState> {
       final wasOffline = !state.isOnline;
       state = state.copyWith(
         isOnline: online,
-        statusMessage: online ? (state.pendingCount > 0 ? '${state.pendingCount} pending sync' : 'Online') : 'Offline Mode',
+        statusMessage: online
+            ? (state.pendingCount > 0
+                  ? '${state.pendingCount} pending sync'
+                  : 'Online')
+            : 'Offline Mode',
       );
 
       // Auto-trigger sync upon coming back online
@@ -155,7 +161,13 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
   Future<void> refreshQueue() async {
     final items = await _storage.getAllItems();
-    final pending = items.where((i) => i.status == SyncItemStatus.pending || i.status == SyncItemStatus.failed).length;
+    final pending = items
+        .where(
+          (i) =>
+              i.status == SyncItemStatus.pending ||
+              i.status == SyncItemStatus.failed,
+        )
+        .length;
     state = state.copyWith(
       queueItems: items,
       pendingCount: pending,
@@ -233,7 +245,9 @@ class SyncNotifier extends StateNotifier<SyncState> {
     // Check live connectivity in case status was stale
     final online = await checkLiveConnectivity();
     if (!online) {
-      state = state.copyWith(statusMessage: 'Cannot sync while offline. Check internet connection.');
+      state = state.copyWith(
+        statusMessage: 'Cannot sync while offline. Check internet connection.',
+      );
       return;
     }
 
@@ -265,7 +279,10 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
       // 2. Pull inbound delta updates
       if (bId != null && bId.isNotEmpty) {
-        state = state.copyWith(progress: 0.7, statusMessage: 'Fetching latest cloud updates...');
+        state = state.copyWith(
+          progress: 0.7,
+          statusMessage: 'Fetching latest cloud updates...',
+        );
         await _deltaService.pullAllDeltas(bId);
       }
 
@@ -279,7 +296,9 @@ class SyncNotifier extends StateNotifier<SyncState> {
         statusMessage: pushResult.failed > 0
             ? 'Synced with ${pushResult.failed} errors'
             : 'All data synchronized',
-        lastError: pushResult.errors.isNotEmpty ? pushResult.errors.first : null,
+        lastError: pushResult.errors.isNotEmpty
+            ? pushResult.errors.first
+            : null,
       );
     } catch (e) {
       AppLogger.e('Manual sync error: $e');

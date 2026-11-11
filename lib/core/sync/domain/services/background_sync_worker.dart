@@ -44,7 +44,9 @@ void callbackDispatcher() {
       }
 
       if (currentSession == null) {
-        AppLogger.w('Background sync worker: no active Supabase session. Skipping queue to avoid RLS violation.');
+        AppLogger.w(
+          'Background sync worker: no active Supabase session. Skipping queue to avoid RLS violation.',
+        );
         return true;
       }
 
@@ -57,7 +59,9 @@ void callbackDispatcher() {
       );
 
       final result = await processor.processQueue();
-      AppLogger.i('Background sync worker finished: ${result.successful}/${result.totalProcessed} synced');
+      AppLogger.i(
+        'Background sync worker finished: ${result.successful}/${result.totalProcessed} synced',
+      );
       return true;
     } catch (e) {
       AppLogger.e('Background sync worker failed: $e');
@@ -72,10 +76,7 @@ class BackgroundSyncWorker {
   static Future<void> initialize() async {
     if (_isInitialized) return;
     try {
-      await Workmanager().initialize(
-        callbackDispatcher,
-        isInDebugMode: false,
-      );
+      await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
       _isInitialized = true;
       AppLogger.i('WorkManager initialized successfully');
 
@@ -92,9 +93,7 @@ class BackgroundSyncWorker {
         'afri_bms_sync_periodic',
         afriSyncTaskPeriodic,
         frequency: const Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
+        constraints: Constraints(networkType: NetworkType.connected),
         existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
       );
     } catch (e) {
@@ -107,9 +106,7 @@ class BackgroundSyncWorker {
       await Workmanager().registerOneOffTask(
         'afri_bms_sync_oneoff_${DateTime.now().millisecondsSinceEpoch}',
         afriSyncTaskOneOff,
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
+        constraints: Constraints(networkType: NetworkType.connected),
       );
     } catch (e) {
       AppLogger.w('Failed to register one-off sync task: $e');

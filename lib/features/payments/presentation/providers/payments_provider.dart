@@ -7,7 +7,9 @@ import '../../data/repositories/payment_repository_impl.dart';
 import '../../../business/presentation/providers/business_provider.dart';
 import '../../../sales/domain/entities/sale_entity.dart';
 
-final paymentsRemoteDatasourceProvider = Provider<PaymentsRemoteDatasource>((ref) {
+final paymentsRemoteDatasourceProvider = Provider<PaymentsRemoteDatasource>((
+  ref,
+) {
   return PaymentsRemoteDatasourceImpl(Supabase.instance.client);
 });
 
@@ -17,43 +19,46 @@ final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
 });
 
 // Payments per sale
-final salePaymentsProvider = FutureProvider.autoDispose.family<List<PaymentEntity>, String>((ref, saleId) async {
-  final repo = ref.watch(paymentRepositoryProvider);
-  final result = await repo.getPaymentsBySale(saleId);
-  return result.fold(
-    (failure) => throw failure.message,
-    (payments) => payments,
-  );
-});
+final salePaymentsProvider = FutureProvider.autoDispose
+    .family<List<PaymentEntity>, String>((ref, saleId) async {
+      final repo = ref.watch(paymentRepositoryProvider);
+      final result = await repo.getPaymentsBySale(saleId);
+      return result.fold(
+        (failure) => throw failure.message,
+        (payments) => payments,
+      );
+    });
 
 // Payments per customer
-final customerPaymentsProvider = FutureProvider.autoDispose.family<List<PaymentEntity>, String>((ref, customerId) async {
-  final repo = ref.watch(paymentRepositoryProvider);
-  final result = await repo.getPaymentsByCustomer(customerId);
-  return result.fold(
-    (failure) => throw failure.message,
-    (payments) => payments,
-  );
-});
+final customerPaymentsProvider = FutureProvider.autoDispose
+    .family<List<PaymentEntity>, String>((ref, customerId) async {
+      final repo = ref.watch(paymentRepositoryProvider);
+      final result = await repo.getPaymentsByCustomer(customerId);
+      return result.fold(
+        (failure) => throw failure.message,
+        (payments) => payments,
+      );
+    });
 
 // Recent payments for active business & branch
-final businessPaymentsProvider = FutureProvider.autoDispose<List<PaymentEntity>>((ref) async {
-  final currentBiz = ref.watch(currentBusinessProvider);
-  if (currentBiz == null) return [];
+final businessPaymentsProvider =
+    FutureProvider.autoDispose<List<PaymentEntity>>((ref) async {
+      final currentBiz = ref.watch(currentBusinessProvider);
+      if (currentBiz == null) return [];
 
-  final currentBranch = ref.watch(currentBranchProvider);
-  final repo = ref.watch(paymentRepositoryProvider);
+      final currentBranch = ref.watch(currentBranchProvider);
+      final repo = ref.watch(paymentRepositoryProvider);
 
-  final result = await repo.getPaymentsByBusiness(
-    businessId: currentBiz.id,
-    branchId: currentBranch?.id,
-  );
+      final result = await repo.getPaymentsByBusiness(
+        businessId: currentBiz.id,
+        branchId: currentBranch?.id,
+      );
 
-  return result.fold(
-    (failure) => throw failure.message,
-    (payments) => payments,
-  );
-});
+      return result.fold(
+        (failure) => throw failure.message,
+        (payments) => payments,
+      );
+    });
 
 class PaymentController extends StateNotifier<AsyncValue<PaymentEntity?>> {
   final Ref ref;
@@ -107,7 +112,8 @@ class PaymentController extends StateNotifier<AsyncValue<PaymentEntity?>> {
       (payment) {
         ref.invalidate(businessPaymentsProvider);
         if (saleId != null) ref.invalidate(salePaymentsProvider(saleId));
-        if (customerId != null) ref.invalidate(customerPaymentsProvider(customerId));
+        if (customerId != null)
+          ref.invalidate(customerPaymentsProvider(customerId));
         state = AsyncValue.data(payment);
         return payment;
       },
@@ -115,6 +121,7 @@ class PaymentController extends StateNotifier<AsyncValue<PaymentEntity?>> {
   }
 }
 
-final paymentControllerProvider = StateNotifierProvider<PaymentController, AsyncValue<PaymentEntity?>>((ref) {
-  return PaymentController(ref);
-});
+final paymentControllerProvider =
+    StateNotifierProvider<PaymentController, AsyncValue<PaymentEntity?>>((ref) {
+      return PaymentController(ref);
+    });

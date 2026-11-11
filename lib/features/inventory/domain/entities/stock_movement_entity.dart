@@ -109,17 +109,17 @@ class StockMovementEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        branchId,
-        productId,
-        variantId,
-        quantity,
-        type,
-        reason,
-        batchNumber,
-        expiryDate,
-        userId,
-        createdAt,
-      ];
+    id,
+    businessId,
+    branchId,
+    productId,
+    variantId,
+    quantity,
+    type,
+    reason,
+    batchNumber,
+    expiryDate,
+    userId,
+    createdAt,
+  ];
 }

@@ -26,7 +26,11 @@ final customDateRangeProvider = StateProvider<CustomDateRange>((ref) {
 });
 
 // Helper function to check if a date falls within the selected filter
-bool _isDateInRange(DateTime date, ReportDateFilter filter, CustomDateRange customRange) {
+bool _isDateInRange(
+  DateTime date,
+  ReportDateFilter filter,
+  CustomDateRange customRange,
+) {
   final now = DateTime.now();
   final startOfToday = DateTime(now.year, now.month, now.day);
   final endOfToday = DateTime(now.year, now.month, now.day, 23, 59, 59);
@@ -36,7 +40,9 @@ bool _isDateInRange(DateTime date, ReportDateFilter filter, CustomDateRange cust
       return date.isAfter(startOfToday.subtract(const Duration(seconds: 1))) &&
           date.isBefore(endOfToday.add(const Duration(seconds: 1)));
     case ReportDateFilter.thisWeek:
-      final monday = startOfToday.subtract(Duration(days: startOfToday.weekday - 1));
+      final monday = startOfToday.subtract(
+        Duration(days: startOfToday.weekday - 1),
+      );
       return date.isAfter(monday.subtract(const Duration(seconds: 1))) &&
           date.isBefore(endOfToday.add(const Duration(seconds: 1)));
     case ReportDateFilter.thisMonth:
@@ -48,7 +54,9 @@ bool _isDateInRange(DateTime date, ReportDateFilter filter, CustomDateRange cust
       return date.isAfter(startOfYear.subtract(const Duration(seconds: 1))) &&
           date.isBefore(endOfToday.add(const Duration(seconds: 1)));
     case ReportDateFilter.custom:
-      return date.isAfter(customRange.start.subtract(const Duration(seconds: 1))) &&
+      return date.isAfter(
+            customRange.start.subtract(const Duration(seconds: 1)),
+          ) &&
           date.isBefore(customRange.end.add(const Duration(seconds: 1)));
   }
 }
@@ -64,7 +72,9 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
     loading: () => const AsyncValue.loading(),
     error: (e, st) => AsyncValue.error(e, st),
     data: (allSales) {
-      final filteredSales = allSales.where((s) => _isDateInRange(s.createdAt, filter, customRange)).toList();
+      final filteredSales = allSales
+          .where((s) => _isDateInRange(s.createdAt, filter, customRange))
+          .toList();
 
       int totalRevenue = 0;
       final Map<String, int> dailyTotals = {};
@@ -77,16 +87,24 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
       for (final sale in filteredSales) {
         totalRevenue += sale.totalAmount;
 
-        final dayKey = '${sale.createdAt.year}-${sale.createdAt.month.toString().padLeft(2, '0')}-${sale.createdAt.day.toString().padLeft(2, '0')}';
+        final dayKey =
+            '${sale.createdAt.year}-${sale.createdAt.month.toString().padLeft(2, '0')}-${sale.createdAt.day.toString().padLeft(2, '0')}';
         dailyTotals[dayKey] = (dailyTotals[dayKey] ?? 0) + sale.totalAmount;
         dailyCounts[dayKey] = (dailyCounts[dayKey] ?? 0) + 1;
 
-        final staffName = sale.cashierName ?? 'Staff #${sale.cashierId.substring(0, 4)}';
+        final staffName =
+            sale.cashierName ?? 'Staff #${sale.cashierId.substring(0, 4)}';
         final current = staffMap[sale.cashierId] ?? _StaffAgg(staffName, 0, 0);
-        staffMap[sale.cashierId] = _StaffAgg(staffName, current.total + sale.totalAmount, current.count + 1);
+        staffMap[sale.cashierId] = _StaffAgg(
+          staffName,
+          current.total + sale.totalAmount,
+          current.count + 1,
+        );
 
         for (final item in sale.items) {
-          final pAgg = productMap[item.productId] ?? _ProductAgg(item.productName, item.variantName, 0, 0, 0);
+          final pAgg =
+              productMap[item.productId] ??
+              _ProductAgg(item.productName, item.variantName, 0, 0, 0);
           final profit = (item.unitPrice - item.unitCostPrice) * item.quantity;
           productMap[item.productId] = _ProductAgg(
             item.productName,
@@ -104,21 +122,25 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
         final catName = p.category?.name ?? 'Uncategorized';
         final agg = productMap[p.id];
         if (agg != null) {
-          categoryTotals[catName] = (categoryTotals[catName] ?? 0) + agg.revenue;
+          categoryTotals[catName] =
+              (categoryTotals[catName] ?? 0) + agg.revenue;
           categoryCounts[catName] = (categoryCounts[catName] ?? 0) + agg.qty;
         }
       }
 
       final dailyPoints = dailyTotals.entries.map((e) {
         final parts = e.key.split('-');
-        final d = DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+        final d = DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
         return DailySalesPoint(
           date: d,
           totalAmount: e.value,
           salesCount: dailyCounts[e.key] ?? 0,
         );
-      }).toList()
-        ..sort((a, b) => a.date.compareTo(b.date));
+      }).toList()..sort((a, b) => a.date.compareTo(b.date));
 
       final topProducts = productMap.entries.map((e) {
         return ProductSalesStat(
@@ -129,8 +151,7 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
           totalRevenue: e.value.revenue,
           totalProfit: e.value.profit,
         );
-      }).toList()
-        ..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
+      }).toList()..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
 
       final categoryStats = categoryTotals.entries.map((e) {
         final pct = totalRevenue > 0 ? (e.value / totalRevenue) * 100 : 0.0;
@@ -140,8 +161,7 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
           itemsCount: categoryCounts[e.key] ?? 0,
           percentage: pct,
         );
-      }).toList()
-        ..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
+      }).toList()..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
 
       final staffStats = staffMap.entries.map((e) {
         return StaffSalesStat(
@@ -150,8 +170,7 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
           totalRevenue: e.value.total,
           salesCount: e.value.count,
         );
-      }).toList()
-        ..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
+      }).toList()..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
 
       final count = filteredSales.length;
       final avg = count > 0 ? (totalRevenue / count).round() : 0;
@@ -172,7 +191,9 @@ final salesReportProvider = Provider<AsyncValue<SalesReportData>>((ref) {
 });
 
 // Financial Report Provider (P&L, Cash flow, Margin)
-final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((ref) {
+final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((
+  ref,
+) {
   final salesReportAsync = ref.watch(salesReportProvider);
   final expensesAsync = ref.watch(expensesListProvider);
   final filter = ref.watch(reportDateFilterProvider);
@@ -183,7 +204,10 @@ final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((ref) 
   }
 
   if (salesReportAsync.hasError) {
-    return AsyncValue.error(salesReportAsync.error!, salesReportAsync.stackTrace!);
+    return AsyncValue.error(
+      salesReportAsync.error!,
+      salesReportAsync.stackTrace!,
+    );
   }
 
   if (expensesAsync.hasError) {
@@ -192,7 +216,9 @@ final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((ref) 
 
   final salesData = salesReportAsync.value!;
   final allExpenses = expensesAsync.value ?? [];
-  final filteredExpenses = allExpenses.where((e) => _isDateInRange(e.expenseDate, filter, customRange)).toList();
+  final filteredExpenses = allExpenses
+      .where((e) => _isDateInRange(e.expenseDate, filter, customRange))
+      .toList();
 
   int totalExpenses = 0;
   final Map<String, int> expenseByCat = {};
@@ -210,7 +236,9 @@ final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((ref) 
   }
   final cogs = (grossSales - totalItemProfit).clamp(0, grossSales);
   final grossProfit = grossSales - cogs;
-  final grossMarginPct = grossSales > 0 ? (grossProfit / grossSales) * 100 : 0.0;
+  final grossMarginPct = grossSales > 0
+      ? (grossProfit / grossSales) * 100
+      : 0.0;
 
   final netProfit = grossProfit - totalExpenses;
   final netMarginPct = grossSales > 0 ? (netProfit / grossSales) * 100 : 0.0;
@@ -222,8 +250,7 @@ final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((ref) 
       totalAmount: e.value,
       percentage: pct,
     );
-  }).toList()
-    ..sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
+  }).toList()..sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
 
   final totalCashIn = grossSales;
   final totalCashOut = totalExpenses + cogs;
@@ -247,7 +274,9 @@ final financialReportProvider = Provider<AsyncValue<FinancialReportData>>((ref) 
 });
 
 // Inventory Valuation & Health Report Provider
-final inventoryReportProvider = Provider<AsyncValue<InventoryReportData>>((ref) {
+final inventoryReportProvider = Provider<AsyncValue<InventoryReportData>>((
+  ref,
+) {
   final productsAsync = ref.watch(productsListProvider);
 
   return productsAsync.when(
@@ -291,52 +320,57 @@ final inventoryReportProvider = Provider<AsyncValue<InventoryReportData>>((ref) 
 });
 
 // Customer & Debt Aging Report Provider
-final customerSupplierReportProvider = Provider<AsyncValue<DebtAgingReportData>>((ref) {
-  final debtsAsync = ref.watch(debtsListProvider);
+final customerSupplierReportProvider =
+    Provider<AsyncValue<DebtAgingReportData>>((ref) {
+      final debtsAsync = ref.watch(debtsListProvider);
 
-  return debtsAsync.when(
-    loading: () => const AsyncValue.loading(),
-    error: (e, st) => AsyncValue.error(e, st),
-    data: (debts) {
-      int current30 = 0;
-      int days31To60 = 0;
-      int days61To90 = 0;
-      int overdue90 = 0;
-      int totalRec = 0;
+      return debtsAsync.when(
+        loading: () => const AsyncValue.loading(),
+        error: (e, st) => AsyncValue.error(e, st),
+        data: (debts) {
+          int current30 = 0;
+          int days31To60 = 0;
+          int days61To90 = 0;
+          int overdue90 = 0;
+          int totalRec = 0;
 
-      final receivables = debts.where((d) => d.debtType == DebtType.receivable && d.status != DebtStatus.paid);
+          final receivables = debts.where(
+            (d) =>
+                d.debtType == DebtType.receivable &&
+                d.status != DebtStatus.paid,
+          );
 
-      for (final r in receivables) {
-        final bal = r.remainingBalance;
-        totalRec += bal;
-        switch (r.agingBucket) {
-          case AgingBucket.current:
-            current30 += bal;
-            break;
-          case AgingBucket.thirtyDays:
-            days31To60 += bal;
-            break;
-          case AgingBucket.sixtyDays:
-            days61To90 += bal;
-            break;
-          case AgingBucket.ninetyDaysPlus:
-            overdue90 += bal;
-            break;
-        }
-      }
+          for (final r in receivables) {
+            final bal = r.remainingBalance;
+            totalRec += bal;
+            switch (r.agingBucket) {
+              case AgingBucket.current:
+                current30 += bal;
+                break;
+              case AgingBucket.thirtyDays:
+                days31To60 += bal;
+                break;
+              case AgingBucket.sixtyDays:
+                days61To90 += bal;
+                break;
+              case AgingBucket.ninetyDaysPlus:
+                overdue90 += bal;
+                break;
+            }
+          }
 
-      return AsyncValue.data(
-        DebtAgingReportData(
-          current30Days: current30,
-          days31To60: days31To60,
-          days61To90: days61To90,
-          overdue90Plus: overdue90,
-          totalReceivables: totalRec,
-        ),
+          return AsyncValue.data(
+            DebtAgingReportData(
+              current30Days: current30,
+              days31To60: days31To60,
+              days61To90: days61To90,
+              overdue90Plus: overdue90,
+              totalReceivables: totalRec,
+            ),
+          );
+        },
       );
-    },
-  );
-});
+    });
 
 // Private helper classes for internal aggregation
 class _ProductAgg {

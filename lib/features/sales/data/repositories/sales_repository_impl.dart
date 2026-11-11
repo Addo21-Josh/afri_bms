@@ -32,20 +32,24 @@ class SalesRepositoryImpl implements SalesRepository {
     required List<SaleItemEntity> items,
   }) async {
     try {
-      final itemModels = items.map((i) => SaleItemModel(
-        id: i.id,
-        saleId: i.saleId,
-        productId: i.productId,
-        variantId: i.variantId,
-        productName: i.productName,
-        variantName: i.variantName,
-        unitCostPrice: i.unitCostPrice,
-        unitPrice: i.unitPrice,
-        quantity: i.quantity,
-        discountAmount: i.discountAmount,
-        totalPrice: i.totalPrice,
-        createdAt: i.createdAt,
-      )).toList();
+      final itemModels = items
+          .map(
+            (i) => SaleItemModel(
+              id: i.id,
+              saleId: i.saleId,
+              productId: i.productId,
+              variantId: i.variantId,
+              productName: i.productName,
+              variantName: i.variantName,
+              unitCostPrice: i.unitCostPrice,
+              unitPrice: i.unitPrice,
+              quantity: i.quantity,
+              discountAmount: i.discountAmount,
+              totalPrice: i.totalPrice,
+              createdAt: i.createdAt,
+            ),
+          )
+          .toList();
 
       final saleModel = await remoteDatasource.processSale(
         businessId: businessId,

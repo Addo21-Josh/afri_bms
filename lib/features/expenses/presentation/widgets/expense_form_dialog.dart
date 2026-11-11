@@ -48,8 +48,12 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
     _amountController = TextEditingController(
       text: exp != null ? (exp.amount / 100).toStringAsFixed(2) : '',
     );
-    _descriptionController = TextEditingController(text: exp?.description ?? '');
-    _referenceController = TextEditingController(text: exp?.paymentReference ?? '');
+    _descriptionController = TextEditingController(
+      text: exp?.description ?? '',
+    );
+    _referenceController = TextEditingController(
+      text: exp?.paymentReference ?? '',
+    );
     _notesController = TextEditingController(text: exp?.notes ?? '');
     _selectedCategoryId = exp?.categoryId;
     _paymentMethod = exp?.paymentMethod ?? 'cash';
@@ -97,7 +101,8 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
 
       // Attempt upload to Supabase storage receipts bucket
       final client = Supabase.instance.client;
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${picked.name}';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${picked.name}';
       final path = 'expenses/$fileName';
 
       try {
@@ -122,7 +127,8 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
             content: Text(
               UserFriendlyError.toFriendly(
                 e,
-                defaultMessage: 'Unable to attach receipt. Please try another image.',
+                defaultMessage:
+                    'Unable to attach receipt. Please try another image.',
               ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -158,7 +164,9 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
             : null,
         expenseDate: _expenseDate,
         receiptUrl: _receiptUrl,
-        notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+        notes: _notesController.text.trim().isNotEmpty
+            ? _notesController.text.trim()
+            : null,
       );
     } else {
       final updated = ExpenseEntity(
@@ -174,7 +182,9 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
             : null,
         expenseDate: _expenseDate,
         receiptUrl: _receiptUrl,
-        notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+        notes: _notesController.text.trim().isNotEmpty
+            ? _notesController.text.trim()
+            : null,
         createdAt: widget.expense!.createdAt,
         updatedAt: DateTime.now(),
       );
@@ -221,8 +231,12 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
             Container(
               padding: const EdgeInsets.fromLTRB(20, 14, 8, 14),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.4,
+                ),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -233,8 +247,12 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      widget.expense == null ? 'Record Business Expense' : 'Edit Expense',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      widget.expense == null
+                          ? 'Record Business Expense'
+                          : 'Edit Expense',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -258,8 +276,13 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                       // Amount Field
                       TextFormField(
                         controller: _amountController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Expense Amount *',
                           prefixText: '$currency ',
@@ -284,7 +307,8 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                         controller: _descriptionController,
                         decoration: const InputDecoration(
                           labelText: 'Description / Purpose *',
-                          hintText: 'e.g. Monthly shop rent, Fuel for generator, Store bags',
+                          hintText:
+                              'e.g. Monthly shop rent, Fuel for generator, Store bags',
                           prefixIcon: Icon(Icons.description_outlined),
                         ),
                         validator: (val) {
@@ -316,11 +340,15 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                                 ...categories.map(
                                   (cat) => DropdownMenuItem<String?>(
                                     value: cat.id,
-                                    child: Text(cat.name, overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      cat.name,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                               ],
-                              onChanged: (val) => setState(() => _selectedCategoryId = val),
+                              onChanged: (val) =>
+                                  setState(() => _selectedCategoryId = val),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -333,7 +361,9 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                                 builder: (_) => const ExpenseCategoryDialog(),
                               );
                               if (created == true) {
-                                await ref.read(expenseCategoriesProvider.notifier).refresh();
+                                await ref
+                                    .read(expenseCategoriesProvider.notifier)
+                                    .refresh();
                               }
                             },
                           ),
@@ -352,7 +382,9 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                                   context: context,
                                   initialDate: _expenseDate,
                                   firstDate: DateTime(2020),
-                                  lastDate: DateTime.now().add(const Duration(days: 1)),
+                                  lastDate: DateTime.now().add(
+                                    const Duration(days: 1),
+                                  ),
                                 );
                                 if (picked != null) {
                                   setState(() => _expenseDate = picked);
@@ -362,10 +394,15 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                               child: InputDecorator(
                                 decoration: const InputDecoration(
                                   labelText: 'Expense Date',
-                                  prefixIcon: Icon(Icons.calendar_today_outlined, size: 20),
+                                  prefixIcon: Icon(
+                                    Icons.calendar_today_outlined,
+                                    size: 20,
+                                  ),
                                 ),
                                 child: Text(
-                                  DateFormat('MMM d, yyyy').format(_expenseDate),
+                                  DateFormat(
+                                    'MMM d, yyyy',
+                                  ).format(_expenseDate),
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ),
@@ -380,16 +417,23 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                               initialValue: _paymentMethod,
                               decoration: const InputDecoration(
                                 labelText: 'Paid Via',
-                                prefixIcon: Icon(Icons.account_balance_wallet_outlined, size: 20),
+                                prefixIcon: Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                  size: 20,
+                                ),
                               ),
                               items: _paymentMethods.map((m) {
                                 return DropdownMenuItem(
                                   value: m,
-                                  child: Text(_formatPaymentMethod(m), overflow: TextOverflow.ellipsis),
+                                  child: Text(
+                                    _formatPaymentMethod(m),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 );
                               }).toList(),
                               onChanged: (val) {
-                                if (val != null) setState(() => _paymentMethod = val);
+                                if (val != null)
+                                  setState(() => _paymentMethod = val);
                               },
                             ),
                           ),
@@ -401,8 +445,10 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                       TextFormField(
                         controller: _referenceController,
                         decoration: const InputDecoration(
-                          labelText: 'Payment Reference / Transaction ID (Optional)',
-                          hintText: 'e.g. MoMo Transaction ID, Check #, Receipt #',
+                          labelText:
+                              'Payment Reference / Transaction ID (Optional)',
+                          hintText:
+                              'e.g. MoMo Transaction ID, Check #, Receipt #',
                           prefixIcon: Icon(Icons.receipt_outlined),
                         ),
                       ),
@@ -412,7 +458,9 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                          color: colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.3,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: colorScheme.outlineVariant),
                         ),
@@ -426,12 +474,19 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                                 Expanded(
                                   child: Text(
                                     'Receipt Photo / Document',
-                                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                                if (_receiptUrl != null || _localReceiptImage != null)
+                                if (_receiptUrl != null ||
+                                    _localReceiptImage != null)
                                   IconButton(
-                                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
                                     onPressed: () {
                                       setState(() {
                                         _receiptUrl = null;
@@ -445,14 +500,22 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                             if (_isUploadingImage)
                               const Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: Center(child: CircularProgressIndicator()),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               )
                             else if (_localReceiptImage != null)
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.file(_localReceiptImage!, height: 120, width: double.infinity, fit: BoxFit.cover),
+                                child: Image.file(
+                                  _localReceiptImage!,
+                                  height: 120,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
                               )
-                            else if (_receiptUrl != null && _receiptUrl!.isNotEmpty)
+                            else if (_receiptUrl != null &&
+                                _receiptUrl!.isNotEmpty)
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
@@ -460,21 +523,30 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                                   height: 120,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => const Text('Attachment saved'),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Text('Attachment saved'),
                                 ),
                               )
                             else
                               Row(
                                 children: [
                                   OutlinedButton.icon(
-                                    onPressed: () => _pickReceipt(ImageSource.camera),
-                                    icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                                    onPressed: () =>
+                                        _pickReceipt(ImageSource.camera),
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 18,
+                                    ),
                                     label: const Text('Camera'),
                                   ),
                                   const SizedBox(width: 8),
                                   OutlinedButton.icon(
-                                    onPressed: () => _pickReceipt(ImageSource.gallery),
-                                    icon: const Icon(Icons.photo_library_outlined, size: 18),
+                                    onPressed: () =>
+                                        _pickReceipt(ImageSource.gallery),
+                                    icon: const Icon(
+                                      Icons.photo_library_outlined,
+                                      size: 18,
+                                    ),
                                     label: const Text('Gallery'),
                                   ),
                                 ],
@@ -508,10 +580,22 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                 child: FilledButton(
                   onPressed: controllerState.isLoading ? null : _submit,
                   child: controllerState.isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
                       : Text(
-                          widget.expense == null ? 'Save Expense' : 'Update Expense',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          widget.expense == null
+                              ? 'Save Expense'
+                              : 'Update Expense',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                 ),
               ),

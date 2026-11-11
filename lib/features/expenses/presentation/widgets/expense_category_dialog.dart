@@ -6,7 +6,8 @@ class ExpenseCategoryDialog extends ConsumerStatefulWidget {
   const ExpenseCategoryDialog({super.key});
 
   @override
-  ConsumerState<ExpenseCategoryDialog> createState() => _ExpenseCategoryDialogState();
+  ConsumerState<ExpenseCategoryDialog> createState() =>
+      _ExpenseCategoryDialogState();
 }
 
 class _ExpenseCategoryDialogState extends ConsumerState<ExpenseCategoryDialog> {
@@ -26,12 +27,14 @@ class _ExpenseCategoryDialogState extends ConsumerState<ExpenseCategoryDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    final success = await ref.read(expenseControllerProvider.notifier).createCategory(
-      name: _nameController.text.trim(),
-      description: _descriptionController.text.trim().isNotEmpty
-          ? _descriptionController.text.trim()
-          : null,
-    );
+    final success = await ref
+        .read(expenseControllerProvider.notifier)
+        .createCategory(
+          name: _nameController.text.trim(),
+          description: _descriptionController.text.trim().isNotEmpty
+              ? _descriptionController.text.trim()
+              : null,
+        );
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -95,7 +98,11 @@ class _ExpenseCategoryDialogState extends ConsumerState<ExpenseCategoryDialog> {
         FilledButton(
           onPressed: _isLoading ? null : _submit,
           child: _isLoading
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text('Save Category'),
         ),
       ],

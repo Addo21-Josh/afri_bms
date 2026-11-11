@@ -46,7 +46,11 @@ class OfflineBanner extends ConsumerWidget {
                 ),
                 child: const Text(
                   'Details',
-                  style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

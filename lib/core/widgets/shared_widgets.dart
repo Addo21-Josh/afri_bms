@@ -20,10 +20,7 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: title != null
-          ? AppBar(
-              title: Text(title!),
-              actions: actions,
-            )
+          ? AppBar(title: Text(title!), actions: actions)
           : null,
       body: body,
       floatingActionButton: floatingActionButton,
@@ -38,9 +35,7 @@ class LoadingOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black.withValues(alpha: 0.5),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: const Center(child: CircularProgressIndicator()),
     );
   }
 }
@@ -69,11 +64,7 @@ class EmptyStateWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: theme.colorScheme.outline,
-            ),
+            Icon(icon, size: 64, color: theme.colorScheme.outline),
             const SizedBox(height: 16),
             Text(
               title,
@@ -92,10 +83,7 @@ class EmptyStateWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ],
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),
@@ -104,11 +92,7 @@ class EmptyStateWidget extends StatelessWidget {
 }
 
 class ErrorStateWidget extends StatelessWidget {
-  const ErrorStateWidget({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorStateWidget({super.key, required this.message, this.onRetry});
 
   final String message;
   final VoidCallback? onRetry;
@@ -134,13 +118,17 @@ class ErrorStateWidget extends StatelessWidget {
             Icon(
               isLimit ? Icons.workspace_premium_outlined : Icons.error_outline,
               size: 56,
-              color: isLimit ? theme.colorScheme.primary : theme.colorScheme.error,
+              color: isLimit
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.error,
             ),
             const SizedBox(height: 16),
             Text(
               displayMessage,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: isLimit ? theme.colorScheme.onSurface : theme.colorScheme.error,
+                color: isLimit
+                    ? theme.colorScheme.onSurface
+                    : theme.colorScheme.error,
               ),
               textAlign: TextAlign.center,
             ),

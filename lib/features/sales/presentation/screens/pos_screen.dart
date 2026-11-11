@@ -50,10 +50,14 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     if (matchedProduct != null) {
       if (matchedVariant != null) {
-        ref.read(posCartProvider.notifier).addItem(matchedProduct, variant: matchedVariant);
+        ref
+            .read(posCartProvider.notifier)
+            .addItem(matchedProduct, variant: matchedVariant);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Added "${matchedProduct.name} (${matchedVariant.name})" to cart'),
+            content: Text(
+              'Added "${matchedProduct.name} (${matchedVariant.name})" to cart',
+            ),
             duration: const Duration(seconds: 1),
           ),
         );
@@ -92,28 +96,45 @@ class _PosScreenState extends ConsumerState<PosScreen> {
           children: [
             Text(
               'Select Variant for ${product.name}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            ...product.variants.map((v) => ListTile(
-                  leading: const Icon(Icons.style_outlined),
-                  title: Text(v.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(v.sku ?? ''),
-                  trailing: Text(
-                    CurrencyFormatter.format(v.sellingPrice, currencyCode: product.currency),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ...product.variants.map(
+              (v) => ListTile(
+                leading: const Icon(Icons.style_outlined),
+                title: Text(
+                  v.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(v.sku ?? ''),
+                trailing: Text(
+                  CurrencyFormatter.format(
+                    v.sellingPrice,
+                    currencyCode: product.currency,
                   ),
-                  onTap: () {
-                    ref.read(posCartProvider.notifier).addItem(product, variant: v);
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Added "${product.name} (${v.name})" to cart'),
-                        duration: const Duration(seconds: 1),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                onTap: () {
+                  ref
+                      .read(posCartProvider.notifier)
+                      .addItem(product, variant: v);
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Added "${product.name} (${v.name})" to cart',
                       ),
-                    );
-                  },
-                )),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -222,21 +243,24 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                       child: FilterChip(
                         label: const Text('All Items'),
                         selected: _selectedCategory == null,
-                        onSelected: (_) => setState(() => _selectedCategory = null),
+                        onSelected: (_) =>
+                            setState(() => _selectedCategory = null),
                       ),
                     ),
-                    ...categories.map((cat) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            label: Text(cat.name),
-                            selected: _selectedCategory == cat.id,
-                            onSelected: (selected) {
-                              setState(() {
-                                _selectedCategory = selected ? cat.id : null;
-                              });
-                            },
-                          ),
-                        )),
+                    ...categories.map(
+                      (cat) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(cat.name),
+                          selected: _selectedCategory == cat.id,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedCategory = selected ? cat.id : null;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -257,14 +281,18 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 var filtered = products;
 
                 if (_selectedCategory != null) {
-                  filtered = filtered.where((p) => p.categoryId == _selectedCategory).toList();
+                  filtered = filtered
+                      .where((p) => p.categoryId == _selectedCategory)
+                      .toList();
                 }
 
                 if (query.isNotEmpty) {
                   filtered = filtered.where((p) {
                     final matchesName = p.name.toLowerCase().contains(query);
-                    final matchesSku = p.sku?.toLowerCase().contains(query) ?? false;
-                    final matchesBarcode = p.barcode?.toLowerCase().contains(query) ?? false;
+                    final matchesSku =
+                        p.sku?.toLowerCase().contains(query) ?? false;
+                    final matchesBarcode =
+                        p.barcode?.toLowerCase().contains(query) ?? false;
                     return matchesName || matchesSku || matchesBarcode;
                   }).toList();
                 }
@@ -276,16 +304,24 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.search_off, size: 64, color: colorScheme.outline),
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: colorScheme.outline,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'No products found',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             'Try adjusting your search query or category filter.',
-                            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.outline,
+                            ),
                           ),
                         ],
                       ),
@@ -318,10 +354,14 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             if (product.variants.isNotEmpty) {
                               _showVariantPicker(product);
                             } else {
-                              ref.read(posCartProvider.notifier).addItem(product);
+                              ref
+                                  .read(posCartProvider.notifier)
+                                  .addItem(product);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Added "${product.name}" to cart'),
+                                  content: Text(
+                                    'Added "${product.name}" to cart',
+                                  ),
                                   duration: const Duration(milliseconds: 800),
                                 ),
                               );
@@ -333,7 +373,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                               side: BorderSide(
-                                color: colorScheme.outlineVariant.withOpacity(0.6),
+                                color: colorScheme.outlineVariant.withOpacity(
+                                  0.6,
+                                ),
                               ),
                             ),
                             child: Padding(
@@ -343,13 +385,17 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                 children: [
                                   // Product visual placeholder or stock badge
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          color: colorScheme.primary.withOpacity(0.08),
-                                          borderRadius: BorderRadius.circular(10),
+                                          color: colorScheme.primary
+                                              .withOpacity(0.08),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                         child: Icon(
                                           product.variants.isNotEmpty
@@ -361,14 +407,23 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                       ),
                                       // Stock Badge
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: isOutOfStock
                                               ? Colors.red.withOpacity(0.12)
                                               : (product.isLowStock
-                                                  ? Colors.orange.withOpacity(0.12)
-                                                  : Colors.green.withOpacity(0.12)),
-                                          borderRadius: BorderRadius.circular(6),
+                                                    ? Colors.orange.withOpacity(
+                                                        0.12,
+                                                      )
+                                                    : Colors.green.withOpacity(
+                                                        0.12,
+                                                      )),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           isOutOfStock
@@ -380,8 +435,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                             color: isOutOfStock
                                                 ? Colors.red.shade800
                                                 : (product.isLowStock
-                                                    ? Colors.orange.shade800
-                                                    : Colors.green.shade800),
+                                                      ? Colors.orange.shade800
+                                                      : Colors.green.shade800),
                                           ),
                                         ),
                                       ),
@@ -401,10 +456,11 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                     const SizedBox(height: 2),
                                     Text(
                                       '${product.variants.length} variants',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: colorScheme.primary,
-                                        fontSize: 11,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.primary,
+                                            fontSize: 11,
+                                          ),
                                     ),
                                   ],
                                   const SizedBox(height: 6),
@@ -457,10 +513,15 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                       children: [
                         Text(
                           '${cart.totalItemCount} items in cart',
-                          style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.outline,
+                          ),
                         ),
                         Text(
-                          CurrencyFormatter.format(cart.totalAmount, currencyCode: currency),
+                          CurrencyFormatter.format(
+                            cart.totalAmount,
+                            currencyCode: currency,
+                          ),
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.primary,
@@ -472,7 +533,10 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                     FilledButton.icon(
                       onPressed: () => _showCartBottomSheet(context, currency),
                       icon: const Icon(Icons.shopping_cart_checkout),
-                      label: const Text('View Cart / Checkout', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'View Cart / Checkout',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -522,7 +586,8 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                   ),
                 ],
                 selected: {selectedType},
-                onSelectionChanged: (set) => setDlgState(() => selectedType = set.first),
+                onSelectionChanged: (set) =>
+                    setDlgState(() => selectedType = set.first),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -533,7 +598,9 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                   labelText: selectedType == CartDiscountType.percentage
                       ? 'Discount Percentage (e.g. 10)'
                       : 'Fixed Amount in Major Units (e.g. 50)',
-                  suffixText: selectedType == CartDiscountType.percentage ? '%' : widget.currency,
+                  suffixText: selectedType == CartDiscountType.percentage
+                      ? '%'
+                      : widget.currency,
                 ),
               ),
             ],
@@ -541,7 +608,9 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
           actions: [
             TextButton(
               onPressed: () {
-                ref.read(posCartProvider.notifier).setDiscount(CartDiscountType.none, 0);
+                ref
+                    .read(posCartProvider.notifier)
+                    .setDiscount(CartDiscountType.none, 0);
                 Navigator.pop(ctx);
               },
               child: const Text('Remove Discount'),
@@ -551,9 +620,13 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                 final val = int.tryParse(discCtrl.text.trim()) ?? 0;
                 if (selectedType == CartDiscountType.fixed) {
                   // Convert major to minor units
-                  ref.read(posCartProvider.notifier).setDiscount(selectedType, val * 100);
+                  ref
+                      .read(posCartProvider.notifier)
+                      .setDiscount(selectedType, val * 100);
                 } else {
-                  ref.read(posCartProvider.notifier).setDiscount(selectedType, val);
+                  ref
+                      .read(posCartProvider.notifier)
+                      .setDiscount(selectedType, val);
                 }
                 Navigator.pop(ctx);
               },
@@ -598,7 +671,9 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
               children: [
                 Text(
                   'Cart Items (${cart.totalItemCount})',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Spacer(),
                 TextButton.icon(
@@ -624,11 +699,20 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.shopping_cart_outlined, size: 64, color: colorScheme.outline),
+                        Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 64,
+                          color: colorScheme.outline,
+                        ),
                         const SizedBox(height: 12),
-                        Text('Your cart is empty', style: theme.textTheme.titleMedium),
+                        Text(
+                          'Your cart is empty',
+                          style: theme.textTheme.titleMedium,
+                        ),
                         const SizedBox(height: 4),
-                        const Text('Tap items in catalog or scan barcodes to add.'),
+                        const Text(
+                          'Tap items in catalog or scan barcodes to add.',
+                        ),
                       ],
                     ),
                   )
@@ -636,7 +720,8 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                     controller: scrollController,
                     padding: const EdgeInsets.all(16),
                     itemCount: cart.items.length,
-                    separatorBuilder: (context, index) => const Divider(height: 16),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 16),
                     itemBuilder: (context, index) {
                       final item = cart.items[index];
                       return Row(
@@ -647,12 +732,21 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                               children: [
                                 Text(
                                   item.displayName,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  CurrencyFormatter.format(item.unitPrice, currencyCode: widget.currency),
-                                  style: TextStyle(color: colorScheme.outline, fontSize: 13),
+                                  CurrencyFormatter.format(
+                                    item.unitPrice,
+                                    currencyCode: widget.currency,
+                                  ),
+                                  style: TextStyle(
+                                    color: colorScheme.outline,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ],
                             ),
@@ -660,7 +754,9 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                           // Stepper
                           Container(
                             decoration: BoxDecoration(
-                              color: colorScheme.surfaceVariant.withOpacity(0.5),
+                              color: colorScheme.surfaceVariant.withOpacity(
+                                0.5,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -669,17 +765,26 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                                   icon: const Icon(Icons.remove, size: 18),
                                   onPressed: () => ref
                                       .read(posCartProvider.notifier)
-                                      .decrementQuantity(item.product.id, item.variant?.id),
+                                      .decrementQuantity(
+                                        item.product.id,
+                                        item.variant?.id,
+                                      ),
                                 ),
                                 Text(
                                   '${item.quantity}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.add, size: 18),
                                   onPressed: () => ref
                                       .read(posCartProvider.notifier)
-                                      .incrementQuantity(item.product.id, item.variant?.id),
+                                      .incrementQuantity(
+                                        item.product.id,
+                                        item.variant?.id,
+                                      ),
                                 ),
                               ],
                             ),
@@ -687,8 +792,14 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                           const SizedBox(width: 12),
                           // Total Price
                           Text(
-                            CurrencyFormatter.format(item.lineTotal, currencyCode: widget.currency),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            CurrencyFormatter.format(
+                              item.lineTotal,
+                              currencyCode: widget.currency,
+                            ),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                         ],
                       );
@@ -702,7 +813,9 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: colorScheme.surfaceVariant.withOpacity(0.2),
-                border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
+                border: Border(
+                  top: BorderSide(color: colorScheme.outlineVariant),
+                ),
               ),
               child: Column(
                 children: [
@@ -710,7 +823,12 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Subtotal:'),
-                      Text(CurrencyFormatter.format(cart.subtotal, currencyCode: widget.currency)),
+                      Text(
+                        CurrencyFormatter.format(
+                          cart.subtotal,
+                          currencyCode: widget.currency,
+                        ),
+                      ),
                     ],
                   ),
                   if (cart.discountAmount > 0) ...[
@@ -718,10 +836,16 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Discount:', style: TextStyle(color: Colors.green)),
+                        const Text(
+                          'Discount:',
+                          style: TextStyle(color: Colors.green),
+                        ),
                         Text(
                           '-${CurrencyFormatter.format(cart.discountAmount, currencyCode: widget.currency)}',
-                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -742,9 +866,14 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                   Row(
                     children: [
                       ActionChip(
-                        avatar: const Icon(Icons.local_offer_outlined, size: 16),
+                        avatar: const Icon(
+                          Icons.local_offer_outlined,
+                          size: 16,
+                        ),
                         label: Text(
-                          cart.discountAmount > 0 ? 'Edit Discount' : 'Add Discount',
+                          cart.discountAmount > 0
+                              ? 'Edit Discount'
+                              : 'Add Discount',
                         ),
                         onPressed: () => _showDiscountDialog(context),
                       ),
@@ -752,11 +881,15 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                       ActionChip(
                         avatar: const Icon(Icons.receipt_outlined, size: 16),
                         label: Text(
-                          cart.taxRatePercent > 0 ? 'Tax: ${cart.taxRatePercent}%' : 'Add Tax',
+                          cart.taxRatePercent > 0
+                              ? 'Tax: ${cart.taxRatePercent}%'
+                              : 'Add Tax',
                         ),
                         onPressed: () {
                           final newRate = cart.taxRatePercent > 0 ? 0.0 : 7.5;
-                          ref.read(posCartProvider.notifier).setTaxRate(newRate);
+                          ref
+                              .read(posCartProvider.notifier)
+                              .setTaxRate(newRate);
                         },
                       ),
                     ],
@@ -765,9 +898,17 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Grand Total:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                       Text(
-                        CurrencyFormatter.format(cart.totalAmount, currencyCode: widget.currency),
+                        'Grand Total:',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        CurrencyFormatter.format(
+                          cart.totalAmount,
+                          currencyCode: widget.currency,
+                        ),
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,
@@ -785,13 +926,17 @@ class _CartBottomSheetState extends ConsumerState<_CartBottomSheet> {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (_) => CheckoutDialog(currency: widget.currency),
+                          builder: (_) =>
+                              CheckoutDialog(currency: widget.currency),
                         );
                       },
                       icon: const Icon(Icons.payment),
                       label: Text(
                         'Proceed to Checkout (${CurrencyFormatter.format(cart.totalAmount, currencyCode: widget.currency)})',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),

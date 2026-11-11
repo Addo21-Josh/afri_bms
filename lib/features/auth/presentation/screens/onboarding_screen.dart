@@ -16,32 +16,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> _onboardingData = [
     {
       'title': 'Welcome to ${AppConstants.appName}',
-      'description': 'The all-in-one business management system designed for African businesses.',
+      'description':
+          'The all-in-one business management system designed for African businesses.',
       'image': 'assets/onboarding/onboarding 1.jpg',
     },
     {
       'title': 'Manage Multiple Branches',
-      'description': 'Keep track of sales, inventory, and staff across all your business locations from one place.',
+      'description':
+          'Keep track of sales, inventory, and staff across all your business locations from one place.',
       'image': 'assets/onboarding/onboarding 2.jpg',
     },
     {
       'title': 'Track Inventory Easily',
-      'description': 'Never run out of stock. Get real-time alerts and track stock movements effortlessly.',
+      'description':
+          'Never run out of stock. Get real-time alerts and track stock movements effortlessly.',
       'image': 'assets/onboarding/onboarding 3.jpg',
     },
     {
       'title': 'Record Sales & Print Receipts',
-      'description': 'Process sales quickly, accept various payment methods, and print or share receipts instantly.',
+      'description':
+          'Process sales quickly, accept various payment methods, and print or share receipts instantly.',
       'image': 'assets/onboarding/onboarding 4.jpg',
     },
     {
       'title': 'Work Offline, Sync Later',
-      'description': 'No internet? No problem. Continue making sales and sync your data when you are back online.',
+      'description':
+          'No internet? No problem. Continue making sales and sync your data when you are back online.',
       'image': 'assets/onboarding/onboarding 5.jpg',
     },
     {
       'title': 'Grow Your Business',
-      'description': 'Generate powerful insights and reports to make informed decisions and grow your business.',
+      'description':
+          'Generate powerful insights and reports to make informed decisions and grow your business.',
       'image': 'assets/onboarding/onboarding 6.jpg',
     },
   ];
@@ -127,7 +133,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 24.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

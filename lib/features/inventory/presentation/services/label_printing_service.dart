@@ -17,7 +17,9 @@ class LabelPrintingService {
     final priceFormatted = (product.sellingPrice / 100).toStringAsFixed(2);
     final barcodeData = product.barcode?.isNotEmpty == true
         ? product.barcode!
-        : (product.sku?.isNotEmpty == true ? product.sku! : product.id.substring(0, 8));
+        : (product.sku?.isNotEmpty == true
+              ? product.sku!
+              : product.id.substring(0, 8));
 
     // A4 grid with 3 columns x 8 rows = 24 labels
     doc.addPage(
@@ -43,14 +45,20 @@ class LabelPrintingService {
                   children: [
                     pw.Text(
                       business?.name ?? 'Afri_BMS Store',
-                      style: pw.TextStyle(fontSize: 7, fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontSize: 7,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
                       maxLines: 1,
                       overflow: pw.TextOverflow.clip,
                     ),
                     pw.SizedBox(height: 2),
                     pw.Text(
                       product.name,
-                      style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
                       maxLines: 1,
                       overflow: pw.TextOverflow.clip,
                       textAlign: pw.TextAlign.center,
@@ -58,7 +66,10 @@ class LabelPrintingService {
                     pw.SizedBox(height: 2),
                     pw.Text(
                       '$currency $priceFormatted',
-                      style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontSize: 11,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
                     ),
                     pw.SizedBox(height: 4),
                     pw.BarcodeWidget(

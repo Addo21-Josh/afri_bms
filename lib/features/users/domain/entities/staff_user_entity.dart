@@ -87,17 +87,17 @@ class StaffUserEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        roleId,
-        userId,
-        businessId,
-        branchId,
-        branchName,
-        role,
-        email,
-        fullName,
-        phone,
-        isActive,
-        customPermissions,
-        createdAt,
-      ];
+    roleId,
+    userId,
+    businessId,
+    branchId,
+    branchName,
+    role,
+    email,
+    fullName,
+    phone,
+    isActive,
+    customPermissions,
+    createdAt,
+  ];
 }

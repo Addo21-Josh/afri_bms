@@ -21,7 +21,8 @@ class BranchModel with _$BranchModel {
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _BranchModel;
 
-  factory BranchModel.fromJson(Map<String, dynamic> json) => _$BranchModelFromJson(json);
+  factory BranchModel.fromJson(Map<String, dynamic> json) =>
+      _$BranchModelFromJson(json);
 
   BranchEntity toEntity() {
     return BranchEntity(

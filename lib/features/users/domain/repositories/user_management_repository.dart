@@ -3,7 +3,9 @@ import '../../../../core/errors/failure.dart';
 import '../entities/staff_user_entity.dart';
 
 abstract class UserManagementRepository {
-  Future<Either<Failure, List<StaffUserEntity>>> getBusinessStaff(String businessId);
+  Future<Either<Failure, List<StaffUserEntity>>> getBusinessStaff(
+    String businessId,
+  );
 
   Future<Either<Failure, StaffUserEntity>> assignStaffRole({
     required String businessId,

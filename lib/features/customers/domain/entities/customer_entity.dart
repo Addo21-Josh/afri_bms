@@ -31,7 +31,8 @@ class CustomerEntity extends Equatable {
 
   bool get hasDebt => outstandingBalance > 0;
 
-  int? get availableCredit => creditLimit > 0 ? (creditLimit - outstandingBalance) : null;
+  int? get availableCredit =>
+      creditLimit > 0 ? (creditLimit - outstandingBalance) : null;
 
   String get initials {
     if (name.isEmpty) return 'C';
@@ -44,17 +45,17 @@ class CustomerEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        name,
-        phone,
-        email,
-        address,
-        creditLimit,
-        outstandingBalance,
-        notes,
-        isActive,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    businessId,
+    name,
+    phone,
+    email,
+    address,
+    creditLimit,
+    outstandingBalance,
+    notes,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
 }

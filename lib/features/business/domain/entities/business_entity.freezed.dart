@@ -12,7 +12,8 @@ part of 'business_entity.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$BusinessEntity {
@@ -40,25 +41,27 @@ mixin _$BusinessEntity {
 /// @nodoc
 abstract class $BusinessEntityCopyWith<$Res> {
   factory $BusinessEntityCopyWith(
-          BusinessEntity value, $Res Function(BusinessEntity) then) =
-      _$BusinessEntityCopyWithImpl<$Res, BusinessEntity>;
+    BusinessEntity value,
+    $Res Function(BusinessEntity) then,
+  ) = _$BusinessEntityCopyWithImpl<$Res, BusinessEntity>;
   @useResult
-  $Res call(
-      {String id,
-      String ownerId,
-      String name,
-      String? description,
-      String? logoUrl,
-      String defaultCurrency,
-      List<String> supportedCurrencies,
-      double taxRate,
-      String? address,
-      String? phone,
-      String? email,
-      bool isActive,
-      String subscriptionTier,
-      DateTime? createdAt,
-      DateTime? updatedAt});
+  $Res call({
+    String id,
+    String ownerId,
+    String name,
+    String? description,
+    String? logoUrl,
+    String defaultCurrency,
+    List<String> supportedCurrencies,
+    double taxRate,
+    String? address,
+    String? phone,
+    String? email,
+    bool isActive,
+    String subscriptionTier,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -90,95 +93,100 @@ class _$BusinessEntityCopyWithImpl<$Res, $Val extends BusinessEntity>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      ownerId: null == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      logoUrl: freezed == logoUrl
-          ? _value.logoUrl
-          : logoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      defaultCurrency: null == defaultCurrency
-          ? _value.defaultCurrency
-          : defaultCurrency // ignore: cast_nullable_to_non_nullable
-              as String,
-      supportedCurrencies: null == supportedCurrencies
-          ? _value.supportedCurrencies
-          : supportedCurrencies // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      taxRate: null == taxRate
-          ? _value.taxRate
-          : taxRate // ignore: cast_nullable_to_non_nullable
-              as double,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      subscriptionTier: null == subscriptionTier
-          ? _value.subscriptionTier
-          : subscriptionTier // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            ownerId: null == ownerId
+                ? _value.ownerId
+                : ownerId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            logoUrl: freezed == logoUrl
+                ? _value.logoUrl
+                : logoUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            defaultCurrency: null == defaultCurrency
+                ? _value.defaultCurrency
+                : defaultCurrency // ignore: cast_nullable_to_non_nullable
+                      as String,
+            supportedCurrencies: null == supportedCurrencies
+                ? _value.supportedCurrencies
+                : supportedCurrencies // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            taxRate: null == taxRate
+                ? _value.taxRate
+                : taxRate // ignore: cast_nullable_to_non_nullable
+                      as double,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phone: freezed == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            subscriptionTier: null == subscriptionTier
+                ? _value.subscriptionTier
+                : subscriptionTier // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$BusinessEntityImplCopyWith<$Res>
     implements $BusinessEntityCopyWith<$Res> {
-  factory _$$BusinessEntityImplCopyWith(_$BusinessEntityImpl value,
-          $Res Function(_$BusinessEntityImpl) then) =
-      __$$BusinessEntityImplCopyWithImpl<$Res>;
+  factory _$$BusinessEntityImplCopyWith(
+    _$BusinessEntityImpl value,
+    $Res Function(_$BusinessEntityImpl) then,
+  ) = __$$BusinessEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String ownerId,
-      String name,
-      String? description,
-      String? logoUrl,
-      String defaultCurrency,
-      List<String> supportedCurrencies,
-      double taxRate,
-      String? address,
-      String? phone,
-      String? email,
-      bool isActive,
-      String subscriptionTier,
-      DateTime? createdAt,
-      DateTime? updatedAt});
+  $Res call({
+    String id,
+    String ownerId,
+    String name,
+    String? description,
+    String? logoUrl,
+    String defaultCurrency,
+    List<String> supportedCurrencies,
+    double taxRate,
+    String? address,
+    String? phone,
+    String? email,
+    bool isActive,
+    String subscriptionTier,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -186,8 +194,9 @@ class __$$BusinessEntityImplCopyWithImpl<$Res>
     extends _$BusinessEntityCopyWithImpl<$Res, _$BusinessEntityImpl>
     implements _$$BusinessEntityImplCopyWith<$Res> {
   __$$BusinessEntityImplCopyWithImpl(
-      _$BusinessEntityImpl _value, $Res Function(_$BusinessEntityImpl) _then)
-      : super(_value, _then);
+    _$BusinessEntityImpl _value,
+    $Res Function(_$BusinessEntityImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -208,91 +217,93 @@ class __$$BusinessEntityImplCopyWithImpl<$Res>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_$BusinessEntityImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      ownerId: null == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      logoUrl: freezed == logoUrl
-          ? _value.logoUrl
-          : logoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      defaultCurrency: null == defaultCurrency
-          ? _value.defaultCurrency
-          : defaultCurrency // ignore: cast_nullable_to_non_nullable
-              as String,
-      supportedCurrencies: null == supportedCurrencies
-          ? _value._supportedCurrencies
-          : supportedCurrencies // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      taxRate: null == taxRate
-          ? _value.taxRate
-          : taxRate // ignore: cast_nullable_to_non_nullable
-              as double,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      subscriptionTier: null == subscriptionTier
-          ? _value.subscriptionTier
-          : subscriptionTier // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ));
+    return _then(
+      _$BusinessEntityImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        ownerId: null == ownerId
+            ? _value.ownerId
+            : ownerId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        logoUrl: freezed == logoUrl
+            ? _value.logoUrl
+            : logoUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        defaultCurrency: null == defaultCurrency
+            ? _value.defaultCurrency
+            : defaultCurrency // ignore: cast_nullable_to_non_nullable
+                  as String,
+        supportedCurrencies: null == supportedCurrencies
+            ? _value._supportedCurrencies
+            : supportedCurrencies // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        taxRate: null == taxRate
+            ? _value.taxRate
+            : taxRate // ignore: cast_nullable_to_non_nullable
+                  as double,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phone: freezed == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        subscriptionTier: null == subscriptionTier
+            ? _value.subscriptionTier
+            : subscriptionTier // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$BusinessEntityImpl implements _BusinessEntity {
-  const _$BusinessEntityImpl(
-      {required this.id,
-      required this.ownerId,
-      required this.name,
-      this.description,
-      this.logoUrl,
-      this.defaultCurrency = 'GHS',
-      final List<String> supportedCurrencies = const ['GHS'],
-      this.taxRate = 0.00,
-      this.address,
-      this.phone,
-      this.email,
-      this.isActive = true,
-      this.subscriptionTier = 'free',
-      this.createdAt,
-      this.updatedAt})
-      : _supportedCurrencies = supportedCurrencies;
+  const _$BusinessEntityImpl({
+    required this.id,
+    required this.ownerId,
+    required this.name,
+    this.description,
+    this.logoUrl,
+    this.defaultCurrency = 'GHS',
+    final List<String> supportedCurrencies = const ['GHS'],
+    this.taxRate = 0.00,
+    this.address,
+    this.phone,
+    this.email,
+    this.isActive = true,
+    this.subscriptionTier = 'free',
+    this.createdAt,
+    this.updatedAt,
+  }) : _supportedCurrencies = supportedCurrencies;
 
   @override
   final String id;
@@ -355,8 +366,10 @@ class _$BusinessEntityImpl implements _BusinessEntity {
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
             (identical(other.defaultCurrency, defaultCurrency) ||
                 other.defaultCurrency == defaultCurrency) &&
-            const DeepCollectionEquality()
-                .equals(other._supportedCurrencies, _supportedCurrencies) &&
+            const DeepCollectionEquality().equals(
+              other._supportedCurrencies,
+              _supportedCurrencies,
+            ) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.phone, phone) || other.phone == phone) &&
@@ -373,48 +386,52 @@ class _$BusinessEntityImpl implements _BusinessEntity {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      ownerId,
-      name,
-      description,
-      logoUrl,
-      defaultCurrency,
-      const DeepCollectionEquality().hash(_supportedCurrencies),
-      taxRate,
-      address,
-      phone,
-      email,
-      isActive,
-      subscriptionTier,
-      createdAt,
-      updatedAt);
+    runtimeType,
+    id,
+    ownerId,
+    name,
+    description,
+    logoUrl,
+    defaultCurrency,
+    const DeepCollectionEquality().hash(_supportedCurrencies),
+    taxRate,
+    address,
+    phone,
+    email,
+    isActive,
+    subscriptionTier,
+    createdAt,
+    updatedAt,
+  );
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$BusinessEntityImplCopyWith<_$BusinessEntityImpl> get copyWith =>
       __$$BusinessEntityImplCopyWithImpl<_$BusinessEntityImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 }
 
 abstract class _BusinessEntity implements BusinessEntity {
-  const factory _BusinessEntity(
-      {required final String id,
-      required final String ownerId,
-      required final String name,
-      final String? description,
-      final String? logoUrl,
-      final String defaultCurrency,
-      final List<String> supportedCurrencies,
-      final double taxRate,
-      final String? address,
-      final String? phone,
-      final String? email,
-      final bool isActive,
-      final String subscriptionTier,
-      final DateTime? createdAt,
-      final DateTime? updatedAt}) = _$BusinessEntityImpl;
+  const factory _BusinessEntity({
+    required final String id,
+    required final String ownerId,
+    required final String name,
+    final String? description,
+    final String? logoUrl,
+    final String defaultCurrency,
+    final List<String> supportedCurrencies,
+    final double taxRate,
+    final String? address,
+    final String? phone,
+    final String? email,
+    final bool isActive,
+    final String subscriptionTier,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
+  }) = _$BusinessEntityImpl;
 
   @override
   String get id;

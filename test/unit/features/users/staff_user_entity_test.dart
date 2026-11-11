@@ -5,11 +5,23 @@ void main() {
   group('UserRoleType', () {
     test('fromString accurately parses database roles', () {
       expect(UserRoleType.fromString('admin'), equals(UserRoleType.admin));
-      expect(UserRoleType.fromString('branch_manager'), equals(UserRoleType.branchManager));
-      expect(UserRoleType.fromString('branchmanager'), equals(UserRoleType.branchManager));
-      expect(UserRoleType.fromString('salesperson'), equals(UserRoleType.salesperson));
+      expect(
+        UserRoleType.fromString('branch_manager'),
+        equals(UserRoleType.branchManager),
+      );
+      expect(
+        UserRoleType.fromString('branchmanager'),
+        equals(UserRoleType.branchManager),
+      );
+      expect(
+        UserRoleType.fromString('salesperson'),
+        equals(UserRoleType.salesperson),
+      );
       expect(UserRoleType.fromString('cashier'), equals(UserRoleType.cashier));
-      expect(UserRoleType.fromString('unknown_role'), equals(UserRoleType.custom));
+      expect(
+        UserRoleType.fromString('unknown_role'),
+        equals(UserRoleType.custom),
+      );
     });
 
     test('toDbString and value return snake_case database value', () {

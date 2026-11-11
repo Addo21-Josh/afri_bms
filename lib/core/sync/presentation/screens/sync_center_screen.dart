@@ -56,7 +56,9 @@ class SyncCenterScreen extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(
-                  color: syncState.isOnline ? colorScheme.outlineVariant : Colors.orange.shade300,
+                  color: syncState.isOnline
+                      ? colorScheme.outlineVariant
+                      : Colors.orange.shade300,
                 ),
               ),
               color: syncState.isOnline
@@ -77,8 +79,12 @@ class SyncCenterScreen extends ConsumerWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            syncState.isOnline ? Icons.cloud_done : Icons.cloud_off,
-                            color: syncState.isOnline ? Colors.green : Colors.orange,
+                            syncState.isOnline
+                                ? Icons.cloud_done
+                                : Icons.cloud_off,
+                            color: syncState.isOnline
+                                ? Colors.green
+                                : Colors.orange,
                             size: 28,
                           ),
                         ),
@@ -88,15 +94,21 @@ class SyncCenterScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                syncState.isOnline ? 'Online Connection' : 'Offline Mode Active',
-                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                syncState.isOnline
+                                    ? 'Online Connection'
+                                    : 'Offline Mode Active',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 syncState.isOnline
                                     ? 'Connected to Afri_BMS cloud infrastructure.'
                                     : 'All operations are queued locally and safely preserved.',
-                                style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.outline,
+                                ),
                               ),
                             ],
                           ),
@@ -113,13 +125,17 @@ class SyncCenterScreen extends ConsumerWidget {
                           context,
                           label: 'Pending Queue',
                           value: '${syncState.pendingCount} items',
-                          color: syncState.pendingCount > 0 ? Colors.orange : Colors.green,
+                          color: syncState.pendingCount > 0
+                              ? Colors.orange
+                              : Colors.green,
                         ),
                         _buildStat(
                           context,
                           label: 'Last Synchronized',
                           value: syncState.lastSyncTime != null
-                              ? DateFormat('HH:mm:ss, d MMM').format(syncState.lastSyncTime!)
+                              ? DateFormat(
+                                  'HH:mm:ss, d MMM',
+                                ).format(syncState.lastSyncTime!)
                               : 'Not yet synced',
                           color: colorScheme.primary,
                         ),
@@ -137,7 +153,11 @@ class SyncCenterScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         syncState.statusMessage,
-                        style: TextStyle(fontSize: 12, color: colorScheme.primary, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ],
@@ -151,11 +171,14 @@ class SyncCenterScreen extends ConsumerWidget {
               onPressed: syncState.isSyncing
                   ? null
                   : () async {
-                      final isOnline = await syncNotifier.checkLiveConnectivity();
+                      final isOnline = await syncNotifier
+                          .checkLiveConnectivity();
                       if (!isOnline && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Cannot sync: No internet connection detected.'),
+                            content: Text(
+                              'Cannot sync: No internet connection detected.',
+                            ),
                             backgroundColor: Colors.orange,
                           ),
                         );
@@ -167,13 +190,20 @@ class SyncCenterScreen extends ConsumerWidget {
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Icon(Icons.sync),
-              label: Text(syncState.isSyncing ? 'Syncing...' : 'Sync All Changes Now'),
+              label: Text(
+                syncState.isSyncing ? 'Syncing...' : 'Sync All Changes Now',
+              ),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -184,12 +214,17 @@ class SyncCenterScreen extends ConsumerWidget {
               children: [
                 Text(
                   'Local Queue Items (${syncState.queueItems.length})',
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 if (syncState.queueItems.isNotEmpty)
                   TextButton(
                     onPressed: () => syncNotifier.clearCompleted(),
-                    child: const Text('Clear Completed', style: TextStyle(fontSize: 12)),
+                    child: const Text(
+                      'Clear Completed',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
               ],
             ),
@@ -202,16 +237,25 @@ class SyncCenterScreen extends ConsumerWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.inbox_outlined, size: 48, color: colorScheme.outlineVariant),
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 48,
+                        color: colorScheme.outlineVariant,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         'Sync Queue is Empty',
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'All operations are fully synced with the cloud.',
-                        style: TextStyle(color: colorScheme.outline, fontSize: 13),
+                        style: TextStyle(
+                          color: colorScheme.outline,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -227,15 +271,30 @@ class SyncCenterScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStat(BuildContext context, {required String label, required String value, required Color color}) {
+  Widget _buildStat(
+    BuildContext context, {
+    required String label,
+    required String value,
+    required Color color,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.outline)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+            color: color,
+          ),
         ),
       ],
     );
@@ -291,25 +350,38 @@ class SyncCenterScreen extends ConsumerWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: opColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     item.operation.name.toUpperCase(),
-                    style: TextStyle(color: opColor, fontWeight: FontWeight.bold, fontSize: 11),
+                    style: TextStyle(
+                      color: opColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     item.table.toUpperCase(),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
@@ -321,7 +393,11 @@ class SyncCenterScreen extends ConsumerWidget {
                       const SizedBox(width: 4),
                       Text(
                         statusLabel,
-                        style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 11),
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),

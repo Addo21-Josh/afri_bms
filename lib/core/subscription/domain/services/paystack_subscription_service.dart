@@ -6,9 +6,10 @@ import '../../../config/paystack_config.dart';
 import '../../../../core/utils/logger.dart';
 import '../models/subscription_tier.dart';
 
-final paystackSubscriptionServiceProvider = Provider<PaystackSubscriptionService>((ref) {
-  return PaystackSubscriptionService();
-});
+final paystackSubscriptionServiceProvider =
+    Provider<PaystackSubscriptionService>((ref) {
+      return PaystackSubscriptionService();
+    });
 
 class PaystackInitResult {
   PaystackInitResult({
@@ -28,8 +29,8 @@ class PaystackInitResult {
 
 class PaystackSubscriptionService {
   PaystackSubscriptionService({Dio? dio, SupabaseClient? supabase})
-      : _dio = dio,
-        _supabase = supabase;
+    : _dio = dio,
+      _supabase = supabase;
 
   final Dio? _dio;
   final SupabaseClient? _supabase;
@@ -90,7 +91,9 @@ class PaystackSubscriptionService {
           AppLogger.w('Paystack Edge Function message: $msg');
         }
       } catch (e) {
-        AppLogger.w('Paystack Edge Function initialization error: $e, checking fallback...');
+        AppLogger.w(
+          'Paystack Edge Function initialization error: $e, checking fallback...',
+        );
       }
     }
 
@@ -125,7 +128,8 @@ class PaystackSubscriptionService {
             reference: data['reference'] as String?,
           );
         }
-        final msg = response.data?['message']?.toString() ?? 'Initialization failed';
+        final msg =
+            response.data?['message']?.toString() ?? 'Initialization failed';
         return PaystackInitResult(success: false, errorMessage: msg);
       } catch (e) {
         AppLogger.e('Paystack initialization fallback error: $e');
@@ -136,7 +140,9 @@ class PaystackSubscriptionService {
     // 3. Test Mode Sandbox Simulator (Active when using pk_test_ keys before Edge Functions are deployed)
     final isTestMode = PaystackConfig.publicKey.startsWith('pk_test_');
     if (isTestMode) {
-      AppLogger.i('Using Paystack Test Mode Sandbox Simulator (Edge Function not yet deployed on Supabase).');
+      AppLogger.i(
+        'Using Paystack Test Mode Sandbox Simulator (Edge Function not yet deployed on Supabase).',
+      );
       final testRef = 'test_ref_${DateTime.now().millisecondsSinceEpoch}';
       return PaystackInitResult(
         success: true,
@@ -148,7 +154,8 @@ class PaystackSubscriptionService {
 
     return PaystackInitResult(
       success: false,
-      errorMessage: 'Payment gateway is currently unreachable. Please check internet connection.',
+      errorMessage:
+          'Payment gateway is currently unreachable. Please check internet connection.',
     );
   }
 
@@ -169,7 +176,9 @@ class PaystackSubscriptionService {
         }
         return false;
       } catch (e) {
-        AppLogger.w('Paystack Edge Function verification error: $e, checking fallback...');
+        AppLogger.w(
+          'Paystack Edge Function verification error: $e, checking fallback...',
+        );
       }
     }
 
@@ -192,7 +201,8 @@ class PaystackSubscriptionService {
     }
 
     // 3. Fallback for test mode
-    if (PaystackConfig.publicKey.startsWith('pk_test_') && reference.startsWith('test_ref_')) {
+    if (PaystackConfig.publicKey.startsWith('pk_test_') &&
+        reference.startsWith('test_ref_')) {
       AppLogger.i('Paystack Test Mode reference detected: $reference');
       return false; // Prompts the test bypass activation on the UI!
     }
@@ -204,10 +214,7 @@ class PaystackSubscriptionService {
   Future<bool> openCheckout(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      return await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
     return false;
   }

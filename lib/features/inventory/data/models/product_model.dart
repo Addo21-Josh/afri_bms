@@ -53,7 +53,9 @@ class ProductModel {
       id: e.id,
       businessId: e.businessId,
       categoryId: e.categoryId,
-      category: e.category != null ? ProductCategoryModel.fromEntity(e.category!) : null,
+      category: e.category != null
+          ? ProductCategoryModel.fromEntity(e.category!)
+          : null,
       name: e.name,
       description: e.description,
       sku: e.sku,
@@ -65,7 +67,9 @@ class ProductModel {
       reorderLevel: e.reorderLevel,
       isActive: e.isActive,
       imageUrls: e.imageUrls,
-      variants: e.variants.map((v) => ProductVariantModel.fromEntity(v)).toList(),
+      variants: e.variants
+          .map((v) => ProductVariantModel.fromEntity(v))
+          .toList(),
       stocks: e.stocks.map((s) => StockModel.fromEntity(s)).toList(),
       currentBranchStock: e.currentBranchStock,
       createdAt: e.createdAt,
@@ -77,7 +81,9 @@ class ProductModel {
     // Parse category join if present
     ProductCategoryModel? catModel;
     if (json['product_categories'] != null) {
-      catModel = ProductCategoryModel.fromJson(json['product_categories'] as Map<String, dynamic>);
+      catModel = ProductCategoryModel.fromJson(
+        json['product_categories'] as Map<String, dynamic>,
+      );
     }
 
     // Parse variants if present

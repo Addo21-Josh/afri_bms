@@ -10,7 +10,9 @@ import '../../../../core/utils/currency_formatter.dart';
 final selectedAlertFilterProvider = StateProvider<AlertType?>((ref) => null);
 
 // Dismissed alert IDs store
-final dismissedAlertIdsProvider = StateProvider<Set<String>>((ref) => <String>{});
+final dismissedAlertIdsProvider = StateProvider<Set<String>>(
+  (ref) => <String>{},
+);
 
 final businessAlertsProvider = Provider<List<BusinessAlertEntity>>((ref) {
   final products = ref.watch(productsListProvider).value ?? [];
@@ -32,33 +34,44 @@ final businessAlertsProvider = Provider<List<BusinessAlertEntity>>((ref) {
     if (stock <= 0) {
       final alertId = 'out_of_stock_${product.id}';
       if (!dismissed.contains(alertId)) {
-        alerts.add(BusinessAlertEntity(
-          id: alertId,
-          type: AlertType.outOfStock,
-          severity: AlertSeverity.critical,
-          title: 'Out of Stock: ${product.name}',
-          message: '${product.name} has 0 units in stock! Sales are blocked or running at deficit.',
-          timestamp: now,
-          actionRoute: '/inventory/${product.id}',
-          actionLabel: 'Restock / Adjust',
-          metadata: {'productId': product.id, 'productName': product.name},
-        ));
+        alerts.add(
+          BusinessAlertEntity(
+            id: alertId,
+            type: AlertType.outOfStock,
+            severity: AlertSeverity.critical,
+            title: 'Out of Stock: ${product.name}',
+            message:
+                '${product.name} has 0 units in stock! Sales are blocked or running at deficit.',
+            timestamp: now,
+            actionRoute: '/inventory/${product.id}',
+            actionLabel: 'Restock / Adjust',
+            metadata: {'productId': product.id, 'productName': product.name},
+          ),
+        );
       }
     } else if (stock <= reorder) {
       final alertId = 'low_stock_${product.id}';
       if (!dismissed.contains(alertId)) {
         final deficit = (reorder * 2) - stock;
-        alerts.add(BusinessAlertEntity(
-          id: alertId,
-          type: AlertType.lowStock,
-          severity: AlertSeverity.warning,
-          title: 'Low Stock Alert: ${product.name}',
-          message: 'Only $stock ${product.unit} left (reorder threshold is $reorder). Suggested order: $deficit ${product.unit}.',
-          timestamp: now,
-          actionRoute: '/inventory/${product.id}',
-          actionLabel: 'View Product',
-          metadata: {'productId': product.id, 'productName': product.name, 'stock': stock, 'reorder': reorder},
-        ));
+        alerts.add(
+          BusinessAlertEntity(
+            id: alertId,
+            type: AlertType.lowStock,
+            severity: AlertSeverity.warning,
+            title: 'Low Stock Alert: ${product.name}',
+            message:
+                'Only $stock ${product.unit} left (reorder threshold is $reorder). Suggested order: $deficit ${product.unit}.',
+            timestamp: now,
+            actionRoute: '/inventory/${product.id}',
+            actionLabel: 'View Product',
+            metadata: {
+              'productId': product.id,
+              'productName': product.name,
+              'stock': stock,
+              'reorder': reorder,
+            },
+          ),
+        );
       }
     }
   }
@@ -75,21 +88,34 @@ final businessAlertsProvider = Provider<List<BusinessAlertEntity>>((ref) {
 
         if (!dismissed.contains(alertId)) {
           final isCritical = daysOverdue >= 30;
-          final amountStr = CurrencyFormatter.format(debt.remainingBalance, currencyCode: currency);
+          final amountStr = CurrencyFormatter.format(
+            debt.remainingBalance,
+            currencyCode: currency,
+          );
 
-          alerts.add(BusinessAlertEntity(
-            id: alertId,
-            type: AlertType.overdueDebt,
-            severity: isCritical ? AlertSeverity.critical : AlertSeverity.warning,
-            title: isCritical
-                ? 'Critically Overdue Debt ($daysOverdue Days): ${debt.personName}'
-                : 'Overdue Receivable: ${debt.personName}',
-            message: '${debt.personName} owes $amountStr, which was due on ${due.day}/${due.month}/${due.year} ($daysOverdue days ago).',
-            timestamp: due,
-            actionRoute: '/debts/${debt.id}',
-            actionLabel: 'View Ledger & Collect',
-            metadata: {'debtId': debt.id, 'personName': debt.personName, 'phone': debt.personPhone, 'balance': debt.remainingBalance},
-          ));
+          alerts.add(
+            BusinessAlertEntity(
+              id: alertId,
+              type: AlertType.overdueDebt,
+              severity: isCritical
+                  ? AlertSeverity.critical
+                  : AlertSeverity.warning,
+              title: isCritical
+                  ? 'Critically Overdue Debt ($daysOverdue Days): ${debt.personName}'
+                  : 'Overdue Receivable: ${debt.personName}',
+              message:
+                  '${debt.personName} owes $amountStr, which was due on ${due.day}/${due.month}/${due.year} ($daysOverdue days ago).',
+              timestamp: due,
+              actionRoute: '/debts/${debt.id}',
+              actionLabel: 'View Ledger & Collect',
+              metadata: {
+                'debtId': debt.id,
+                'personName': debt.personName,
+                'phone': debt.personPhone,
+                'balance': debt.remainingBalance,
+              },
+            ),
+          );
         }
       }
     }
@@ -105,19 +131,23 @@ final businessAlertsProvider = Provider<List<BusinessAlertEntity>>((ref) {
     }
   }
 
-  final summaryAlertId = 'daily_sales_${startOfToday.toIso8601String().substring(0, 10)}';
+  final summaryAlertId =
+      'daily_sales_${startOfToday.toIso8601String().substring(0, 10)}';
   if (!dismissed.contains(summaryAlertId) && todayCount > 0) {
-    alerts.add(BusinessAlertEntity(
-      id: summaryAlertId,
-      type: AlertType.dailySalesTarget,
-      severity: AlertSeverity.info,
-      title: "Today's Sales Performance",
-      message: 'Recorded $todayCount completed sales today totaling ${CurrencyFormatter.format(todaySalesTotal, currencyCode: currency)}.',
-      timestamp: now,
-      actionRoute: '/reports',
-      actionLabel: 'View Analytics',
-      metadata: {'todaySales': todaySalesTotal, 'salesCount': todayCount},
-    ));
+    alerts.add(
+      BusinessAlertEntity(
+        id: summaryAlertId,
+        type: AlertType.dailySalesTarget,
+        severity: AlertSeverity.info,
+        title: "Today's Sales Performance",
+        message:
+            'Recorded $todayCount completed sales today totaling ${CurrencyFormatter.format(todaySalesTotal, currencyCode: currency)}.',
+        timestamp: now,
+        actionRoute: '/reports',
+        actionLabel: 'View Analytics',
+        metadata: {'todaySales': todaySalesTotal, 'salesCount': todayCount},
+      ),
+    );
   }
 
   // Sort: Critical first, then Warning, then Info, then by timestamp descending

@@ -39,21 +39,21 @@ class ExpenseEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        branchId,
-        categoryId,
-        categoryName,
-        amount,
-        description,
-        paymentMethod,
-        paymentReference,
-        expenseDate,
-        receiptUrl,
-        recordedBy,
-        recordedByName,
-        notes,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    businessId,
+    branchId,
+    categoryId,
+    categoryName,
+    amount,
+    description,
+    paymentMethod,
+    paymentReference,
+    expenseDate,
+    receiptUrl,
+    recordedBy,
+    recordedByName,
+    notes,
+    createdAt,
+    updatedAt,
+  ];
 }

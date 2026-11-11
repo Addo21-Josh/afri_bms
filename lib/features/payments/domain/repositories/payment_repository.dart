@@ -21,7 +21,9 @@ abstract class PaymentRepository {
 
   Future<Either<Failure, List<PaymentEntity>>> getPaymentsBySale(String saleId);
 
-  Future<Either<Failure, List<PaymentEntity>>> getPaymentsByCustomer(String customerId);
+  Future<Either<Failure, List<PaymentEntity>>> getPaymentsByCustomer(
+    String customerId,
+  );
 
   Future<Either<Failure, List<PaymentEntity>>> getPaymentsByBusiness({
     required String businessId,

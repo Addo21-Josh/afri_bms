@@ -24,10 +24,7 @@ class StaffListScreen extends ConsumerWidget {
       );
       return;
     }
-    showDialog(
-      context: context,
-      builder: (_) => const AssignRoleDialog(),
-    );
+    showDialog(context: context, builder: (_) => const AssignRoleDialog());
   }
 
   Color _getRoleColor(UserRoleType role, ColorScheme colors) {
@@ -58,7 +55,8 @@ class StaffListScreen extends ConsumerWidget {
             content: Text(
               UserFriendlyError.toFriendly(
                 next.error,
-                defaultMessage: 'Unable to update staff account. Please try again.',
+                defaultMessage:
+                    'Unable to update staff account. Please try again.',
               ),
             ),
             backgroundColor: colorScheme.error,
@@ -82,7 +80,8 @@ class StaffListScreen extends ConsumerWidget {
           if (staffList.isEmpty) {
             return EmptyStateWidget(
               title: 'No staff members yet',
-              subtitle: 'Add staff accounts to collaborate in managing sales and inventory across your branches.',
+              subtitle:
+                  'Add staff accounts to collaborate in managing sales and inventory across your branches.',
               icon: Icons.people_outline,
               action: FilledButton.icon(
                 onPressed: () => _onAddStaff(context, ref, 0),
@@ -93,7 +92,8 @@ class StaffListScreen extends ConsumerWidget {
           }
 
           return RefreshIndicator(
-            onRefresh: () async => ref.refresh(businessStaffListProvider.future),
+            onRefresh: () async =>
+                ref.refresh(businessStaffListProvider.future),
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: staffList.length,
@@ -117,9 +117,13 @@ class StaffListScreen extends ConsumerWidget {
                           children: [
                             CircleAvatar(
                               radius: 22,
-                              backgroundColor: roleColor.withValues(alpha: 0.15),
+                              backgroundColor: roleColor.withValues(
+                                alpha: 0.15,
+                              ),
                               child: Text(
-                                staff.fullName.isNotEmpty ? staff.fullName[0].toUpperCase() : '?',
+                                staff.fullName.isNotEmpty
+                                    ? staff.fullName[0].toUpperCase()
+                                    : '?',
                                 style: TextStyle(
                                   color: roleColor,
                                   fontWeight: FontWeight.bold,
@@ -136,9 +140,8 @@ class StaffListScreen extends ConsumerWidget {
                                     staff.fullName,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   Text(
                                     staff.email,
@@ -153,11 +156,16 @@ class StaffListScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: roleColor.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                                border: Border.all(
+                                  color: roleColor.withValues(alpha: 0.3),
+                                ),
                               ),
                               child: Text(
                                 staff.role.displayName,
@@ -177,16 +185,21 @@ class StaffListScreen extends ConsumerWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.store_outlined, size: 16, color: colorScheme.onSurfaceVariant),
+                                  Icon(
+                                    Icons.store_outlined,
+                                    size: 16,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                                   const SizedBox(width: 6),
                                   Flexible(
                                     child: Text(
                                       staff.branchName ?? 'All Branches',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -201,13 +214,18 @@ class StaffListScreen extends ConsumerWidget {
                               onPressed: () {
                                 showDialog(
                                   context: context,
-                                  builder: (_) => AssignRoleDialog(existingStaff: staff),
+                                  builder: (_) =>
+                                      AssignRoleDialog(existingStaff: staff),
                                 );
                               },
                             ),
                             const SizedBox(width: 8),
                             IconButton(
-                              icon: Icon(Icons.delete_outline, size: 20, color: colorScheme.error),
+                              icon: Icon(
+                                Icons.delete_outline,
+                                size: 20,
+                                color: colorScheme.error,
+                              ),
                               tooltip: 'Remove',
                               visualDensity: VisualDensity.compact,
                               padding: const EdgeInsets.all(8),
@@ -217,15 +235,21 @@ class StaffListScreen extends ConsumerWidget {
                                   context: context,
                                   builder: (ctx) => AlertDialog(
                                     title: const Text('Remove Staff Member?'),
-                                    content: Text('Are you sure you want to remove ${staff.fullName} from this business?'),
+                                    content: Text(
+                                      'Are you sure you want to remove ${staff.fullName} from this business?',
+                                    ),
                                     actions: [
                                       TextButton(
-                                        onPressed: () => Navigator.pop(ctx, false),
+                                        onPressed: () =>
+                                            Navigator.pop(ctx, false),
                                         child: const Text('Cancel'),
                                       ),
                                       FilledButton(
-                                        style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
-                                        onPressed: () => Navigator.pop(ctx, true),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: colorScheme.error,
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.pop(ctx, true),
                                         child: const Text('Remove'),
                                       ),
                                     ],
@@ -233,7 +257,9 @@ class StaffListScreen extends ConsumerWidget {
                                 );
 
                                 if (confirm == true) {
-                                  await ref.read(staffControllerProvider.notifier).removeStaff(staff.roleId);
+                                  await ref
+                                      .read(staffControllerProvider.notifier)
+                                      .removeStaff(staff.roleId);
                                 }
                               },
                             ),

@@ -10,7 +10,9 @@ class UserManagementRepositoryImpl implements UserManagementRepository {
   UserManagementRepositoryImpl({required this.remoteDatasource});
 
   @override
-  Future<Either<Failure, List<StaffUserEntity>>> getBusinessStaff(String businessId) async {
+  Future<Either<Failure, List<StaffUserEntity>>> getBusinessStaff(
+    String businessId,
+  ) async {
     try {
       final models = await remoteDatasource.getBusinessStaff(businessId);
       final entities = models.map((m) => m.toEntity()).toList();
@@ -81,7 +83,9 @@ class UserManagementRepositoryImpl implements UserManagementRepository {
   }
 
   @override
-  Future<Either<Failure, UserRoleType?>> getCurrentUserRole(String businessId) async {
+  Future<Either<Failure, UserRoleType?>> getCurrentUserRole(
+    String businessId,
+  ) async {
     try {
       final role = await remoteDatasource.getCurrentUserRole(businessId);
       return Right(role);

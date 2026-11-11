@@ -10,10 +10,7 @@ import '../../../../core/utils/user_friendly_error.dart';
 class SupplierFormDialog extends ConsumerStatefulWidget {
   final SupplierEntity? supplierToEdit;
 
-  const SupplierFormDialog({
-    super.key,
-    this.supplierToEdit,
-  });
+  const SupplierFormDialog({super.key, this.supplierToEdit});
 
   @override
   ConsumerState<SupplierFormDialog> createState() => _SupplierFormDialogState();
@@ -35,7 +32,9 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
     super.initState();
     final s = widget.supplierToEdit;
     _nameController = TextEditingController(text: s?.name ?? '');
-    _contactPersonController = TextEditingController(text: s?.contactPerson ?? '');
+    _contactPersonController = TextEditingController(
+      text: s?.contactPerson ?? '',
+    );
     _phoneController = TextEditingController(text: s?.phone ?? '');
     _emailController = TextEditingController(text: s?.email ?? '');
     _addressController = TextEditingController(text: s?.address ?? '');
@@ -82,25 +81,49 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
         id: widget.supplierToEdit!.id,
         businessId: widget.supplierToEdit!.businessId,
         name: _nameController.text.trim(),
-        contactPerson: _contactPersonController.text.trim().isEmpty ? null : _contactPersonController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-        address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
+        contactPerson: _contactPersonController.text.trim().isEmpty
+            ? null
+            : _contactPersonController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        email: _emailController.text.trim().isEmpty
+            ? null
+            : _emailController.text.trim(),
+        address: _addressController.text.trim().isEmpty
+            ? null
+            : _addressController.text.trim(),
         outstandingBalance: widget.supplierToEdit!.outstandingBalance,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         isActive: widget.supplierToEdit!.isActive,
         createdAt: widget.supplierToEdit!.createdAt,
         updatedAt: DateTime.now(),
       );
-      result = await ref.read(supplierControllerProvider.notifier).updateSupplier(updated);
+      result = await ref
+          .read(supplierControllerProvider.notifier)
+          .updateSupplier(updated);
     } else {
-      result = await ref.read(supplierControllerProvider.notifier).createSupplier(
+      result = await ref
+          .read(supplierControllerProvider.notifier)
+          .createSupplier(
             name: _nameController.text.trim(),
-            contactPerson: _contactPersonController.text.trim().isEmpty ? null : _contactPersonController.text.trim(),
-            phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-            email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-            address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
-            notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+            contactPerson: _contactPersonController.text.trim().isEmpty
+                ? null
+                : _contactPersonController.text.trim(),
+            phone: _phoneController.text.trim().isEmpty
+                ? null
+                : _phoneController.text.trim(),
+            email: _emailController.text.trim().isEmpty
+                ? null
+                : _emailController.text.trim(),
+            address: _addressController.text.trim().isEmpty
+                ? null
+                : _addressController.text.trim(),
+            notes: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
           );
     }
 
@@ -110,7 +133,11 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
         Navigator.of(context).pop(result);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isEditing ? 'Supplier updated successfully' : 'Supplier added successfully'),
+            content: Text(
+              isEditing
+                  ? 'Supplier updated successfully'
+                  : 'Supplier added successfully',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -160,7 +187,9 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                         ),
                         child: Icon(
                           Icons.local_shipping_outlined,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -170,13 +199,13 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                           children: [
                             Text(
                               isEditing ? 'Edit Supplier' : 'Add New Supplier',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               'Track restocks, deliveries, and payment balances',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey.shade600),
                             ),
                           ],
                         ),
@@ -194,7 +223,8 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                       border: OutlineInputBorder(),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => Validators.required(v, 'Please enter a supplier name'),
+                    validator: (v) =>
+                        Validators.required(v, 'Please enter a supplier name'),
                   ),
                   const SizedBox(height: 14),
 
@@ -266,7 +296,9 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.of(context).pop(),
                         child: const Text('Cancel'),
                       ),
                       const SizedBox(width: 12),
@@ -276,10 +308,17 @@ class _SupplierFormDialogState extends ConsumerState<SupplierFormDialog> {
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
-                            : Icon(isEditing ? Icons.check : Icons.add_business),
-                        label: Text(isEditing ? 'Save Changes' : 'Add Supplier'),
+                            : Icon(
+                                isEditing ? Icons.check : Icons.add_business,
+                              ),
+                        label: Text(
+                          isEditing ? 'Save Changes' : 'Add Supplier',
+                        ),
                       ),
                     ],
                   ),

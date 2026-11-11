@@ -6,8 +6,9 @@ import '../models/expense_model.dart';
 import '../models/expense_category_model.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
-  const ExpenseRepositoryImpl({required ExpensesRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+  const ExpenseRepositoryImpl({
+    required ExpensesRemoteDataSource remoteDataSource,
+  }) : _remoteDataSource = remoteDataSource;
 
   final ExpensesRemoteDataSource _remoteDataSource;
 
@@ -39,7 +40,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<ExpenseCategoryEntity> updateCategory(ExpenseCategoryEntity category) async {
+  Future<ExpenseCategoryEntity> updateCategory(
+    ExpenseCategoryEntity category,
+  ) async {
     final model = ExpenseCategoryModel(
       id: category.id,
       businessId: category.businessId,

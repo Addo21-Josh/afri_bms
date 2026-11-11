@@ -5,11 +5,15 @@ enum DebtType {
   payable; // We owe supplier (money to pay)
 
   static DebtType fromString(String val) {
-    return val.toLowerCase() == 'payable' ? DebtType.payable : DebtType.receivable;
+    return val.toLowerCase() == 'payable'
+        ? DebtType.payable
+        : DebtType.receivable;
   }
 
   String get value => this == DebtType.payable ? 'payable' : 'receivable';
-  String get label => this == DebtType.payable ? 'Payable (To Supplier)' : 'Receivable (From Customer)';
+  String get label => this == DebtType.payable
+      ? 'Payable (To Supplier)'
+      : 'Receivable (From Customer)';
 }
 
 enum DebtStatus {
@@ -140,21 +144,21 @@ class DebtEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        branchId,
-        debtType,
-        customerId,
-        supplierId,
-        saleId,
-        personName,
-        personPhone,
-        initialAmount,
-        remainingBalance,
-        dueDate,
-        status,
-        notes,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    businessId,
+    branchId,
+    debtType,
+    customerId,
+    supplierId,
+    saleId,
+    personName,
+    personPhone,
+    initialAmount,
+    remainingBalance,
+    dueDate,
+    status,
+    notes,
+    createdAt,
+    updatedAt,
+  ];
 }

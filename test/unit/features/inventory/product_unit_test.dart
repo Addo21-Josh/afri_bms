@@ -6,12 +6,24 @@ void main() {
     test('contains comprehensive units across all industries', () {
       expect(ProductUnits.all.length, greaterThanOrEqualTo(40));
 
-      final pharmacyUnits = ProductUnits.all.where((u) => u.category == ProductUnitCategory.pharmacy).toList();
-      final clothingUnits = ProductUnits.all.where((u) => u.category == ProductUnitCategory.clothing).toList();
-      final generalUnits = ProductUnits.all.where((u) => u.category == ProductUnitCategory.general).toList();
-      final volumeUnits = ProductUnits.all.where((u) => u.category == ProductUnitCategory.volume).toList();
-      final weightUnits = ProductUnits.all.where((u) => u.category == ProductUnitCategory.weight).toList();
-      final foodUnits = ProductUnits.all.where((u) => u.category == ProductUnitCategory.food).toList();
+      final pharmacyUnits = ProductUnits.all
+          .where((u) => u.category == ProductUnitCategory.pharmacy)
+          .toList();
+      final clothingUnits = ProductUnits.all
+          .where((u) => u.category == ProductUnitCategory.clothing)
+          .toList();
+      final generalUnits = ProductUnits.all
+          .where((u) => u.category == ProductUnitCategory.general)
+          .toList();
+      final volumeUnits = ProductUnits.all
+          .where((u) => u.category == ProductUnitCategory.volume)
+          .toList();
+      final weightUnits = ProductUnits.all
+          .where((u) => u.category == ProductUnitCategory.weight)
+          .toList();
+      final foodUnits = ProductUnits.all
+          .where((u) => u.category == ProductUnitCategory.food)
+          .toList();
 
       expect(pharmacyUnits.isNotEmpty, isTrue);
       expect(clothingUnits.isNotEmpty, isTrue);
@@ -22,7 +34,19 @@ void main() {
     });
 
     test('supports essential pharmacy measurement units', () {
-      const expectedCodes = ['tab', 'cap', 'strip', 'bottle', 'tube', 'vial', 'ampoule', 'sachet', 'dose', 'inhaler', 'supp'];
+      const expectedCodes = [
+        'tab',
+        'cap',
+        'strip',
+        'bottle',
+        'tube',
+        'vial',
+        'ampoule',
+        'sachet',
+        'dose',
+        'inhaler',
+        'supp',
+      ];
       for (final code in expectedCodes) {
         final unit = ProductUnits.find(code);
         expect(unit, isNotNull, reason: 'Unit $code should exist in registry');
@@ -31,10 +55,23 @@ void main() {
     });
 
     test('supports essential clothing and textile measurement units', () {
-      const expectedCodes = ['pair', 'yard', 'm', 'set', 'bale', 'roll', 'bundle', 'doz'];
+      const expectedCodes = [
+        'pair',
+        'yard',
+        'm',
+        'set',
+        'bale',
+        'roll',
+        'bundle',
+        'doz',
+      ];
       for (final code in expectedCodes) {
         final unit = ProductUnits.find(code);
-        expect(unit, isNotNull, reason: 'Clothing unit $code should exist in registry');
+        expect(
+          unit,
+          isNotNull,
+          reason: 'Clothing unit $code should exist in registry',
+        );
         expect(unit!.category, equals(ProductUnitCategory.clothing));
       }
     });
@@ -61,14 +98,17 @@ void main() {
       expect(ProductUnits.format('   '), equals('Pieces (pcs)'));
     });
 
-    test('formatShort produces clean compact symbols for receipts and stock badges', () {
-      expect(ProductUnits.formatShort('tab'), equals('tab'));
-      expect(ProductUnits.formatShort('yard'), equals('yard'));
-      expect(ProductUnits.formatShort('pair'), equals('pair'));
-      expect(ProductUnits.formatShort('scoop'), equals('scoop'));
-      expect(ProductUnits.formatShort(null), equals('pcs'));
-      expect(ProductUnits.formatShort(''), equals('pcs'));
-    });
+    test(
+      'formatShort produces clean compact symbols for receipts and stock badges',
+      () {
+        expect(ProductUnits.formatShort('tab'), equals('tab'));
+        expect(ProductUnits.formatShort('yard'), equals('yard'));
+        expect(ProductUnits.formatShort('pair'), equals('pair'));
+        expect(ProductUnits.formatShort('scoop'), equals('scoop'));
+        expect(ProductUnits.formatShort(null), equals('pcs'));
+        expect(ProductUnits.formatShort(''), equals('pcs'));
+      },
+    );
 
     test('every unit has non-empty code, name, and description', () {
       for (final unit in ProductUnits.all) {

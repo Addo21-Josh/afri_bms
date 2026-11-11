@@ -63,12 +63,18 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref.read(customerSearchQueryProvider.notifier).state = '';
+                          ref.read(customerSearchQueryProvider.notifier).state =
+                              '';
                         },
                       )
                     : null,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onChanged: (val) {
                 ref.read(customerSearchQueryProvider.notifier).state = val;
@@ -81,30 +87,47 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
             data: (customers) {
               if (customers.isEmpty) return const SizedBox.shrink();
               final debtCount = customers.where((c) => c.hasDebt).length;
-              final totalDebtMinor = customers.fold<int>(0, (sum, c) => sum + c.outstandingBalance);
-              final totalDebtFormatted = (totalDebtMinor / 100).toStringAsFixed(2);
+              final totalDebtMinor = customers.fold<int>(
+                0,
+                (sum, c) => sum + c.outstandingBalance,
+              );
+              final totalDebtFormatted = (totalDebtMinor / 100).toStringAsFixed(
+                2,
+              );
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Card(
                         elevation: 0,
-                        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Total Customers',
-                                style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.outline,
+                                ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 '${customers.length}',
-                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -115,16 +138,25 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                     Expanded(
                       child: Card(
                         elevation: 0,
-                        color: totalDebtMinor > 0 ? Colors.red.shade50 : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        color: totalDebtMinor > 0
+                            ? Colors.red.shade50
+                            : colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.5,
+                              ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Unpaid Debt ($debtCount)',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: totalDebtMinor > 0 ? Colors.red.shade800 : colorScheme.outline,
+                                  color: totalDebtMinor > 0
+                                      ? Colors.red.shade800
+                                      : colorScheme.outline,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -132,7 +164,9 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                                 '$currency $totalDebtFormatted',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: totalDebtMinor > 0 ? Colors.red.shade900 : null,
+                                  color: totalDebtMinor > 0
+                                      ? Colors.red.shade900
+                                      : null,
                                 ),
                               ),
                             ],
@@ -157,9 +191,16 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.people_outline, size: 54, color: Colors.grey),
+                      const Icon(
+                        Icons.people_outline,
+                        size: 54,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(height: 12),
-                      Text('Error loading customers: $err', textAlign: TextAlign.center),
+                      Text(
+                        'Error loading customers: $err',
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 12),
                       OutlinedButton(
                         onPressed: () => ref.invalidate(customersListProvider),
@@ -177,11 +218,19 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.person_add_alt_1_outlined, size: 64, color: colorScheme.outline),
+                          Icon(
+                            Icons.person_add_alt_1_outlined,
+                            size: 64,
+                            color: colorScheme.outline,
+                          ),
                           const SizedBox(height: 16),
                           Text(
-                            _searchController.text.isNotEmpty ? 'No matching customers found' : 'No customers recorded yet',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            _searchController.text.isNotEmpty
+                                ? 'No matching customers found'
+                                : 'No customers recorded yet',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -211,14 +260,19 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final customer = customers[index];
-                      final balanceFormatted = (customer.outstandingBalance / 100).toStringAsFixed(2);
+                      final balanceFormatted =
+                          (customer.outstandingBalance / 100).toStringAsFixed(
+                            2,
+                          );
 
                       return Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: BorderSide(
-                            color: customer.hasDebt ? Colors.red.shade200 : colorScheme.outlineVariant,
+                            color: customer.hasDebt
+                                ? Colors.red.shade200
+                                : colorScheme.outlineVariant,
                           ),
                         ),
                         child: InkWell(
@@ -248,26 +302,41 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         customer.name,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
                                       const SizedBox(height: 3),
                                       Row(
                                         children: [
-                                          if (customer.phone != null && customer.phone!.isNotEmpty) ...[
-                                            Icon(Icons.phone_outlined, size: 13, color: Colors.grey.shade600),
+                                          if (customer.phone != null &&
+                                              customer.phone!.isNotEmpty) ...[
+                                            Icon(
+                                              Icons.phone_outlined,
+                                              size: 13,
+                                              color: Colors.grey.shade600,
+                                            ),
                                             const SizedBox(width: 4),
                                             Text(
                                               customer.phone!,
-                                              style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                                              style: TextStyle(
+                                                color: Colors.grey.shade700,
+                                                fontSize: 13,
+                                              ),
                                             ),
                                           ] else ...[
                                             Text(
                                               'No phone recorded',
-                                              style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                                              style: TextStyle(
+                                                color: Colors.grey.shade500,
+                                                fontSize: 12,
+                                              ),
                                             ),
                                           ],
                                         ],
@@ -277,18 +346,28 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                                 ),
                                 if (customer.hasDebt) ...[
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.red.shade50,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.red.shade300),
+                                      border: Border.all(
+                                        color: Colors.red.shade300,
+                                      ),
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Text(
                                           'Debt',
-                                          style: TextStyle(color: Colors.red.shade800, fontSize: 11, fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                            color: Colors.red.shade800,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                         Text(
                                           '$currency $balanceFormatted',
@@ -303,7 +382,10 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                 ],
-                                const Icon(Icons.chevron_right, color: Colors.grey),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey,
+                                ),
                               ],
                             ),
                           ),

@@ -11,13 +11,11 @@ import '../../../sales/presentation/screens/sale_receipt_screen.dart';
 class CustomerDetailScreen extends ConsumerStatefulWidget {
   final String customerId;
 
-  const CustomerDetailScreen({
-    super.key,
-    required this.customerId,
-  });
+  const CustomerDetailScreen({super.key, required this.customerId});
 
   @override
-  ConsumerState<CustomerDetailScreen> createState() => _CustomerDetailScreenState();
+  ConsumerState<CustomerDetailScreen> createState() =>
+      _CustomerDetailScreenState();
 }
 
 class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
@@ -88,7 +86,9 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                   prefixIcon: Icon(Icons.payments_outlined),
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (val) {
                   final parsed = double.tryParse(val ?? '');
                   if (parsed == null || parsed <= 0) {
@@ -138,23 +138,26 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final customerAsync = ref.watch(customerDetailProvider(widget.customerId));
-    final salesAsync = ref.watch(customerSalesHistoryProvider(widget.customerId));
+    final salesAsync = ref.watch(
+      customerSalesHistoryProvider(widget.customerId),
+    );
     final currentBiz = ref.watch(currentBusinessProvider);
     final currency = currentBiz?.defaultCurrency ?? 'GHS';
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return customerAsync.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, _) => Scaffold(
         appBar: AppBar(),
-        body: Center(
-          child: Text('Error loading customer: $err'),
-        ),
+        body: Center(child: Text('Error loading customer: $err')),
       ),
       data: (customer) {
-        final balanceFormatted = (customer.outstandingBalance / 100).toStringAsFixed(2);
-        final creditLimitFormatted = (customer.creditLimit / 100).toStringAsFixed(2);
+        final balanceFormatted = (customer.outstandingBalance / 100)
+            .toStringAsFixed(2);
+        final creditLimitFormatted = (customer.creditLimit / 100)
+            .toStringAsFixed(2);
 
         return Scaffold(
           appBar: AppBar(
@@ -217,22 +220,26 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                                 children: [
                                   Text(
                                     customer.name,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   if (customer.phone != null) ...[
                                     const SizedBox(height: 2),
                                     Text(
                                       customer.phone!,
-                                      style: TextStyle(color: Colors.grey.shade700),
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                      ),
                                     ),
                                   ],
                                   if (customer.email != null) ...[
                                     const SizedBox(height: 2),
                                     Text(
                                       customer.email!,
-                                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ],
                                 ],
@@ -240,12 +247,17 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                             ),
                           ],
                         ),
-                        if (customer.address != null && customer.address!.isNotEmpty) ...[
+                        if (customer.address != null &&
+                            customer.address!.isNotEmpty) ...[
                           const Divider(height: 24),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.location_on_outlined, size: 18, color: colorScheme.outline),
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 18,
+                                color: colorScheme.outline,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -256,17 +268,25 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                             ],
                           ),
                         ],
-                        if (customer.notes != null && customer.notes!.isNotEmpty) ...[
+                        if (customer.notes != null &&
+                            customer.notes!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.notes_outlined, size: 18, color: colorScheme.outline),
+                              Icon(
+                                Icons.notes_outlined,
+                                size: 18,
+                                color: colorScheme.outline,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   customer.notes!,
-                                  style: TextStyle(color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
                               ),
                             ],
@@ -281,11 +301,17 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 // Financial Balance & Debt Card
                 Card(
                   elevation: 0,
-                  color: customer.hasDebt ? Colors.red.shade50 : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: customer.hasDebt
+                      ? Colors.red.shade50
+                      : colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
-                      color: customer.hasDebt ? Colors.red.shade200 : colorScheme.outlineVariant,
+                      color: customer.hasDebt
+                          ? Colors.red.shade200
+                          : colorScheme.outlineVariant,
                     ),
                   ),
                   child: Padding(
@@ -301,7 +327,9 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                                 Text(
                                   'Outstanding Debt',
                                   style: TextStyle(
-                                    color: customer.hasDebt ? Colors.red.shade800 : colorScheme.outline,
+                                    color: customer.hasDebt
+                                        ? Colors.red.shade800
+                                        : colorScheme.outline,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -311,7 +339,9 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: customer.hasDebt ? Colors.red.shade900 : colorScheme.onSurface,
+                                    color: customer.hasDebt
+                                        ? Colors.red.shade900
+                                        : colorScheme.onSurface,
                                   ),
                                 ),
                               ],
@@ -322,12 +352,18 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                                 children: [
                                   Text(
                                     'Credit Limit',
-                                    style: TextStyle(color: colorScheme.outline, fontSize: 13),
+                                    style: TextStyle(
+                                      color: colorScheme.outline,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     '$currency $creditLimitFormatted',
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -338,8 +374,11 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton.icon(
-                              style: FilledButton.styleFrom(backgroundColor: Colors.red.shade800),
-                              onPressed: () => _openDebtRepaymentDialog(customer),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.red.shade800,
+                              ),
+                              onPressed: () =>
+                                  _openDebtRepaymentDialog(customer),
                               icon: const Icon(Icons.payments_outlined),
                               label: const Text('Record Debt Payment'),
                             ),
@@ -357,11 +396,16 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                   children: [
                     Text(
                       'Purchase History',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       '${salesAsync.value?.length ?? 0} orders',
-                      style: TextStyle(color: colorScheme.outline, fontSize: 13),
+                      style: TextStyle(
+                        color: colorScheme.outline,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -392,9 +436,15 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                           padding: const EdgeInsets.all(24),
                           child: Column(
                             children: [
-                              Icon(Icons.receipt_long_outlined, size: 40, color: colorScheme.outline),
+                              Icon(
+                                Icons.receipt_long_outlined,
+                                size: 40,
+                                color: colorScheme.outline,
+                              ),
                               const SizedBox(height: 8),
-                              const Text('No past purchases recorded for this customer yet.'),
+                              const Text(
+                                'No past purchases recorded for this customer yet.',
+                              ),
                             ],
                           ),
                         ),
@@ -408,8 +458,11 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (context, idx) {
                         final sale = sales[idx];
-                        final dateStr = DateFormat('MMM d, yyyy • h:mm a').format(sale.createdAt);
-                        final totalFormatted = (sale.totalAmount / 100).toStringAsFixed(2);
+                        final dateStr = DateFormat(
+                          'MMM d, yyyy • h:mm a',
+                        ).format(sale.createdAt);
+                        final totalFormatted = (sale.totalAmount / 100)
+                            .toStringAsFixed(2);
 
                         return Card(
                           elevation: 0,
@@ -421,7 +474,10 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => SaleReceiptScreen(sale: sale, currency: currency),
+                                  builder: (_) => SaleReceiptScreen(
+                                    sale: sale,
+                                    currency: currency,
+                                  ),
                                 ),
                               );
                             },
@@ -431,10 +487,21 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                                 color: colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Icon(Icons.receipt, color: colorScheme.onPrimaryContainer, size: 20),
+                              child: Icon(
+                                Icons.receipt,
+                                color: colorScheme.onPrimaryContainer,
+                                size: 20,
+                              ),
                             ),
-                            title: Text(sale.saleNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('$dateStr\n${sale.items.length} item(s) • ${sale.paymentMethod.label}'),
+                            title: Text(
+                              sale.saleNumber,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '$dateStr\n${sale.items.length} item(s) • ${sale.paymentMethod.label}',
+                            ),
                             isThreeLine: true,
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -442,9 +509,16 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                               children: [
                                 Text(
                                   '$currency $totalFormatted',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
                                 ),
-                                const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  size: 18,
+                                  color: Colors.grey,
+                                ),
                               ],
                             ),
                           ),

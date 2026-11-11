@@ -51,9 +51,17 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
     if (picked != null) {
       ref.read(customDateRangeProvider.notifier).state = CustomDateRange(
         start: picked.start,
-        end: DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59),
+        end: DateTime(
+          picked.end.year,
+          picked.end.month,
+          picked.end.day,
+          23,
+          59,
+          59,
+        ),
       );
-      ref.read(reportDateFilterProvider.notifier).state = ReportDateFilter.custom;
+      ref.read(reportDateFilterProvider.notifier).state =
+          ReportDateFilter.custom;
     }
   }
 
@@ -84,7 +92,8 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
                 UpgradePromptSheet.show(
                   context,
                   featureName: 'Data Export (CSV & PDF)',
-                  customMessage: 'Exporting sales, inventory spreadsheets and executive reports is available on Afri_BMS Pro & Enterprise.',
+                  customMessage:
+                      'Exporting sales, inventory spreadsheets and executive reports is available on Afri_BMS Pro & Enterprise.',
                   currentTier: gate.tier,
                   suggestedTier: SubscriptionTier.pro,
                 );
@@ -147,7 +156,11 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
                 value: 'executive_pdf',
                 child: Row(
                   children: [
-                    Icon(Icons.picture_as_pdf_outlined, size: 20, color: Colors.red),
+                    Icon(
+                      Icons.picture_as_pdf_outlined,
+                      size: 20,
+                      color: Colors.red,
+                    ),
                     SizedBox(width: 8),
                     Text('Export Executive PDF'),
                   ],
@@ -175,7 +188,9 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: colorScheme.surface,
-              border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
+              border: Border(
+                bottom: BorderSide(color: colorScheme.outlineVariant),
+              ),
             ),
             child: Row(
               children: [
@@ -193,13 +208,17 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
                             label: Text(
                               filter == ReportDateFilter.custom && isSelected
                                   ? () {
-                                      final r = ref.watch(customDateRangeProvider);
+                                      final r = ref.watch(
+                                        customDateRangeProvider,
+                                      );
                                       return '${DateFormat('d MMM').format(r.start)} - ${DateFormat('d MMM').format(r.end)}';
                                     }()
                                   : filter.label,
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
                             selected: isSelected,
@@ -208,7 +227,12 @@ class _ReportsHubScreenState extends ConsumerState<ReportsHubScreen>
                                 if (filter == ReportDateFilter.custom) {
                                   _showCustomDateDialog(context);
                                 } else {
-                                  ref.read(reportDateFilterProvider.notifier).state = filter;
+                                  ref
+                                          .read(
+                                            reportDateFilterProvider.notifier,
+                                          )
+                                          .state =
+                                      filter;
                                 }
                               }
                             },
@@ -268,7 +292,10 @@ class _SalesReportsTab extends ConsumerWidget {
                   Expanded(
                     child: _ReportKpiCard(
                       title: 'Total Revenue',
-                      value: CurrencyFormatter.format(data.totalRevenue, currencyCode: currency),
+                      value: CurrencyFormatter.format(
+                        data.totalRevenue,
+                        currencyCode: currency,
+                      ),
                       icon: Icons.payments,
                       color: colorScheme.primary,
                     ),
@@ -287,7 +314,10 @@ class _SalesReportsTab extends ConsumerWidget {
               const SizedBox(height: 10),
               _ReportKpiCard(
                 title: 'Average Order Value (AOV)',
-                value: CurrencyFormatter.format(data.averageOrderValue, currencyCode: currency),
+                value: CurrencyFormatter.format(
+                  data.averageOrderValue,
+                  currencyCode: currency,
+                ),
                 icon: Icons.analytics_outlined,
                 color: Colors.indigo,
               ),
@@ -310,13 +340,18 @@ class _SalesReportsTab extends ConsumerWidget {
                         children: [
                           Text(
                             'Revenue Trend Over Time',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Icon(Icons.show_chart, color: colorScheme.primary),
                         ],
                       ),
                       const Divider(height: 20),
-                      RevenueLineChart(dailyPoints: data.dailyPoints, currency: currency),
+                      RevenueLineChart(
+                        dailyPoints: data.dailyPoints,
+                        currency: currency,
+                      ),
                     ],
                   ),
                 ),
@@ -340,13 +375,18 @@ class _SalesReportsTab extends ConsumerWidget {
                         children: [
                           Text(
                             'Top Selling Products',
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Icon(Icons.star, color: Colors.amber.shade700),
                         ],
                       ),
                       const Divider(height: 20),
-                      TopProductsBarChart(products: data.topProducts, currency: currency),
+                      TopProductsBarChart(
+                        products: data.topProducts,
+                        currency: currency,
+                      ),
                     ],
                   ),
                 ),
@@ -368,25 +408,37 @@ class _SalesReportsTab extends ConsumerWidget {
                       children: [
                         Text(
                           'Sales by Category',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const Divider(height: 20),
-                        ...data.categoryStats.map((c) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(c.categoryName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        ...data.categoryStats.map(
+                          (c) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    c.categoryName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${CurrencyFormatter.format(c.totalRevenue, currencyCode: currency)} (${c.percentage.toStringAsFixed(1)}%)',
-                                    style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${CurrencyFormatter.format(c.totalRevenue, currencyCode: currency)} (${c.percentage.toStringAsFixed(1)}%)',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                            )),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -409,23 +461,43 @@ class _SalesReportsTab extends ConsumerWidget {
                       children: [
                         Text(
                           'Staff / Cashier Performance',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const Divider(height: 20),
-                        ...data.staffStats.map((s) => ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              leading: CircleAvatar(
-                                backgroundColor: colorScheme.primaryContainer,
-                                child: Text(s.staffName.isNotEmpty ? s.staffName[0].toUpperCase() : 'S'),
+                        ...data.staffStats.map(
+                          (s) => ListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              backgroundColor: colorScheme.primaryContainer,
+                              child: Text(
+                                s.staffName.isNotEmpty
+                                    ? s.staffName[0].toUpperCase()
+                                    : 'S',
                               ),
-                              title: Text(s.staffName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text('${s.salesCount} completed checkouts'),
-                              trailing: Text(
-                                CurrencyFormatter.format(s.totalRevenue, currencyCode: currency),
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            title: Text(
+                              s.staffName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
-                            )),
+                            ),
+                            subtitle: Text(
+                              '${s.salesCount} completed checkouts',
+                            ),
+                            trailing: Text(
+                              CurrencyFormatter.format(
+                                s.totalRevenue,
+                                currencyCode: currency,
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -454,7 +526,8 @@ class _FinancialReportsTab extends ConsumerWidget {
 
     return financialReportAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error loading financial report: $e')),
+      error: (e, _) =>
+          Center(child: Text('Error loading financial report: $e')),
       data: (data) {
         final isProfit = data.netProfit >= 0;
 
@@ -481,20 +554,29 @@ class _FinancialReportsTab extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               'Profit & Loss Statement',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: isProfit ? Colors.green.shade50 : Colors.red.shade50,
+                              color: isProfit
+                                  ? Colors.green.shade50
+                                  : Colors.red.shade50,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               isProfit ? 'PROFITABLE' : 'NET LOSS',
                               style: TextStyle(
-                                color: isProfit ? Colors.green.shade800 : Colors.red.shade800,
+                                color: isProfit
+                                    ? Colors.green.shade800
+                                    : Colors.red.shade800,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
                               ),
@@ -505,37 +587,52 @@ class _FinancialReportsTab extends ConsumerWidget {
                       const Divider(height: 20),
                       _StatementRow(
                         title: 'Gross Revenue (Sales)',
-                        amount: CurrencyFormatter.format(data.grossSales, currencyCode: currency),
+                        amount: CurrencyFormatter.format(
+                          data.grossSales,
+                          currencyCode: currency,
+                        ),
                         isBold: true,
                       ),
                       const SizedBox(height: 8),
                       _StatementRow(
                         title: 'Less: Cost of Goods Sold (COGS)',
-                        amount: '- ${CurrencyFormatter.format(data.costOfGoodsSold, currencyCode: currency)}',
+                        amount:
+                            '- ${CurrencyFormatter.format(data.costOfGoodsSold, currencyCode: currency)}',
                         color: Colors.red.shade700,
                       ),
                       const Divider(height: 16),
                       _StatementRow(
                         title: 'Gross Profit',
-                        amount: CurrencyFormatter.format(data.grossProfit, currencyCode: currency),
-                        subtitle: 'Gross Margin: ${data.grossMarginPercent.toStringAsFixed(1)}%',
+                        amount: CurrencyFormatter.format(
+                          data.grossProfit,
+                          currencyCode: currency,
+                        ),
+                        subtitle:
+                            'Gross Margin: ${data.grossMarginPercent.toStringAsFixed(1)}%',
                         isBold: true,
                         color: Colors.blue.shade900,
                       ),
                       const SizedBox(height: 8),
                       _StatementRow(
                         title: 'Less: Operating Expenses',
-                        amount: '- ${CurrencyFormatter.format(data.totalExpenses, currencyCode: currency)}',
+                        amount:
+                            '- ${CurrencyFormatter.format(data.totalExpenses, currencyCode: currency)}',
                         color: Colors.red.shade700,
                       ),
                       const Divider(height: 20, thickness: 1.5),
                       _StatementRow(
                         title: 'Net Operating Profit',
-                        amount: CurrencyFormatter.format(data.netProfit, currencyCode: currency),
-                        subtitle: 'Net Margin: ${data.netMarginPercent.toStringAsFixed(1)}%',
+                        amount: CurrencyFormatter.format(
+                          data.netProfit,
+                          currencyCode: currency,
+                        ),
+                        subtitle:
+                            'Net Margin: ${data.netMarginPercent.toStringAsFixed(1)}%',
                         isBold: true,
                         fontSize: 16,
-                        color: isProfit ? Colors.green.shade800 : Colors.red.shade800,
+                        color: isProfit
+                            ? Colors.green.shade800
+                            : Colors.red.shade800,
                       ),
                     ],
                   ),
@@ -557,7 +654,9 @@ class _FinancialReportsTab extends ConsumerWidget {
                     children: [
                       Text(
                         'Operating Expense Breakdown',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const Divider(height: 20),
                       ExpensePieChart(
@@ -585,17 +684,27 @@ class _FinancialReportsTab extends ConsumerWidget {
                     children: [
                       Text(
                         'Cash Flow Summary',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const Divider(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(child: Text('Total Cash Inflow (Sales)')),
+                          const Expanded(
+                            child: Text('Total Cash Inflow (Sales)'),
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            CurrencyFormatter.format(data.totalCashIn, currencyCode: currency),
-                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                            CurrencyFormatter.format(
+                              data.totalCashIn,
+                              currencyCode: currency,
+                            ),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
                           ),
                         ],
                       ),
@@ -603,11 +712,19 @@ class _FinancialReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(child: Text('Total Cash Outflow (Expenses + COGS)')),
+                          const Expanded(
+                            child: Text('Total Cash Outflow (Expenses + COGS)'),
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            CurrencyFormatter.format(data.totalCashOut, currencyCode: currency),
-                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+                            CurrencyFormatter.format(
+                              data.totalCashOut,
+                              currencyCode: currency,
+                            ),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
                           ),
                         ],
                       ),
@@ -615,14 +732,24 @@ class _FinancialReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(child: Text('Net Cash Flow', style: TextStyle(fontWeight: FontWeight.bold))),
+                          const Expanded(
+                            child: Text(
+                              'Net Cash Flow',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            CurrencyFormatter.format(data.netCashFlow, currencyCode: currency),
+                            CurrencyFormatter.format(
+                              data.netCashFlow,
+                              currencyCode: currency,
+                            ),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
-                              color: data.netCashFlow >= 0 ? Colors.green.shade800 : Colors.red.shade800,
+                              color: data.netCashFlow >= 0
+                                  ? Colors.green.shade800
+                                  : Colors.red.shade800,
                             ),
                           ),
                         ],
@@ -654,7 +781,8 @@ class _InventoryReportsTab extends ConsumerWidget {
 
     return inventoryReportAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error loading inventory report: $e')),
+      error: (e, _) =>
+          Center(child: Text('Error loading inventory report: $e')),
       data: (data) {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -697,16 +825,23 @@ class _InventoryReportsTab extends ConsumerWidget {
                     children: [
                       Text(
                         'Inventory Financial Valuation',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const Divider(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(child: Text('Valuation at Cost (Asset Cost)')),
+                          const Expanded(
+                            child: Text('Valuation at Cost (Asset Cost)'),
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            CurrencyFormatter.format(data.totalCostValue, currencyCode: currency),
+                            CurrencyFormatter.format(
+                              data.totalCostValue,
+                              currencyCode: currency,
+                            ),
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -715,11 +850,19 @@ class _InventoryReportsTab extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(child: Text('Valuation at Retail Price')),
+                          const Expanded(
+                            child: Text('Valuation at Retail Price'),
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            CurrencyFormatter.format(data.totalRetailValue, currencyCode: currency),
-                            style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary),
+                            CurrencyFormatter.format(
+                              data.totalRetailValue,
+                              currencyCode: currency,
+                            ),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
                           ),
                         ],
                       ),
@@ -730,8 +873,14 @@ class _InventoryReportsTab extends ConsumerWidget {
                           const Expanded(child: Text('Potential Gross Profit')),
                           const SizedBox(width: 8),
                           Text(
-                            CurrencyFormatter.format(data.potentialProfit, currencyCode: currency),
-                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                            CurrencyFormatter.format(
+                              data.potentialProfit,
+                              currencyCode: currency,
+                            ),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
                           ),
                         ],
                       ),
@@ -753,27 +902,43 @@ class _InventoryReportsTab extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Stock Health & Alerts',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        'Stock Health & Alerts',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const Divider(height: 20),
                       ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.warning_amber, color: Colors.orange),
+                        leading: const Icon(
+                          Icons.warning_amber,
+                          color: Colors.orange,
+                        ),
                         title: const Text('Low Stock Alerts'),
                         trailing: Text(
                           '${data.lowStockCount} items',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
                         ),
                       ),
                       ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.cancel_outlined, color: Colors.red),
+                        leading: const Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.red,
+                        ),
                         title: const Text('Out of Stock'),
                         trailing: Text(
                           '${data.outOfStockCount} items',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -821,7 +986,10 @@ class _CustomerDebtsReportsTab extends ConsumerWidget {
             children: [
               _ReportKpiCard(
                 title: 'Total Outstanding Receivables (Customer Credit)',
-                value: CurrencyFormatter.format(data.totalReceivables, currencyCode: currency),
+                value: CurrencyFormatter.format(
+                  data.totalReceivables,
+                  currencyCode: currency,
+                ),
                 icon: Icons.account_balance_wallet_outlined,
                 color: Colors.deepOrange,
               ),
@@ -841,30 +1009,44 @@ class _CustomerDebtsReportsTab extends ConsumerWidget {
                     children: [
                       Text(
                         'Debt Aging Ledger',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const Divider(height: 20),
                       _AgingRow(
                         title: 'Current (0–30 Days)',
-                        amount: CurrencyFormatter.format(data.current30Days, currencyCode: currency),
+                        amount: CurrencyFormatter.format(
+                          data.current30Days,
+                          currencyCode: currency,
+                        ),
                         color: Colors.green.shade800,
                       ),
                       const SizedBox(height: 8),
                       _AgingRow(
                         title: '31–60 Days Overdue',
-                        amount: CurrencyFormatter.format(data.days31To60, currencyCode: currency),
+                        amount: CurrencyFormatter.format(
+                          data.days31To60,
+                          currencyCode: currency,
+                        ),
                         color: Colors.amber.shade900,
                       ),
                       const SizedBox(height: 8),
                       _AgingRow(
                         title: '61–90 Days Overdue',
-                        amount: CurrencyFormatter.format(data.days61To90, currencyCode: currency),
+                        amount: CurrencyFormatter.format(
+                          data.days61To90,
+                          currencyCode: currency,
+                        ),
                         color: Colors.orange.shade900,
                       ),
                       const SizedBox(height: 8),
                       _AgingRow(
                         title: '90+ Days Overdue (High Risk)',
-                        amount: CurrencyFormatter.format(data.overdue90Plus, currencyCode: currency),
+                        amount: CurrencyFormatter.format(
+                          data.overdue90Plus,
+                          currencyCode: currency,
+                        ),
                         color: Colors.red.shade800,
                         isBold: true,
                       ),
@@ -930,7 +1112,10 @@ class _ReportKpiCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12),
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -941,7 +1126,9 @@ class _ReportKpiCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 value,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -1040,7 +1227,9 @@ class _AgingRow extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
+                  style: TextStyle(
+                    fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
               ),
             ],

@@ -56,14 +56,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reset Password'),
-      ),
+      appBar: AppBar(title: const Text('Reset Password')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: _emailSent ? _buildSuccessView(context) : _buildFormView(context),
+            child: _emailSent
+                ? _buildSuccessView(context)
+                : _buildFormView(context),
           ),
         ),
       ),
@@ -80,11 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.lock_reset_rounded,
-            size: 72,
-            color: colorScheme.primary,
-          ),
+          Icon(Icons.lock_reset_rounded, size: 72, color: colorScheme.primary),
           const SizedBox(height: 24),
           Text(
             'Forgot Password?',

@@ -18,5 +18,12 @@ class ProductCategoryEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, businessId, name, description, isActive, createdAt];
+  List<Object?> get props => [
+    id,
+    businessId,
+    name,
+    description,
+    isActive,
+    createdAt,
+  ];
 }

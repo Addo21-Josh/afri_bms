@@ -8,7 +8,9 @@ class UserFriendlyError {
 
   /// Converts any exception, error object, or failure into a polished, user-centric message.
   static String toFriendly(dynamic error, {String? defaultMessage}) {
-    if (error == null) return defaultMessage ?? 'An unexpected error occurred. Please try again.';
+    if (error == null)
+      return defaultMessage ??
+          'An unexpected error occurred. Please try again.';
 
     String raw;
     if (error is Failure) {
@@ -28,11 +30,13 @@ class UserFriendlyError {
       return 'Unable to create staff account right now. Please verify the email address or upgrade your plan to add more team members.';
     }
 
-    if (lower.contains('staff account') && (lower.contains('limit') || lower.contains('reached'))) {
+    if (lower.contains('staff account') &&
+        (lower.contains('limit') || lower.contains('reached'))) {
       return "You've reached your plan's staff account limit. Please upgrade to Pro to add more team members.";
     }
 
-    if (lower.contains('only business owners and admins') || lower.contains('permission denied')) {
+    if (lower.contains('only business owners and admins') ||
+        lower.contains('permission denied')) {
       return 'You do not have administrative privileges to perform this action.';
     }
 
@@ -54,11 +58,16 @@ class UserFriendlyError {
       return 'An account with this email address already exists. Please sign in or use a different email.';
     }
 
-    if (lower.contains('password') && (lower.contains('6') || lower.contains('short') || lower.contains('least'))) {
+    if (lower.contains('password') &&
+        (lower.contains('6') ||
+            lower.contains('short') ||
+            lower.contains('least'))) {
       return 'Password must be at least 6 characters long.';
     }
 
-    if (lower.contains('jwt') || lower.contains('session expired') || lower.contains('token is expired')) {
+    if (lower.contains('jwt') ||
+        lower.contains('session expired') ||
+        lower.contains('token is expired')) {
       return 'Your session has expired. Please sign in again to continue.';
     }
 
@@ -73,25 +82,33 @@ class UserFriendlyError {
       return 'Unable to connect to the server. Please check your internet connection.';
     }
 
-    if (lower.contains('timeoutexception') || lower.contains('timed out') || lower.contains('connection timeout')) {
+    if (lower.contains('timeoutexception') ||
+        lower.contains('timed out') ||
+        lower.contains('connection timeout')) {
       return 'The connection timed out. Please check your network and try again.';
     }
 
     // ─── Tier Quotas & Limits ───
-    if (lower.contains('product limit') || (lower.contains('products') && lower.contains('limit'))) {
+    if (lower.contains('product limit') ||
+        (lower.contains('products') && lower.contains('limit'))) {
       return "You've reached your product limit. Upgrade to Pro for an expanded product catalog.";
     }
 
-    if (lower.contains('customer limit') || (lower.contains('customers') && lower.contains('limit'))) {
+    if (lower.contains('customer limit') ||
+        (lower.contains('customers') && lower.contains('limit'))) {
       return "You've reached your customer directory limit. Upgrade to Pro to add more clients.";
     }
 
-    if (lower.contains('branch limit') || (lower.contains('branches') && lower.contains('limit'))) {
+    if (lower.contains('branch limit') ||
+        (lower.contains('branches') && lower.contains('limit'))) {
       return "You've reached your multi-branch limit. Upgrade to Enterprise to add more locations.";
     }
 
     // ─── Database / Internal Server ───
-    if (lower.contains('pgrst') || lower.contains('42883') || lower.contains('syntax error') || lower.contains('postgrestexception')) {
+    if (lower.contains('pgrst') ||
+        lower.contains('42883') ||
+        lower.contains('syntax error') ||
+        lower.contains('postgrestexception')) {
       return 'The service is temporarily unavailable. Please try again in a few moments.';
     }
 
@@ -100,18 +117,30 @@ class UserFriendlyError {
         .replaceAll(RegExp(r'^AppException:\s*', caseSensitive: false), '')
         .replaceAll(RegExp(r'^Exception:\s*', caseSensitive: false), '')
         .replaceAll(RegExp(r'^AuthException:\s*', caseSensitive: false), '')
-        .replaceAll(RegExp(r'^PostgrestException\(message:\s*', caseSensitive: false), '')
+        .replaceAll(
+          RegExp(r'^PostgrestException\(message:\s*', caseSensitive: false),
+          '',
+        )
         .replaceAll(RegExp(r'^ServerFailure:\s*', caseSensitive: false), '')
-        .replaceAll(RegExp(r'^Assign Staff Role Error:\s*', caseSensitive: false), '')
-        .replaceAll(RegExp(r'^Update Staff Role Error:\s*', caseSensitive: false), '')
+        .replaceAll(
+          RegExp(r'^Assign Staff Role Error:\s*', caseSensitive: false),
+          '',
+        )
+        .replaceAll(
+          RegExp(r'^Update Staff Role Error:\s*', caseSensitive: false),
+          '',
+        )
         .replaceAll(RegExp(r'^SignIn Error:\s*', caseSensitive: false), '')
         .replaceAll(RegExp(r'^SignUp Error:\s*', caseSensitive: false), '')
         .replaceAll(RegExp(r'^Error:\s*', caseSensitive: false), '')
         .trim();
 
     // If cleaned string still looks like an unformatted technical code, fall back to default
-    if (cleaned.isEmpty || cleaned.contains('Stack trace:') || cleaned.length > 250) {
-      return defaultMessage ?? 'Unable to complete your request. Please try again shortly.';
+    if (cleaned.isEmpty ||
+        cleaned.contains('Stack trace:') ||
+        cleaned.length > 250) {
+      return defaultMessage ??
+          'Unable to complete your request. Please try again shortly.';
     }
 
     // Capitalize first character and ensure ending period

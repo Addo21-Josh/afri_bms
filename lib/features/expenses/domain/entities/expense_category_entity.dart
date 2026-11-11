@@ -25,14 +25,14 @@ class ExpenseCategoryEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        businessId,
-        name,
-        description,
-        icon,
-        color,
-        isSystem,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    businessId,
+    name,
+    description,
+    icon,
+    color,
+    isSystem,
+    createdAt,
+    updatedAt,
+  ];
 }

@@ -17,10 +17,12 @@ class BarcodeGeneratorDialog extends ConsumerStatefulWidget {
   final String currency;
 
   @override
-  ConsumerState<BarcodeGeneratorDialog> createState() => _BarcodeGeneratorDialogState();
+  ConsumerState<BarcodeGeneratorDialog> createState() =>
+      _BarcodeGeneratorDialogState();
 }
 
-class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog> {
+class _BarcodeGeneratorDialogState
+    extends ConsumerState<BarcodeGeneratorDialog> {
   bool _useQrCode = false;
   int _labelCount = 24;
   bool _isPrinting = false;
@@ -34,10 +36,12 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
     final barcodeData = widget.product.barcode?.isNotEmpty == true
         ? widget.product.barcode!
         : (widget.product.sku?.isNotEmpty == true
-            ? widget.product.sku!
-            : widget.product.id.substring(0, 8));
+              ? widget.product.sku!
+              : widget.product.id.substring(0, 8));
 
-    final priceFormatted = (widget.product.sellingPrice / 100).toStringAsFixed(2);
+    final priceFormatted = (widget.product.sellingPrice / 100).toStringAsFixed(
+      2,
+    );
 
     return AlertDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -49,7 +53,9 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
             child: Text(
               'Barcode & Price Label',
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -62,7 +68,10 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
             children: [
               Text(
                 widget.product.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
@@ -79,7 +88,10 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
               // Barcode Widget Card
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -90,7 +102,9 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: BarcodeWidget(
-                        barcode: _useQrCode ? Barcode.qrCode() : Barcode.code128(),
+                        barcode: _useQrCode
+                            ? Barcode.qrCode()
+                            : Barcode.code128(),
                         data: barcodeData,
                         width: _useQrCode ? 130 : 210,
                         height: _useQrCode ? 130 : 65,
@@ -103,7 +117,9 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: barcodeData));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Barcode copied to clipboard')),
+                          const SnackBar(
+                            content: Text('Barcode copied to clipboard'),
+                          ),
                         );
                       },
                       child: Row(
@@ -159,7 +175,10 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
                   const SizedBox(width: 10),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: colorScheme.outlineVariant),
@@ -170,9 +189,18 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
                           isExpanded: true,
                           isDense: true,
                           items: const [
-                            DropdownMenuItem(value: 12, child: Text('12 Labels')),
-                            DropdownMenuItem(value: 24, child: Text('24 Labels (A4)')),
-                            DropdownMenuItem(value: 48, child: Text('48 Labels')),
+                            DropdownMenuItem(
+                              value: 12,
+                              child: Text('12 Labels'),
+                            ),
+                            DropdownMenuItem(
+                              value: 24,
+                              child: Text('24 Labels (A4)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 48,
+                              child: Text('48 Labels'),
+                            ),
                           ],
                           onChanged: (val) {
                             if (val != null) setState(() => _labelCount = val);
@@ -216,7 +244,14 @@ class _BarcodeGeneratorDialogState extends ConsumerState<BarcodeGeneratorDialog>
                   }
                 },
           icon: _isPrinting
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
               : const Icon(Icons.print),
           label: const Text('Print Labels'),
         ),

@@ -12,7 +12,8 @@ part of 'branch_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 BranchModel _$BranchModelFromJson(Map<String, dynamic> json) {
   return _BranchModel.fromJson(json);
@@ -45,20 +46,22 @@ mixin _$BranchModel {
 /// @nodoc
 abstract class $BranchModelCopyWith<$Res> {
   factory $BranchModelCopyWith(
-          BranchModel value, $Res Function(BranchModel) then) =
-      _$BranchModelCopyWithImpl<$Res, BranchModel>;
+    BranchModel value,
+    $Res Function(BranchModel) then,
+  ) = _$BranchModelCopyWithImpl<$Res, BranchModel>;
   @useResult
-  $Res call(
-      {String id,
-      @JsonKey(name: 'business_id') String businessId,
-      String name,
-      String? address,
-      String? phone,
-      String currency,
-      @JsonKey(name: 'is_main') bool isMain,
-      @JsonKey(name: 'is_active') bool isActive,
-      @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt});
+  $Res call({
+    String id,
+    @JsonKey(name: 'business_id') String businessId,
+    String name,
+    String? address,
+    String? phone,
+    String currency,
+    @JsonKey(name: 'is_main') bool isMain,
+    @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -85,48 +88,51 @@ class _$BranchModelCopyWithImpl<$Res, $Val extends BranchModel>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      businessId: null == businessId
-          ? _value.businessId
-          : businessId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      currency: null == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
-              as String,
-      isMain: null == isMain
-          ? _value.isMain
-          : isMain // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            businessId: null == businessId
+                ? _value.businessId
+                : businessId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phone: freezed == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            currency: null == currency
+                ? _value.currency
+                : currency // ignore: cast_nullable_to_non_nullable
+                      as String,
+            isMain: null == isMain
+                ? _value.isMain
+                : isMain // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -134,21 +140,23 @@ class _$BranchModelCopyWithImpl<$Res, $Val extends BranchModel>
 abstract class _$$BranchModelImplCopyWith<$Res>
     implements $BranchModelCopyWith<$Res> {
   factory _$$BranchModelImplCopyWith(
-          _$BranchModelImpl value, $Res Function(_$BranchModelImpl) then) =
-      __$$BranchModelImplCopyWithImpl<$Res>;
+    _$BranchModelImpl value,
+    $Res Function(_$BranchModelImpl) then,
+  ) = __$$BranchModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      @JsonKey(name: 'business_id') String businessId,
-      String name,
-      String? address,
-      String? phone,
-      String currency,
-      @JsonKey(name: 'is_main') bool isMain,
-      @JsonKey(name: 'is_active') bool isActive,
-      @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt});
+  $Res call({
+    String id,
+    @JsonKey(name: 'business_id') String businessId,
+    String name,
+    String? address,
+    String? phone,
+    String currency,
+    @JsonKey(name: 'is_main') bool isMain,
+    @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  });
 }
 
 /// @nodoc
@@ -156,8 +164,9 @@ class __$$BranchModelImplCopyWithImpl<$Res>
     extends _$BranchModelCopyWithImpl<$Res, _$BranchModelImpl>
     implements _$$BranchModelImplCopyWith<$Res> {
   __$$BranchModelImplCopyWithImpl(
-      _$BranchModelImpl _value, $Res Function(_$BranchModelImpl) _then)
-      : super(_value, _then);
+    _$BranchModelImpl _value,
+    $Res Function(_$BranchModelImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -173,66 +182,68 @@ class __$$BranchModelImplCopyWithImpl<$Res>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(_$BranchModelImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      businessId: null == businessId
-          ? _value.businessId
-          : businessId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      currency: null == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
-              as String,
-      isMain: null == isMain
-          ? _value.isMain
-          : isMain // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ));
+    return _then(
+      _$BranchModelImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        businessId: null == businessId
+            ? _value.businessId
+            : businessId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phone: freezed == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        currency: null == currency
+            ? _value.currency
+            : currency // ignore: cast_nullable_to_non_nullable
+                  as String,
+        isMain: null == isMain
+            ? _value.isMain
+            : isMain // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$BranchModelImpl extends _BranchModel {
-  const _$BranchModelImpl(
-      {required this.id,
-      @JsonKey(name: 'business_id') required this.businessId,
-      required this.name,
-      this.address,
-      this.phone,
-      this.currency = 'GHS',
-      @JsonKey(name: 'is_main') this.isMain = false,
-      @JsonKey(name: 'is_active') this.isActive = true,
-      @JsonKey(name: 'created_at') this.createdAt,
-      @JsonKey(name: 'updated_at') this.updatedAt})
-      : super._();
+  const _$BranchModelImpl({
+    required this.id,
+    @JsonKey(name: 'business_id') required this.businessId,
+    required this.name,
+    this.address,
+    this.phone,
+    this.currency = 'GHS',
+    @JsonKey(name: 'is_main') this.isMain = false,
+    @JsonKey(name: 'is_active') this.isActive = true,
+    @JsonKey(name: 'created_at') this.createdAt,
+    @JsonKey(name: 'updated_at') this.updatedAt,
+  }) : super._();
 
   factory _$BranchModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$BranchModelImplFromJson(json);
@@ -293,8 +304,19 @@ class _$BranchModelImpl extends _BranchModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, businessId, name, address,
-      phone, currency, isMain, isActive, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    businessId,
+    name,
+    address,
+    phone,
+    currency,
+    isMain,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -304,25 +326,23 @@ class _$BranchModelImpl extends _BranchModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$BranchModelImplToJson(
-      this,
-    );
+    return _$$BranchModelImplToJson(this);
   }
 }
 
 abstract class _BranchModel extends BranchModel {
-  const factory _BranchModel(
-          {required final String id,
-          @JsonKey(name: 'business_id') required final String businessId,
-          required final String name,
-          final String? address,
-          final String? phone,
-          final String currency,
-          @JsonKey(name: 'is_main') final bool isMain,
-          @JsonKey(name: 'is_active') final bool isActive,
-          @JsonKey(name: 'created_at') final DateTime? createdAt,
-          @JsonKey(name: 'updated_at') final DateTime? updatedAt}) =
-      _$BranchModelImpl;
+  const factory _BranchModel({
+    required final String id,
+    @JsonKey(name: 'business_id') required final String businessId,
+    required final String name,
+    final String? address,
+    final String? phone,
+    final String currency,
+    @JsonKey(name: 'is_main') final bool isMain,
+    @JsonKey(name: 'is_active') final bool isActive,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+  }) = _$BranchModelImpl;
   const _BranchModel._() : super._();
 
   factory _BranchModel.fromJson(Map<String, dynamic> json) =

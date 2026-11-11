@@ -44,7 +44,8 @@ class StockMovementModel {
 
     // Check if variant join is present
     String? varName;
-    if (json['product_variants'] != null && json['product_variants'] is Map<String, dynamic>) {
+    if (json['product_variants'] != null &&
+        json['product_variants'] is Map<String, dynamic>) {
       varName = json['product_variants']['name'] as String?;
     }
 

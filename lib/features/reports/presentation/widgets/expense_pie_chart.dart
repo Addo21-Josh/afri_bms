@@ -46,7 +46,9 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
         alignment: Alignment.center,
         child: Text(
           'No expenses recorded in this period',
-          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.outline,
+          ),
         ),
       );
     }
@@ -66,7 +68,8 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                       _touchedIndex = -1;
                       return;
                     }
-                    _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    _touchedIndex =
+                        pieTouchResponse.touchedSection!.touchedSectionIndex;
                   });
                 },
               ),
@@ -89,7 +92,9 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                     fontSize: fontSize,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    shadows: const [Shadow(color: Colors.black45, blurRadius: 2)],
+                    shadows: const [
+                      Shadow(color: Colors.black45, blurRadius: 2),
+                    ],
                   ),
                 );
               }),
@@ -114,13 +119,18 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                   Container(
                     width: 12,
                     height: 12,
-                    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
                       '${cat.categoryName}: ${CurrencyFormatter.format(cat.totalAmount, currencyCode: widget.currency)}',
-                      style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

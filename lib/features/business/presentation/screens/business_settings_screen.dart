@@ -9,10 +9,12 @@ class BusinessSettingsScreen extends ConsumerStatefulWidget {
   const BusinessSettingsScreen({super.key});
 
   @override
-  ConsumerState<BusinessSettingsScreen> createState() => _BusinessSettingsScreenState();
+  ConsumerState<BusinessSettingsScreen> createState() =>
+      _BusinessSettingsScreenState();
 }
 
-class _BusinessSettingsScreenState extends ConsumerState<BusinessSettingsScreen> {
+class _BusinessSettingsScreenState
+    extends ConsumerState<BusinessSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descController;
@@ -26,11 +28,15 @@ class _BusinessSettingsScreenState extends ConsumerState<BusinessSettingsScreen>
     super.initState();
     final currentBiz = ref.read(currentBusinessProvider);
     _nameController = TextEditingController(text: currentBiz?.name ?? '');
-    _descController = TextEditingController(text: currentBiz?.description ?? '');
+    _descController = TextEditingController(
+      text: currentBiz?.description ?? '',
+    );
     _addressController = TextEditingController(text: currentBiz?.address ?? '');
     _phoneController = TextEditingController(text: currentBiz?.phone ?? '');
     _emailController = TextEditingController(text: currentBiz?.email ?? '');
-    _taxController = TextEditingController(text: (currentBiz?.taxRate ?? 0.0).toString());
+    _taxController = TextEditingController(
+      text: (currentBiz?.taxRate ?? 0.0).toString(),
+    );
   }
 
   @override
@@ -93,7 +99,9 @@ class _BusinessSettingsScreenState extends ConsumerState<BusinessSettingsScreen>
         );
       } else if (!next.isLoading && next.value != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Business settings updated successfully')),
+          const SnackBar(
+            content: Text('Business settings updated successfully'),
+          ),
         );
       }
     });
@@ -131,7 +139,8 @@ class _BusinessSettingsScreenState extends ConsumerState<BusinessSettingsScreen>
                     labelText: 'Business Name',
                     prefixIcon: Icon(Icons.business_outlined),
                   ),
-                  validator: (val) => Validators.required(val, 'Business name is required'),
+                  validator: (val) =>
+                      Validators.required(val, 'Business name is required'),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -191,7 +200,9 @@ class _BusinessSettingsScreenState extends ConsumerState<BusinessSettingsScreen>
                     labelText: 'Default Tax Rate (%)',
                     prefixIcon: Icon(Icons.percent_outlined),
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 FilledButton.icon(

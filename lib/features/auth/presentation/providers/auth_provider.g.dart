@@ -13,14 +13,14 @@ String _$authRemoteDatasourceHash() =>
 @ProviderFor(authRemoteDatasource)
 final authRemoteDatasourceProvider =
     AutoDisposeProvider<AuthRemoteDatasource>.internal(
-  authRemoteDatasource,
-  name: r'authRemoteDatasourceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authRemoteDatasourceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      authRemoteDatasource,
+      name: r'authRemoteDatasourceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$authRemoteDatasourceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef AuthRemoteDatasourceRef = AutoDisposeProviderRef<AuthRemoteDatasource>;
 String _$authRepositoryHash() => r'd2949936d1a31eb352a1207327b0380f8cd7cb91';
@@ -90,31 +90,31 @@ String _$getCurrentUserUseCaseHash() =>
 @ProviderFor(getCurrentUserUseCase)
 final getCurrentUserUseCaseProvider =
     AutoDisposeProvider<GetCurrentUserUseCase>.internal(
-  getCurrentUserUseCase,
-  name: r'getCurrentUserUseCaseProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$getCurrentUserUseCaseHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      getCurrentUserUseCase,
+      name: r'getCurrentUserUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$getCurrentUserUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-typedef GetCurrentUserUseCaseRef
-    = AutoDisposeProviderRef<GetCurrentUserUseCase>;
+typedef GetCurrentUserUseCaseRef =
+    AutoDisposeProviderRef<GetCurrentUserUseCase>;
 String _$authControllerHash() => r'9693c064369dcced24dac7d8aad8882644fa7772';
 
 /// See also [AuthController].
 @ProviderFor(AuthController)
 final authControllerProvider =
     AutoDisposeAsyncNotifierProvider<AuthController, UserEntity?>.internal(
-  AuthController.new,
-  name: r'authControllerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authControllerHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      AuthController.new,
+      name: r'authControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$authControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef _$AuthController = AutoDisposeAsyncNotifier<UserEntity?>;
 // ignore_for_file: type=lint

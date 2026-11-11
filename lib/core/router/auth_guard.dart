@@ -4,7 +4,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../sync/data/local/local_cache_service.dart';
 
 class AuthGuard {
-  static Future<String?> redirect(BuildContext context, GoRouterState state) async {
+  static Future<String?> redirect(
+    BuildContext context,
+    GoRouterState state,
+  ) async {
     final supabase = Supabase.instance.client;
     final session = supabase.auth.currentSession;
     // Use currentUser as fallback — it persists from cached JWT data
@@ -24,9 +27,10 @@ class AuthGuard {
       return null;
     }
 
-    final isGoingToAuth = state.matchedLocation == '/login' ||
+    final isGoingToAuth =
+        state.matchedLocation == '/login' ||
         state.matchedLocation == '/register' ||
-        state.matchedLocation == '/onboarding' || 
+        state.matchedLocation == '/onboarding' ||
         state.matchedLocation == '/forgot-password';
 
     if (!isLoggedIn && !isGoingToAuth) {

@@ -28,7 +28,9 @@ class PaymentModel extends PaymentEntity {
       customerId: json['customer_id'] as String?,
       supplierId: json['supplier_id'] as String?,
       amount: (json['amount'] as num?)?.toInt() ?? 0,
-      paymentMethod: PaymentMethod.fromString(json['payment_method'] as String? ?? 'cash'),
+      paymentMethod: PaymentMethod.fromString(
+        json['payment_method'] as String? ?? 'cash',
+      ),
       provider: json['provider'] as String?,
       reference: json['reference'] as String?,
       phoneNumber: json['phone_number'] as String?,

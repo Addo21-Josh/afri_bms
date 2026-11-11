@@ -9,7 +9,6 @@ import '../../domain/repositories/inventory_repository.dart';
 import '../datasources/inventory_remote_datasource.dart';
 
 class InventoryRepositoryImpl implements InventoryRepository {
-
   InventoryRepositoryImpl({required this.remoteDatasource});
   final InventoryRemoteDatasource remoteDatasource;
 
@@ -26,7 +25,9 @@ class InventoryRepositoryImpl implements InventoryRepository {
         categoryId: categoryId,
         searchQuery: searchQuery,
       );
-      final entities = models.map((m) => m.toEntity(currentBranchId: branchId)).toList();
+      final entities = models
+          .map((m) => m.toEntity(currentBranchId: branchId))
+          .toList();
       return Right(entities);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -34,7 +35,10 @@ class InventoryRepositoryImpl implements InventoryRepository {
   }
 
   @override
-  Future<Either<Failure, ProductEntity>> getProductById(String id, {String? branchId}) async {
+  Future<Either<Failure, ProductEntity>> getProductById(
+    String id, {
+    String? branchId,
+  }) async {
     try {
       final model = await remoteDatasource.getProductById(id);
       return Right(model.toEntity(currentBranchId: branchId));
@@ -88,7 +92,9 @@ class InventoryRepositoryImpl implements InventoryRepository {
   }
 
   @override
-  Future<Either<Failure, ProductEntity>> updateProduct(ProductEntity product) async {
+  Future<Either<Failure, ProductEntity>> updateProduct(
+    ProductEntity product,
+  ) async {
     try {
       final model = await remoteDatasource.updateProduct(product);
       return Right(model.toEntity());
@@ -108,7 +114,9 @@ class InventoryRepositoryImpl implements InventoryRepository {
   }
 
   @override
-  Future<Either<Failure, List<ProductCategoryEntity>>> getCategories(String businessId) async {
+  Future<Either<Failure, List<ProductCategoryEntity>>> getCategories(
+    String businessId,
+  ) async {
     try {
       final models = await remoteDatasource.getCategories(businessId);
       return Right(models.map((m) => m.toEntity()).toList());

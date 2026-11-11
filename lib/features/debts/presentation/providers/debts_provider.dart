@@ -50,12 +50,16 @@ class DebtFilter {
 }
 
 final debtFilterProvider = StateProvider<DebtFilter>((ref) {
-  return const DebtFilter(debtType: DebtType.receivable, status: DebtStatus.active);
+  return const DebtFilter(
+    debtType: DebtType.receivable,
+    status: DebtStatus.active,
+  );
 });
 
-final debtsListProvider = AsyncNotifierProvider<DebtsListNotifier, List<DebtEntity>>(() {
-  return DebtsListNotifier();
-});
+final debtsListProvider =
+    AsyncNotifierProvider<DebtsListNotifier, List<DebtEntity>>(() {
+      return DebtsListNotifier();
+    });
 
 class DebtsListNotifier extends AsyncNotifier<List<DebtEntity>> {
   @override
@@ -69,7 +73,10 @@ class DebtsListNotifier extends AsyncNotifier<List<DebtEntity>> {
     final localCache = ref.watch(localCacheServiceProvider);
 
     if (!isOnline) {
-      final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
+      final cached = await localCache.getCachedDebts(
+        business.id,
+        branchId: branch?.id,
+      );
       return _filterDebts(cached, filter);
     }
 
@@ -87,7 +94,10 @@ class DebtsListNotifier extends AsyncNotifier<List<DebtEntity>> {
       await localCache.cacheDebts(business.id, rawList);
       return _filterDebts(rawList, filter);
     } catch (_) {
-      final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
+      final cached = await localCache.getCachedDebts(
+        business.id,
+        branchId: branch?.id,
+      );
       return _filterDebts(cached, filter);
     }
   }
@@ -100,7 +110,9 @@ class DebtsListNotifier extends AsyncNotifier<List<DebtEntity>> {
     }
 
     if (filter.agingBucket != null) {
-      filtered = filtered.where((d) => d.agingBucket == filter.agingBucket).toList();
+      filtered = filtered
+          .where((d) => d.agingBucket == filter.agingBucket)
+          .toList();
     }
 
     if (filter.searchQuery.trim().isNotEmpty) {
@@ -121,7 +133,10 @@ class DebtsListNotifier extends AsyncNotifier<List<DebtEntity>> {
 }
 
 // Single Debt Detail Provider with offline cache fallback
-final debtDetailProvider = FutureProvider.family<DebtEntity, String>((ref, debtId) async {
+final debtDetailProvider = FutureProvider.family<DebtEntity, String>((
+  ref,
+  debtId,
+) async {
   final business = ref.watch(currentBusinessProvider);
   final isOnline = ref.watch(syncProvider.select((s) => s.isOnline));
   final localCache = ref.watch(localCacheServiceProvider);
@@ -146,13 +161,13 @@ final debtDetailProvider = FutureProvider.family<DebtEntity, String>((ref, debtI
 // Payments List for a debt
 final debtPaymentsListProvider =
     FutureProvider.family<List<DebtPaymentEntity>, String>((ref, debtId) async {
-  final repo = ref.watch(debtRepositoryProvider);
-  try {
-    return await repo.getDebtPayments(debtId);
-  } catch (_) {
-    return [];
-  }
-});
+      final repo = ref.watch(debtRepositoryProvider);
+      try {
+        return await repo.getDebtPayments(debtId);
+      } catch (_) {
+        return [];
+      }
+    });
 
 // Summary: Total active customer receivables with offline fallback
 final totalReceivablesSummaryProvider = FutureProvider<int>((ref) async {
@@ -163,9 +178,16 @@ final totalReceivablesSummaryProvider = FutureProvider<int>((ref) async {
   final localCache = ref.watch(localCacheServiceProvider);
 
   if (!isOnline) {
-    final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
+    final cached = await localCache.getCachedDebts(
+      business.id,
+      branchId: branch?.id,
+    );
     return cached
-        .where((d) => d.debtType == DebtType.receivable && d.status == DebtStatus.active)
+        .where(
+          (d) =>
+              d.debtType == DebtType.receivable &&
+              d.status == DebtStatus.active,
+        )
         .fold<int>(0, (sum, d) => sum + d.remainingBalance);
   }
 
@@ -179,9 +201,16 @@ final totalReceivablesSummaryProvider = FutureProvider<int>((ref) async {
     );
     return receivables.fold<int>(0, (sum, d) => sum + d.remainingBalance);
   } catch (_) {
-    final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
+    final cached = await localCache.getCachedDebts(
+      business.id,
+      branchId: branch?.id,
+    );
     return cached
-        .where((d) => d.debtType == DebtType.receivable && d.status == DebtStatus.active)
+        .where(
+          (d) =>
+              d.debtType == DebtType.receivable &&
+              d.status == DebtStatus.active,
+        )
         .fold<int>(0, (sum, d) => sum + d.remainingBalance);
   }
 });
@@ -195,9 +224,15 @@ final totalPayablesSummaryProvider = FutureProvider<int>((ref) async {
   final localCache = ref.watch(localCacheServiceProvider);
 
   if (!isOnline) {
-    final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
+    final cached = await localCache.getCachedDebts(
+      business.id,
+      branchId: branch?.id,
+    );
     return cached
-        .where((d) => d.debtType == DebtType.payable && d.status == DebtStatus.active)
+        .where(
+          (d) =>
+              d.debtType == DebtType.payable && d.status == DebtStatus.active,
+        )
         .fold<int>(0, (sum, d) => sum + d.remainingBalance);
   }
 
@@ -211,15 +246,23 @@ final totalPayablesSummaryProvider = FutureProvider<int>((ref) async {
     );
     return payables.fold<int>(0, (sum, d) => sum + d.remainingBalance);
   } catch (_) {
-    final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
+    final cached = await localCache.getCachedDebts(
+      business.id,
+      branchId: branch?.id,
+    );
     return cached
-        .where((d) => d.debtType == DebtType.payable && d.status == DebtStatus.active)
+        .where(
+          (d) =>
+              d.debtType == DebtType.payable && d.status == DebtStatus.active,
+        )
         .fold<int>(0, (sum, d) => sum + d.remainingBalance);
   }
 });
 
 // Summary: Aging distribution of receivables for buckets
-final receivablesAgingSummaryProvider = FutureProvider<Map<AgingBucket, int>>((ref) async {
+final receivablesAgingSummaryProvider = FutureProvider<Map<AgingBucket, int>>((
+  ref,
+) async {
   final business = ref.watch(currentBusinessProvider);
   if (business == null) return {};
   final branch = ref.watch(currentBranchProvider);
@@ -228,8 +271,17 @@ final receivablesAgingSummaryProvider = FutureProvider<Map<AgingBucket, int>>((r
 
   List<DebtEntity> list = [];
   if (!isOnline) {
-    final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
-    list = cached.where((d) => d.debtType == DebtType.receivable && d.status == DebtStatus.active).toList();
+    final cached = await localCache.getCachedDebts(
+      business.id,
+      branchId: branch?.id,
+    );
+    list = cached
+        .where(
+          (d) =>
+              d.debtType == DebtType.receivable &&
+              d.status == DebtStatus.active,
+        )
+        .toList();
   } else {
     try {
       final repo = ref.watch(debtRepositoryProvider);
@@ -240,8 +292,17 @@ final receivablesAgingSummaryProvider = FutureProvider<Map<AgingBucket, int>>((r
         status: DebtStatus.active,
       );
     } catch (_) {
-      final cached = await localCache.getCachedDebts(business.id, branchId: branch?.id);
-      list = cached.where((d) => d.debtType == DebtType.receivable && d.status == DebtStatus.active).toList();
+      final cached = await localCache.getCachedDebts(
+        business.id,
+        branchId: branch?.id,
+      );
+      list = cached
+          .where(
+            (d) =>
+                d.debtType == DebtType.receivable &&
+                d.status == DebtStatus.active,
+          )
+          .toList();
     }
   }
 
@@ -267,8 +328,8 @@ class DebtControllerState {
 
 final debtControllerProvider =
     StateNotifierProvider<DebtControllerNotifier, DebtControllerState>((ref) {
-  return DebtControllerNotifier(ref);
-});
+      return DebtControllerNotifier(ref);
+    });
 
 class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
   DebtControllerNotifier(this._ref) : super(const DebtControllerState());
@@ -318,29 +379,31 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
       final localCache = _ref.read(localCacheServiceProvider);
       await localCache.saveOfflineDebt(business.id, offlineDebt);
 
-      await _ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'debts',
-        operation: SyncOperation.insert,
-        recordId: offlineId,
-        payload: {
-          'id': offlineId,
-          'business_id': business.id,
-          'branch_id': branch.id,
-          'debt_type': debtType.name,
-          'customer_id': customerId,
-          'supplier_id': supplierId,
-          'sale_id': saleId,
-          'person_name': personName,
-          'person_phone': personPhone,
-          'initial_amount': amount,
-          'remaining_balance': amount,
-          'due_date': dueDate?.toIso8601String(),
-          'status': DebtStatus.active.name,
-          'notes': notes,
-          'created_at': now.toIso8601String(),
-          'updated_at': now.toIso8601String(),
-        },
-      );
+      await _ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'debts',
+            operation: SyncOperation.insert,
+            recordId: offlineId,
+            payload: {
+              'id': offlineId,
+              'business_id': business.id,
+              'branch_id': branch.id,
+              'debt_type': debtType.name,
+              'customer_id': customerId,
+              'supplier_id': supplierId,
+              'sale_id': saleId,
+              'person_name': personName,
+              'person_phone': personPhone,
+              'initial_amount': amount,
+              'remaining_balance': amount,
+              'due_date': dueDate?.toIso8601String(),
+              'status': DebtStatus.active.name,
+              'notes': notes,
+              'created_at': now.toIso8601String(),
+              'updated_at': now.toIso8601String(),
+            },
+          );
 
       await _ref.read(debtsListProvider.notifier).refresh();
       _ref.invalidate(totalReceivablesSummaryProvider);
@@ -372,7 +435,9 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
       );
 
       final created = await repo.createDebt(debt);
-      await _ref.read(localCacheServiceProvider).saveOfflineDebt(business.id, created);
+      await _ref
+          .read(localCacheServiceProvider)
+          .saveOfflineDebt(business.id, created);
       await _ref.read(debtsListProvider.notifier).refresh();
       _ref.invalidate(totalReceivablesSummaryProvider);
       _ref.invalidate(totalPayablesSummaryProvider);
@@ -400,11 +465,19 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
 
     if (!isOnline) {
       final localCache = _ref.read(localCacheServiceProvider);
-      final cachedDebt = await localCache.getCachedDebtById(business.id, debtId);
+      final cachedDebt = await localCache.getCachedDebtById(
+        business.id,
+        debtId,
+      );
 
       if (cachedDebt != null) {
-        final newRemaining = (cachedDebt.remainingBalance - amount).clamp(0, cachedDebt.initialAmount);
-        final newStatus = newRemaining == 0 ? DebtStatus.paid : DebtStatus.active;
+        final newRemaining = (cachedDebt.remainingBalance - amount).clamp(
+          0,
+          cachedDebt.initialAmount,
+        );
+        final newStatus = newRemaining == 0
+            ? DebtStatus.paid
+            : DebtStatus.active;
         final updatedDebt = DebtEntity(
           id: cachedDebt.id,
           businessId: cachedDebt.businessId,
@@ -429,32 +502,36 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
         final paymentId = const Uuid().v4();
         final now = DateTime.now();
 
-        await _ref.read(syncProvider.notifier).enqueueOperation(
-          table: 'debt_payments',
-          operation: SyncOperation.insert,
-          recordId: paymentId,
-          payload: {
-            'id': paymentId,
-            'business_id': business.id,
-            'debt_id': debtId,
-            'amount': amount,
-            'payment_method': paymentMethod,
-            'payment_reference': paymentReference,
-            'notes': notes,
-            'created_at': now.toIso8601String(),
-          },
-        );
+        await _ref
+            .read(syncProvider.notifier)
+            .enqueueOperation(
+              table: 'debt_payments',
+              operation: SyncOperation.insert,
+              recordId: paymentId,
+              payload: {
+                'id': paymentId,
+                'business_id': business.id,
+                'debt_id': debtId,
+                'amount': amount,
+                'payment_method': paymentMethod,
+                'payment_reference': paymentReference,
+                'notes': notes,
+                'created_at': now.toIso8601String(),
+              },
+            );
 
-        await _ref.read(syncProvider.notifier).enqueueOperation(
-          table: 'debts',
-          operation: SyncOperation.update,
-          recordId: debtId,
-          payload: {
-            'remaining_balance': newRemaining,
-            'status': newStatus.name,
-            'updated_at': now.toIso8601String(),
-          },
-        );
+        await _ref
+            .read(syncProvider.notifier)
+            .enqueueOperation(
+              table: 'debts',
+              operation: SyncOperation.update,
+              recordId: debtId,
+              payload: {
+                'remaining_balance': newRemaining,
+                'status': newStatus.name,
+                'updated_at': now.toIso8601String(),
+              },
+            );
 
         await _ref.read(debtsListProvider.notifier).refresh();
         _ref.invalidate(debtDetailProvider(debtId));
@@ -481,7 +558,9 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
       // Refresh debt from repo to update local cache
       try {
         final updated = await repo.getDebtById(debtId);
-        await _ref.read(localCacheServiceProvider).saveOfflineDebt(business.id, updated);
+        await _ref
+            .read(localCacheServiceProvider)
+            .saveOfflineDebt(business.id, updated);
       } catch (_) {}
 
       await _ref.read(debtsListProvider.notifier).refresh();
@@ -514,7 +593,9 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
       personName: debt.personName,
       personPhone: debt.personPhone,
       initialAmount: debt.initialAmount,
-      remainingBalance: newStatus == DebtStatus.paid ? 0 : debt.remainingBalance,
+      remainingBalance: newStatus == DebtStatus.paid
+          ? 0
+          : debt.remainingBalance,
       dueDate: debt.dueDate,
       status: newStatus,
       notes: debt.notes,
@@ -526,16 +607,18 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
       final localCache = _ref.read(localCacheServiceProvider);
       await localCache.saveOfflineDebt(business.id, updated);
 
-      await _ref.read(syncProvider.notifier).enqueueOperation(
-        table: 'debts',
-        operation: SyncOperation.update,
-        recordId: debt.id,
-        payload: {
-          'remaining_balance': updated.remainingBalance,
-          'status': newStatus.name,
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-      );
+      await _ref
+          .read(syncProvider.notifier)
+          .enqueueOperation(
+            table: 'debts',
+            operation: SyncOperation.update,
+            recordId: debt.id,
+            payload: {
+              'remaining_balance': updated.remainingBalance,
+              'status': newStatus.name,
+              'updated_at': DateTime.now().toIso8601String(),
+            },
+          );
 
       await _ref.read(debtsListProvider.notifier).refresh();
       _ref.invalidate(debtDetailProvider(debt.id));
@@ -551,7 +634,9 @@ class DebtControllerNotifier extends StateNotifier<DebtControllerState> {
       await repo.updateDebt(updated);
 
       if (business != null) {
-        await _ref.read(localCacheServiceProvider).saveOfflineDebt(business.id, updated);
+        await _ref
+            .read(localCacheServiceProvider)
+            .saveOfflineDebt(business.id, updated);
       }
 
       await _ref.read(debtsListProvider.notifier).refresh();

@@ -27,7 +27,9 @@ class SupplierRepositoryImpl implements SupplierRepository {
   }
 
   @override
-  Future<Either<Failure, SupplierEntity>> getSupplierById(String supplierId) async {
+  Future<Either<Failure, SupplierEntity>> getSupplierById(
+    String supplierId,
+  ) async {
     try {
       final model = await remoteDatasource.getSupplierById(supplierId);
       return Right(model.toEntity());
@@ -63,7 +65,9 @@ class SupplierRepositoryImpl implements SupplierRepository {
   }
 
   @override
-  Future<Either<Failure, SupplierEntity>> updateSupplier(SupplierEntity supplier) async {
+  Future<Either<Failure, SupplierEntity>> updateSupplier(
+    SupplierEntity supplier,
+  ) async {
     try {
       final model = SupplierModel(
         id: supplier.id,

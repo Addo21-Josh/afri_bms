@@ -27,15 +27,15 @@ class ProductVariantEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        productId,
-        name,
-        sku,
-        barcode,
-        costPrice,
-        sellingPrice,
-        attributes,
-        isActive,
-        createdAt,
-      ];
+    id,
+    productId,
+    name,
+    sku,
+    barcode,
+    costPrice,
+    sellingPrice,
+    attributes,
+    isActive,
+    createdAt,
+  ];
 }

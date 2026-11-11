@@ -41,10 +41,13 @@ class StaffUserModel {
       branchName: branch?['name'] as String?,
       role: UserRoleType.fromString(json['role'] as String? ?? 'salesperson'),
       email: (profile?['email'] ?? json['email'] ?? '') as String,
-      fullName: (profile?['full_name'] ?? json['full_name'] ?? 'Staff Member') as String,
+      fullName:
+          (profile?['full_name'] ?? json['full_name'] ?? 'Staff Member')
+              as String,
       phone: profile?['phone'] as String?,
       isActive: json['is_active'] as bool? ?? true,
-      customPermissions: (json['custom_permissions'] as Map<String, dynamic>?) ?? {},
+      customPermissions:
+          (json['custom_permissions'] as Map<String, dynamic>?) ?? {},
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),

@@ -5,7 +5,9 @@ import 'package:afri_bms/core/subscription/presentation/widgets/upgrade_prompt_s
 
 void main() {
   group('UpgradePromptSheet Widget Tests', () {
-    testWidgets('renders title, perks, and GHS pricing for Pro upgrade', (WidgetTester tester) async {
+    testWidgets('renders title, perks, and GHS pricing for Pro upgrade', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -30,22 +32,25 @@ void main() {
       expect(find.text('View Plans & Upgrade'), findsOneWidget);
     });
 
-    testWidgets('renders Enterprise perks and GHS pricing when suggested tier is Enterprise', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: UpgradePromptSheet(
-              featureName: 'Unlimited Businesses',
-              currentTier: SubscriptionTier.pro,
-              suggestedTier: SubscriptionTier.enterprise,
+    testWidgets(
+      'renders Enterprise perks and GHS pricing when suggested tier is Enterprise',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: UpgradePromptSheet(
+                featureName: 'Unlimited Businesses',
+                currentTier: SubscriptionTier.pro,
+                suggestedTier: SubscriptionTier.enterprise,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Upgrade to Enterprise'), findsOneWidget);
-      expect(find.textContaining('GH₵150'), findsOneWidget);
-      expect(find.textContaining('Unlimited Businesses'), findsOneWidget);
-    });
+        expect(find.text('Upgrade to Enterprise'), findsOneWidget);
+        expect(find.textContaining('GH₵150'), findsOneWidget);
+        expect(find.textContaining('Unlimited Businesses'), findsOneWidget);
+      },
+    );
   });
 }
