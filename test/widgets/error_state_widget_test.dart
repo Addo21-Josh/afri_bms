@@ -14,7 +14,7 @@ void main() {
         expect(
           cleaned,
           equals(
-            'Unable to reach the server. Please check your internet connection.',
+            'Unable to connect to the server. Please check your internet connection.',
           ),
         );
       },
@@ -27,13 +27,13 @@ void main() {
           ErrorStateWidget.cleanMessage(
             'AppException: Product not found in database',
           ),
-          equals('Product not found in database'),
+          equals('Product not found in database.'),
         );
         expect(
           ErrorStateWidget.cleanMessage(
             'Exception: Insufficient stock for transaction',
           ),
-          equals('Insufficient stock for transaction'),
+          equals('Insufficient stock for transaction.'),
         );
       },
     );
@@ -59,7 +59,7 @@ void main() {
         // Verify human-friendly message is shown
         expect(
           find.text(
-            'Unable to reach the server. Please check your internet connection.',
+            'Unable to connect to the server. Please check your internet connection.',
           ),
           findsOneWidget,
         );
