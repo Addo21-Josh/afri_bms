@@ -471,7 +471,7 @@
 
 ### 12.5 CI/CD
 
-- [x] Multi-Platform CI Workflow across Android, iOS, Web, and Desktop (.github/workflows/multi_platform_ci.yml)
+- [x] Multi-Platform CI Workflow across Android and iOS (.github/workflows/multi_platform_ci.yml)
 - [x] GitHub Actions for automated testing (.github/workflows/ci.yml)
 - [x] Automated build on PR (.github/workflows/pr_build.yml)
 - [x] Release build pipeline (signed APK/IPA) (.github/workflows/release.yml)
