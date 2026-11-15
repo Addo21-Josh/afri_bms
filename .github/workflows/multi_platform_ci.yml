@@ -211,8 +211,7 @@ jobs:
           path: |
             ~/.cocoapods
             ~/.pub-cache
-            ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
@@ -222,8 +221,12 @@ jobs:
       - name: Verify CocoaPods Version
         run: pod --version
 
+      - name: Install CocoaPods Dependencies
+        working-directory: ios
+        run: pod install --verbose
+
       - name: Build iOS Application (Simulator Verification)
-        run: flutter build ios --simulator --debug
+        run: flutter build ios --simulator --debug --no-pub
 
       - name: Upload iOS Build Payload
         uses: actions/upload-artifact@v4
