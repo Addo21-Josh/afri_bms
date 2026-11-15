@@ -199,6 +199,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Ruby 3.3 (CocoaPods Compatibility)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Install CocoaPods 1.16.2
+        run: |
+          gem install cocoapods -v 1.16.2
+          which pod
+          pod --version
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -211,15 +223,12 @@ jobs:
           path: |
             ~/.cocoapods
             ~/.pub-cache
-          key: ${{ runner.os }}-pods-${{ hashFiles('pubspec.lock') }}
+          key: ${{ runner.os }}-ruby33-pods-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-ruby33-pods-
 
       - name: Install dependencies
         run: flutter pub get
-
-      - name: Verify CocoaPods Version
-        run: pod --version
 
       - name: Install CocoaPods Dependencies
         working-directory: ios

@@ -60,9 +60,9 @@ The Multi-Platform CI workflow (`.github/workflows/multi_platform_ci.yml`) focus
    - Archives APK and AAB artifacts
 
 3. **iOS Pipeline (`macos-latest`)**:
-   - macOS runner with CocoaPods & Xcode toolchain
-   - Dependency & Pods caching (`~/.cocoapods`, `ios/Pods`)
-   - Builds iOS application without code signing (`flutter build ios --no-codesign --debug`)
+   - Pinned Ruby 3.3 via `ruby/setup-ruby@v1` and CocoaPods 1.16.2 for compatibility on macOS runners
+   - Dependency & Pods caching (`~/.cocoapods`, `.pub-cache`)
+   - Builds iOS application in Simulator debug mode (`flutter build ios --simulator --debug --no-pub`)
    - Validates native CocoaPods integration and iOS engine compilation
 
 4. **Summary & Health Enforcement**:
