@@ -44,31 +44,33 @@ The Multi-Platform CI workflow (`.github/workflows/multi_platform_ci.yml`) focus
 └────────────────────────────────────────────────────────┘
 ```
 
-### Stages & Capabilities
-1. **Quality Gate (`ubuntu-latest`)**:
-   - Dart code format verification (`dart format --set-exit-if-changed .`)
+### Two-Tier Architecture & Capabilities
+1. **Tier 1: Quality Gate (Every Push & Pull Request)**:
+   - Runner: `ubuntu-latest` (Runs in under 2 minutes)
+   - Pinned Flutter `3.41.7` (Dart `3.11.5`) matching local development
+   - Dart code format verification (`dart format --output=none --set-exit-if-changed .`)
    - Static analysis (`flutter analyze --no-fatal-warnings --no-fatal-infos`)
    - Unit & widget test execution with coverage (`flutter test --coverage`)
    - Code coverage artifact archiving (`coverage/lcov.info`)
 
-2. **Android Pipeline (`ubuntu-latest`)**:
-   - JDK 17 & Flutter stable
-   - Gradle wrapper and dependency caching (`~/.gradle/caches`, `~/.gradle/wrapper`)
-   - Builds Debug APK (`flutter build apk --debug`)
-   - Builds Release APK (`flutter build apk --release`)
-   - Builds Release AppBundle (`flutter build appbundle --release`)
-   - Archives APK and AAB artifacts
+2. **Tier 2: Platform Packaging (Release Tags `v*` & Manual `workflow_dispatch`)**:
+   - **Android Pipeline (`ubuntu-latest`)**:
+     - Runner disk cleanup recovering 40+ GB of workspace
+     - JDK 17 & Flutter `3.41.7` with AGP `8.11.1` and Gradle `8.11.1`
+     - Builds Debug APK (`flutter build apk --debug`)
+     - Builds Release APK (`flutter build apk --release`)
+     - Builds Release AppBundle (`flutter build appbundle --release`)
+     - Archives APK and AAB artifacts
+   - **iOS Pipeline (`macos-latest`)**:
+     - Pinned Ruby 3.3 via `ruby/setup-ruby@v1` and CocoaPods 1.16.2
+     - Static framework linkage and deployment target 15.5
+     - Builds iOS application in Simulator debug mode (`flutter build ios --simulator --debug --no-pub`)
+     - Archives iOS Runner payload
 
-3. **iOS Pipeline (`macos-latest`)**:
-   - Pinned Ruby 3.3 via `ruby/setup-ruby@v1` and CocoaPods 1.16.2 for compatibility on macOS runners
-   - Dependency & Pods caching (`~/.cocoapods`, `.pub-cache`)
-   - Builds iOS application in Simulator debug mode (`flutter build ios --simulator --debug --no-pub`)
-   - Validates native CocoaPods integration and iOS engine compilation
-
-4. **Summary & Health Enforcement**:
+3. **Summary & Health Enforcement**:
    - Collects results across Quality Gate, Android, and iOS jobs
    - Publishes an execution summary table to `$GITHUB_STEP_SUMMARY`
-   - Strictly enforces success on all stages, failing if any core target fails.
+   - Strictly enforces success on all active stages, failing if any required target fails.
 
 ---
 
