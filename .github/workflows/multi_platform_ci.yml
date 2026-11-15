@@ -223,7 +223,7 @@ jobs:
 
       - name: Install CocoaPods Dependencies
         working-directory: ios
-        run: pod install --verbose
+        run: pod install --repo-update --verbose
 
       - name: Build iOS Application (Simulator Verification)
         run: flutter build ios --simulator --debug --no-pub

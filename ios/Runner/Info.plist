@@ -4,6 +4,10 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Afri_BMS requires camera access to scan barcodes and QR codes for products and sales.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Afri_BMS requires photo library access to upload receipts and product images.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Afri_BMS requires permission to save generated receipts and reports to your photo library.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
